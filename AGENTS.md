@@ -8,6 +8,8 @@ This file is the authoritative root contract for the repository. It defines repo
 
 Detailed writing guidance and detailed task playbooks do not live here. They live in repo-local skills under `.agents/skills/`.
 
+The source of truth for the LLM Wiki pattern is the template repository at [jonyfs/llm-wiki-template](https://github.com/jonyfs/llm-wiki-template). This file tracks that template, with the multi-agent and symlink configuration below layered on top.
+
 ## Purpose
 
 There are three layers in this repo:
@@ -17,6 +19,26 @@ There are three layers in this repo:
 3. `AGENTS.md` plus `.agents/skills/` define how the LLM operates on the wiki.
 
 The wiki is a persistent artifact. New sources and valuable answers should be integrated into the wiki so knowledge accumulates over time.
+
+## Multi-agent configuration
+
+This repo is written for multiple AI agents, not a single one. Every agent reads the same `AGENTS.md` through a symlink, so the contract stays consistent across tools. Edit `AGENTS.md` only; the links carry it to the rest.
+
+| File | Agent | Points to |
+|------|-------|-----------|
+| `CLAUDE.md` | Claude Code | `AGENTS.md` |
+| `.cursorrules` | Cursor / OpenCode | `AGENTS.md` |
+| `.github/copilot-instructions.md` | Copilot / Codex | `../AGENTS.md` |
+
+`.agents/skills/` is the single source of truth for skills. Each skill is a folder with a `SKILL.md`. Add, edit, and remove skills only there.
+
+Claude Code and OpenCode reach the folder through symlinks. Codex, Cursor, and Copilot read `.agents/skills/` directly.
+
+| Path | Agent | Type |
+|------|-------|------|
+| `.claude/skills` | Claude Code | symlink to `.agents/skills` |
+| `.opencode/skills` | OpenCode | symlink to `.agents/skills` |
+| `.agents/skills` | Codex, Cursor, Copilot | native |
 
 ## Required repo-local skills
 
