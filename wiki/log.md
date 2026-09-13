@@ -76,3 +76,11 @@ Refined the repo-local wiki skills after comparing them with the external `llm-w
 - added image-backed source handling and provenance cautions to `.agents/skills/wiki-ingest`
 - added a cost-aware structural scan order to `.agents/skills/wiki-maintenance`
 - kept the repo's stricter page schema and avoided importing incompatible Obsidian-specific metadata or manifest rules
+
+## [2026-09-13] maintenance | Add read-only wiki query skill and command
+
+Added a read-only sibling to the query workflow so agents can answer from the wiki without writing any file:
+
+- added `.agents/skills/wiki/` as the read-only variant of `wiki-query`, keeping the same retrieval behavior while removing every write path
+- added `.agents/commands/wiki.md` as the matching read-only query command
+- documented the new skill in `AGENTS.md` and the new operation in `README.md`

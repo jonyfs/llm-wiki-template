@@ -15,7 +15,7 @@ The writing model is plain-language, answer-first wiki prose: teach the smallest
 - `raw/` - curated source documents
 - `wiki/` - persistent markdown wiki and navigation surfaces
 - `AGENTS.md` - root contract for structure, workflows, and page types
-- `.agents/skills/` - repo-local skill playbooks for writing, ingest, query, and maintenance work
+- `.agents/skills/` - repo-local skill playbooks for writing, ingest, query, read-only query, and maintenance work
 
 ## Workflow
 
@@ -29,5 +29,10 @@ The writing model is plain-language, answer-first wiki prose: teach the smallest
 
 - `ingest` - integrate curated material from `raw/` into `wiki/` and update related pages, the index, and the log.
 - `query` - answer from the wiki first, then fold durable answers back into the knowledge base when they deserve a synthesis page.
+- `wiki` - answer from the wiki first in read-only mode, never writing or modifying any file.
 - `lint` - check wiki health, including structure, link integrity, stale claims, and integration gaps.
 - `refresh` - detect raw-source drift and report the downstream pages that should be revisited.
+
+## Credits
+
+This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on.

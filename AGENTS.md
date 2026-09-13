@@ -52,6 +52,7 @@ Agents working in this repo should load the relevant repo-local skills before su
 - Load `.agents/skills/wiki-writing/` before creating or materially revising wiki prose.
 - Load `.agents/skills/wiki-ingest/` before ingesting new source material into the wiki.
 - Load `.agents/skills/wiki-query/` before answering wiki-grounded questions or filing a durable answer back into the wiki.
+- Load `.agents/skills/wiki/` before answering wiki-grounded questions in read-only mode, when no file should be written.
 - Load `.agents/skills/wiki-maintenance/` before refresh, lint, drift, or broader health-check work.
 
 This file intentionally does not duplicate the detailed playbooks from those skills. Agents are expected to use the local skills rather than relying on a hidden prose fallback in `AGENTS.md`.
