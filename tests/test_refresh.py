@@ -223,6 +223,46 @@ class RefreshScriptTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("dependency cycle detected", result.stderr)
 
+    def test_refresh_quiet_prints_nothing_and_exits_zero(self) -> None:
+        root = self.copy_fixture("refresh_valid")
+
+        result = self.run_refresh(root, "--quiet")
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertEqual(result.stdout, "")
+
+    def test_refresh_summary_counts_reason_kinds(self) -> None:
+        root = self.copy_fixture("refresh_valid")
+
+        result = self.run_refresh(root, "--summary")
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertIn("missing_hash: 2", result.stdout)
+        self.assertNotIn("order:", result.stdout)
+        self.assertNotIn("  changed:", result.stdout)
+
+    def test_refresh_limit_caps_listed_rows_and_records_totals(self) -> None:
+        root = self.copy_fixture("refresh_valid")
+
+        report = self.load_report(self.run_refresh_json(root, "--limit", "1"))
+
+        self.assertEqual(len(report["refresh_order"]), 1)
+        self.assertEqual(report["refresh_order_total"], 6)
+        self.assertEqual(len(report["changed_raw_files"]), 1)
+        self.assertEqual(report["changed_raw_files_total"], 2)
+        self.assertEqual(len(report["refresh_roots"]), 1)
+        self.assertEqual(report["refresh_roots_total"], 2)
+
+    def test_refresh_limit_text_header_reports_full_counts(self) -> None:
+        root = self.copy_fixture("refresh_valid")
+
+        result = self.run_refresh(root, "--limit", "1")
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertTrue(
+            result.stdout.startswith("refresh changed-only: 2 changed raw file(s), 6 page(s) to refresh\n")
+        )
+
     def test_write_page_if_changed_is_noop_when_rendering_matches_disk(self) -> None:
         original_path = list(sys.path)
         self.addCleanup(lambda: sys.path.__setitem__(slice(None), original_path))
