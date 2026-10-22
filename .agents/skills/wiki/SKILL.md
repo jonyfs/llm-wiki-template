@@ -18,7 +18,7 @@ This skill may only read. It must never:
 - create, modify, rename, move, or delete any file
 - create or update a `synthesis` page, or any other wiki page
 - update `wiki/index.md` or `wiki/log.md`
-- change anything in `raw/`, including `raw/assets/`
+- change anything in `raw/`, including `raw/assets/` (`AGENTS.md` "Purpose")
 - run any command or tool that writes to disk
 
 If an answer looks like it deserves to become durable wiki content, do not file it. State that recommendation to the user instead, and note that the read-write `wiki-query` skill (or an explicit ingest request) is the path for persisting it.
