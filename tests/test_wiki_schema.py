@@ -138,6 +138,10 @@ class CanonicalUrlNormalizationTests(unittest.TestCase):
         url = "https://example.com/a?id=7#top"
         self.assertEqual(wiki_schema.normalize_canonical_url(url), url)
 
+    def test_empty_query_parts_are_not_treated_as_tracking(self) -> None:
+        url = "https://example.com/a?x=1&"
+        self.assertEqual(wiki_schema.normalize_canonical_url(url), url)
+
 
 class ValidationHelperTests(unittest.TestCase):
     def test_date_problem_distinguishes_format_from_calendar_validity(self) -> None:

@@ -545,7 +545,7 @@ def normalize_canonical_url(value: str) -> str:
     kept = [
         part
         for part in parsed.query.split("&")
-        if part and not part.split("=", 1)[0].lower().startswith("utm_")
+        if not part.split("=", 1)[0].lower().startswith("utm_")
     ]
     return urlunparse(parsed._replace(query="&".join(kept)))
 
