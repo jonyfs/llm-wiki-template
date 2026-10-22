@@ -32,7 +32,8 @@ class BenchmarkScriptTests(unittest.TestCase):
         result = self.run_benchmark("--pages", "30", "--profile")
 
         self.assertEqual(result.returncode, 0, msg=result.stderr)
-        self.assertIn("cumtime", result.stdout)
+        self.assertIn("ncalls  tottime  percall  cumtime", result.stdout)
+        self.assertIn("discover_pages", result.stdout)
 
 
 if __name__ == "__main__":
