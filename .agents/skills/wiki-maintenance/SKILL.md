@@ -51,6 +51,12 @@ Use `lint` for health-check work:
 5. Update `updated_at` only where the content changed materially.
 6. Update `wiki/index.md` and `wiki/log.md` only if the wiki changed materially after the follow-on edits.
 
+Dependency rules for refresh:
+
+- If page `A` lists `[[B]]` in `sources`, `A` depends on `B`.
+- Body wikilinks are navigational and never create refresh dependencies.
+- `source` pages must carry exactly one canonical `[[raw/...]]` reference and a `raw_sha256`. Refresh can backfill a missing hash.
+
 Refresh must not:
 
 - rewrite dependent wiki pages directly
@@ -99,6 +105,10 @@ Rewrite pages after maintenance only when:
 - fixing the issue materially improves correctness or navigability
 
 Do not rewrite pages just because maintenance surfaced a question, a possible future improvement, or an editorial preference.
+
+## Checklists
+
+The lint checklist, pitfalls, and completion checklist are in `references/checklists.md`. Run the completion checklist before finishing any wiki-changing task.
 
 ## Common failure modes
 

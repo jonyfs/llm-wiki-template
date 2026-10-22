@@ -51,32 +51,12 @@ For image-backed raw sources:
 - When the image is the single canonical backing file for the `source` page, compute `raw_sha256` from that image file exactly as you would for any other canonical `[[raw/...]]` source.
 
 ## Create-vs-update in practice
-
-Default to updating an existing page when:
-
-- the topic already has a canonical page
-- the new source adds detail, evidence, dates, nuance, or contradictions
-- the mention matters but is not strong enough to justify a standalone page
-
-Create a new page when:
-
-- the topic is central to the source, not just a passing mention
-- the topic recurs across sources and would otherwise be awkwardly buried
-- a durable synthesis question deserves its own page
-- a comparison or map synthesis would make an existing cluster of pages easier to learn
-
-Do not create pages for fleeting mentions, weakly evidenced subtopics, or alternate phrasings of an existing page.
+Apply the rules in `../wiki-writing/references/page-decisions.md`. Do not create pages for fleeting mentions, weakly evidenced subtopics, or alternate phrasings of an existing page.
 
 ## Source-page requirements
-
-- A newly created `source` page must include `source_role`.
-- Choose `source_role` for research function rather than prestige: primary evidence, secondary interpretation, reference context, operational practice, or informal but relevant material.
-- Add `source_format`, `authors`, `published_at`, or `canonical_url` only when the raw source supports them and they improve retrieval or provenance.
-- A newly created `source` page must include `raw_sha256` immediately.
-- Compute the hash from the single canonical raw backing file rather than relying on later refresh to backfill it.
-- Preserve exactly one canonical `[[raw/...]]` backing reference in `sources`.
-- Keep related appendices, errata, benchmark sheets, or companion artifacts as separate pages rather than bundling multiple canonical raw files into one `source` page.
-- Make the source's limitations explicit inside `## Evidence or notable details` and `## Open questions`; do not let the source summary imply more certainty or coverage than the raw material supports.
+- The frontmatter rules for `source` pages (`source_role`, `raw_sha256`, single canonical `[[raw/...]]` reference) are in `AGENTS.md` (Frontmatter schema). Choose `source_role` by research function, not prestige.
+- Keep appendices, errata, and companion artifacts as separate pages.
+- State the source's limits in `## Evidence or notable details` and `## Open questions`, and do not imply more certainty or coverage than the raw material supports.
 
 ## Page-touch strategy
 
@@ -88,12 +68,7 @@ Do not create pages for fleeting mentions, weakly evidenced subtopics, or altern
 - Prefer reusable-question syntheses over broad topic-label syntheses.
 
 ## Index and log discipline
-
-- `wiki/index.md` should remain a category-organized catalog with one entry per content page.
-- `wiki/index.md` should include short learning paths when a set of pages has a useful reading order.
-- Each relevant index entry should include at least a link and a one-line summary.
-- `wiki/log.md` should record the ingest after the page set is stable.
-- Use one batch-oriented log entry for batch ingest unless separate entries are genuinely clearer.
+- Index and log rules are in `AGENTS.md` (Index and log). For batch ingest, write one batch log entry unless separate entries are clearer.
 
 ## Common failure modes
 
