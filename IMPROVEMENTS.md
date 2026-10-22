@@ -1,4 +1,4 @@
-# LLM Wiki Template: Improvement Catalog
+# LLM Wiki: Improvement Catalog
 
 This document lists 100 candidate improvements for this repository. It is a proposal only. No code, skill, or contract file is changed by this document. The operator selects which items to implement.
 
