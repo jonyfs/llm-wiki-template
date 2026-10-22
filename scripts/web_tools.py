@@ -61,7 +61,7 @@ class _MarkdownExtractor(HTMLParser):
             self.parts.append("\n\n")
 
     def handle_endtag(self, tag: str) -> None:
-        if tag in VOID_TAGS:
+        if tag in VOID_TAGS or tag not in {open_tag for open_tag, _ in self.stack}:
             return
         while self.stack:
             open_tag, skip = self.stack.pop()

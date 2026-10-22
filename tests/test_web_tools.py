@@ -43,6 +43,12 @@ class HtmlToMarkdownTests(unittest.TestCase):
         for boilerplate in ("var x", "color: red", "Home", "Accept cookies", "Related links", "Copyright"):
             self.assertNotIn(boilerplate, text)
 
+    def test_unmatched_end_tag_does_not_reopen_skipped_content(self) -> None:
+        text = web_tools.html_to_markdown("<header><em>Menu</i> more</em></header><p>Body</p>")
+
+        self.assertNotIn("more", text)
+        self.assertIn("Body", text)
+
     def test_output_has_no_runs_of_blank_lines(self) -> None:
         text = web_tools.html_to_markdown(PAGE)
 
