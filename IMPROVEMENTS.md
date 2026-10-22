@@ -4,7 +4,7 @@ This document lists 100 candidate improvements for this repository. It is a prop
 
 ## Scope and method
 
-The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). It has three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 27 unit tests.
+The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). It has three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 24 unit tests.
 
 Baseline at HEAD `72d80b0`: `python3 -m unittest discover -s tests -t .` passes all 24 tests.
 
