@@ -55,7 +55,7 @@ INDEX_SECTIONS = {
 }
 LOG_HEADING_RE = re.compile(r"^## \[(\d{4}-\d{2}-\d{2})\] ([a-z][a-z-]*) \| (\S.*?)\s*$")
 RELATED_LINK_RE = re.compile(r"\[\[([^\]]+)\]\]")
-CLAIM_LINE_RE = re.compile(r"^- (C[1-9][0-9]*): (.+?) \[\[(raw/[^\]|#]+)\]\]$")
+CLAIM_LINE_RE = re.compile(r"^- (C[1-9][0-9]*): (\S(?:.*\S)?) \[\[(raw/[^\]|#]+)\]\]$")
 CLAIMS_LEDGER_HEADING = "Claims ledger"
 H1_RE = re.compile(r"^#\s+(.+?)\s*$")
 NON_WORD_RE = re.compile(r"[\W_]+")
@@ -272,42 +272,54 @@ def validate_headings(page, errors: list[str]) -> tuple[str, ...]:
     if page.page_type == "synthesis":
         validate_evidence_base(page, lines, headings, section_ranges, errors)
     if page.page_type == "source":
-        validate_claims_ledger(page, lines, section_ranges, errors)
+        validate_claims_ledger(page, lines, headings, section_ranges, errors)
     return related
 
 
-def validate_claims_ledger(page, lines: list[str], section_ranges, errors: list[str]) -> None:
+def validate_claims_ledger(page, lines: list[str], headings, section_ranges, errors: list[str]) -> None:
     """Check the optional `## Claims ledger` section of a source page."""
     ledger_range = section_ranges.get(CLAIMS_LEDGER_HEADING)
     if ledger_range is None:
         return
 
+    # find_section_ranges keys ranges by title, so a duplicated heading would
+    # validate only the last block; reject the duplicate outright.
+    ledger_lines = [line_no for level, title, line_no in headings if level == 2 and title == CLAIMS_LEDGER_HEADING]
+    if len(ledger_lines) > 1:
+        add_error(errors, page.rel_path, "page must not carry more than one `## Claims ledger` heading")
+    if any(
+        level == 2 and title != CLAIMS_LEDGER_HEADING and line_no > max(ledger_lines)
+        for level, title, line_no in headings
+    ):
+        add_error(errors, page.rel_path, "`## Claims ledger` must be the last level-2 section")
+
     start, end = ledger_range
-    raw_refs = {
-        link_target(match.group(1))
-        for item in source_items(page)
-        for match in RELATED_LINK_RE.finditer(item)
-        if link_target(match.group(1)).startswith("raw/")
-    }
+    raw_refs = {target for target in (raw_target(item) for item in source_items(page)) if target}
     canonical = next(iter(raw_refs)) if len(raw_refs) == 1 else None
+    if canonical is None:
+        add_error(
+            errors,
+            page.rel_path,
+            f"claims ledger requires exactly one canonical `[[raw/...]]` source (found {len(raw_refs)})",
+        )
     claim_ids: set[str] = set()
-    claim_count = 0
+    saw_content = False
     for line_no in range(start + 1, end):
-        line = lines[line_no - 1].strip()
-        if not line:
+        line = lines[line_no - 1]
+        if not line.strip():
             continue
+        saw_content = True
         match = CLAIM_LINE_RE.match(line)
-        if not match:
-            add_error(errors, page.rel_path, "claims ledger entries must read `- C<n>: <claim> [[raw/...]]`")
+        if not match or len(RELATED_LINK_RE.findall(line)) > 1:
+            add_error(errors, page.rel_path, f"line {line_no}: claims ledger entries must read `- C<n>: <claim> [[raw/...]]`")
             continue
-        claim_id, raw_target = match.group(1), match.group(3)
-        claim_count += 1
+        claim_id, claim_raw = match.group(1), match.group(3)
         if claim_id in claim_ids:
-            add_error(errors, page.rel_path, f"claim id {claim_id} is duplicated")
+            add_error(errors, page.rel_path, f"line {line_no}: claim id {claim_id} is duplicated")
         claim_ids.add(claim_id)
-        if raw_target != canonical:
-            add_error(errors, page.rel_path, f"claim {claim_id} must cite the canonical raw file in `sources`")
-    if claim_count == 0:
+        if canonical is not None and claim_raw != canonical:
+            add_error(errors, page.rel_path, f"line {line_no}: claim {claim_id} must cite the canonical raw file in `sources`")
+    if not saw_content:
         add_error(errors, page.rel_path, "claims ledger must contain at least one claim")
 
 
