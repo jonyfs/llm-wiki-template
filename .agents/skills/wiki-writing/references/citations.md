@@ -32,3 +32,6 @@ Read on demand. Detailed footnote and link mechanics for normal prose. The core 
 - When a sentence is supported by both wiki pages and raw material, prefer an inline `[[slug]]` link plus a raw footnote.
 - In raw-source footnotes, put the `[[raw/...]]` link first, then add the shortest useful locator detail.
 
+## Claims ledger
+
+A `source` page may end with an optional `## Claims ledger` section (after `## Open questions`). Each line is `- C<n>: <claim text> [[raw/...]]`, with ids `C1`, `C2`, and so on, unique within the page. Every claim cites the single canonical raw file listed in `sources`. Cite a ledger claim in other pages as `[[slug]] C<n>`. `lint.py` rejects malformed lines, duplicate ids, a non-canonical raw file, and an empty ledger.
