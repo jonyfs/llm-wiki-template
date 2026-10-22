@@ -19,12 +19,14 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## Verified defect (highest priority)
 
+> Status: fixed. `parse_scalar` unescapes only `\\` and `\"` via `unescape_double_quoted`; see item 1.
+
 `scripts/wiki_schema.py` `parse_scalar` decodes quoted values with `bytes(value, "utf-8").decode("unicode_escape")`. This corrupts non-ASCII text. Reproduced: the string `Coordenação de Ação — café` does not survive a round-trip; it comes back as mojibake (`CoordenaÃ§Ã£o...`). The corruption is reachable through `refresh.py`, because `serialize_page` rewrites the full frontmatter from parsed values whenever a source hash changes. An accented title, author, or publisher on a source page is silently damaged on refresh. Fix by unescaping only backslash and double-quote sequences, or by using a real YAML parser.
 
 ## 1. Correctness and data integrity
 
-1. Fix `parse_scalar` so non-ASCII frontmatter values survive a refresh round-trip. Add a regression test with accented titles.
-2. Add a round-trip test: parse then serialize a page and assert byte-equal frontmatter for representative values.
+1. Fix `parse_scalar` so non-ASCII frontmatter values survive a refresh round-trip. Add a regression test with accented titles. Resolved: `parse_scalar` now unescapes only `\\` and `\"` (`unescape_double_quoted`); regression tests cover accented titles and the refresh round-trip.
+2. Add a round-trip test: parse then serialize a page and assert byte-equal frontmatter for representative values. Resolved: `test_round_trip_is_byte_equal_for_representative_frontmatter` in `tests/test_wiki_schema.py`.
 3. Make `serialize_page` preserve original key order and quoting style, so refresh produces minimal diffs.
 4. Make `refresh.py` write atomically (write to a temp file in the same directory, then `os.replace`) to avoid truncated pages on crash.
 5. Check for duplicate frontmatter keys during parse and report them as errors instead of silently overwriting.
@@ -59,10 +61,10 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## 3. Output and token efficiency of the scripts
 
-31. Print the JSON success report only with `--verbose`. Default success output should be one line, such as `lint ok: 4 pages, 0 violations`.
-32. Make `refresh.py` default to a compact report, with the full JSON behind `--json`.
+31. Print the JSON success report only with `--verbose`. Default success output should be one line, such as `lint ok: 4 pages, 0 violations`. Resolved: default prints the one-line summary; `--verbose` adds the JSON report.
+32. Make `refresh.py` default to a compact report, with the full JSON behind `--json`. Resolved: `render_text` is the default output; `--json` prints the compact report.
 33. Emit only slugs and paths in `refresh_order` by default; move `reasons` and `depends_on` behind `--verbose`.
-34. Use compact JSON separators (`separators=(",", ":")`) in machine mode. This is a real byte reduction for agents that parse the output.
+34. Use compact JSON separators (`separators=(",", ":")`) in machine mode. This is a real byte reduction for agents that parse the output. Resolved: all machine-mode output uses the compact separators.
 35. Truncate long violation lists with a count and a `--limit N` flag, so a broken wiki does not flood the context window.
 36. Group violations by file in the error output so each file name is printed once.
 37. Add a `--quiet` flag that prints exit status only, for hook and CI use.
@@ -72,9 +74,9 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## 4. Performance of the Python scripts
 
-41. Parse each page once per run. `discover_pages` is called separately by each script, and every script reads and parses every page again.
-42. Cache parsed pages keyed by `(path, mtime_ns, size)` in a small JSON file under a git-ignored `.cache/` directory.
-43. Cache SHA-256 digests of raw files keyed by `(path, mtime_ns, size)`. Today every raw file is re-hashed on every refresh.
+41. Parse each page once per run. `discover_pages` is called separately by each script, and every script reads and parses every page again. Resolved: `discover_pages` accepts a `ScriptCache`; each run parses each page at most once.
+42. Cache parsed pages keyed by `(path, mtime_ns, size)` in a small JSON file under a git-ignored `.cache/` directory. Resolved: `ScriptCache` under `.cache/`, with `--no-cache` opt-out.
+43. Cache SHA-256 digests of raw files keyed by `(path, mtime_ns, size)`. Today every raw file is re-hashed on every refresh. Resolved: the same `ScriptCache` stores digests keyed by `(mtime_ns, size)`.
 44. Use `os.scandir` or a single `Path.rglob` pass instead of several `glob` calls per content directory.
 45. Compile regular expressions once at module level (mostly done; audit the remaining inline calls).
 46. Remove the function-local `from wiki_schema import is_absolute_url` inside the `validate_frontmatter` loop; import at module top.
@@ -90,8 +92,8 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 56. Use `heapq` only where the ordering matters; document why `topo_sort` needs deterministic order.
 57. Add a benchmark script that generates a synthetic wiki of 1,000 pages and times lint and refresh, so performance claims are measured.
 58. Profile the scripts with `cProfile` on the synthetic wiki and record the top hotspots in the PR description.
-59. Consider PyYAML's C-accelerated loader only if an optional dependency is acceptable; the current zero-dependency rule should be kept by default.
-60. Evaluate `python-frontmatter` as an optional dependency only; it would replace the custom parser but breaks the stdlib-only property.
+59. Consider PyYAML's C-accelerated loader only if an optional dependency is acceptable; the current zero-dependency rule should be kept by default. Resolved as not adopted: the zero-dependency rule is kept (decision 2026-10-22).
+60. Evaluate `python-frontmatter` as an optional dependency only; it would replace the custom parser but breaks the stdlib-only property. Resolved as not adopted: same decision as item 59.
 61. Add `__slots__` to the `MarkdownPage` and `Heading` dataclasses to reduce per-page memory on large wikis.
 62. Make `discover_pages` lazy (generator) when the caller only needs slugs.
 63. Avoid building `slug_map` twice (once in `lint.run` and once inside `validate_refresh_pages`).
@@ -99,9 +101,9 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## 5. Search and retrieval (internal wiki)
 
-65. Add a `scripts/wiki_index.py` that builds a compact machine-readable index (slug, type, title, one-line summary, outbound links) as JSON. Agents read this instead of scanning every page.
-66. Store the index as SQLite with an FTS5 table for full-text search over titles and summaries. Stdlib `sqlite3` supports FTS5 in most CPython builds, so no new dependency is needed.
-67. Add `scripts/wiki_search.py "<query>" --limit 5` that returns slug, type, and the matching summary line only, not full pages.
+65. Add a `scripts/wiki_index.py` that builds a compact machine-readable index (slug, type, title, one-line summary, outbound links) as JSON. Agents read this instead of scanning every page. Resolved: `scripts/wiki_index.py` writes `wiki/.index.json` (git-ignored).
+66. Store the index as SQLite with an FTS5 table for full-text search over titles and summaries. Stdlib `sqlite3` supports FTS5 in most CPython builds, so no new dependency is needed. Resolved: `wiki/.index.sqlite` with a `pages_fts` FTS5 table; stdlib only.
+67. Add `scripts/wiki_search.py "<query>" --limit 5` that returns slug, type, and the matching summary line only, not full pages. Resolved: `wiki_search.py` with `--limit` defaulting to 5 and snippets capped at 200 characters.
 68. Return a snippet of at most 200 characters per hit, so one query costs a bounded number of tokens.
 69. Add a `--type` filter (source, entity, concept, synthesis) to search.
 70. Add a `--backlinks <slug>` query that lists pages linking to a slug, which replaces repeated grep work in `wiki-query`.
@@ -131,7 +133,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## 7. Skills, AGENTS.md, and repository gaps (token footprint of the harness)
 
-91. Split `AGENTS.md` into a short always-loaded core (rules that apply to every turn) and load-on-demand sections (page templates, lint checklist, migration notes). Target: reduce the always-loaded file to under 8 KB.
+91. Split `AGENTS.md` into a short always-loaded core (rules that apply to every turn) and load-on-demand sections (page templates, lint checklist, migration notes). Target: reduce the always-loaded file to under 8 KB. Resolved: `AGENTS.md` is under 8 KB; migration notes moved to `docs/migration.md`, templates and checklists to skill references.
 92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core.
 93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it.
 94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core.
@@ -155,7 +157,11 @@ If the operator wants a small first step, the highest value items are:
 
 ## Open questions
 
-- Should the zero-dependency rule be kept? Items 59 and 60 trade it for speed and parsing robustness.
-- Should the wiki search index (items 65 to 77) be committed to git or treated as a generated artifact?
-- Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its symlink?
+- ~~Should the zero-dependency rule be kept?~~ Decided 2026-10-22: keep it. Items 59 and 60 stay
+  optional-only or unadopted; SQLite FTS5 (items 65 to 67) is stdlib and unaffected.
+- ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated
+  artifact?~~ Decided: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*`
+  and `wiki/.manifest.json*`.
+- ~~Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its
+  symlink?~~ Decided: split done; the symlinks still resolve to `AGENTS.md`, now under 8KB.
 - Which benchmark questions (item 77) best represent the operator's real use?
