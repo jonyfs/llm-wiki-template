@@ -72,17 +72,6 @@ def write_manifest(root: Path, entries: list[dict[str, object]]) -> Path:
     return path
 
 
-def load_manifest(root: Path) -> list[dict[str, object]] | None:
-    try:
-        payload = json.loads((root / "wiki" / MANIFEST_NAME).read_text(encoding="utf-8"))
-    except (OSError, ValueError):
-        return None
-    if not isinstance(payload, dict) or payload.get("version") != MANIFEST_VERSION:
-        return None
-    files = payload.get("files")
-    return files if isinstance(files, list) else None
-
-
 def find_duplicates(entries: list[dict[str, object]], candidate: bytes) -> list[str]:
     exact = hashlib.sha256(candidate).hexdigest()
     normal = normalized_digest(candidate)
@@ -104,9 +93,7 @@ def main(argv: list[str]) -> int:
     args = parse_args(argv)
     root = Path(args.root).resolve()
     if args.check:
-        entries = load_manifest(root)
-        if entries is None:
-            entries = build_manifest(root)
+        entries = build_manifest(root)
         duplicates = find_duplicates(entries, Path(args.check).read_bytes())
         if duplicates:
             for path in duplicates:

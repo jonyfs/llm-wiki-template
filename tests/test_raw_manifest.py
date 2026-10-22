@@ -85,7 +85,7 @@ class RawManifestTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         self.assertIn("no duplicate", result.stdout)
 
-    def test_check_uses_manifest_without_rehashing_raw(self) -> None:
+    def test_check_ignores_stale_manifest_when_raw_changed(self) -> None:
         root = self.make_root()
         self.run_manifest(root)
         (root / "raw" / "alpha.md").write_text("Changed after manifest.\n", encoding="utf-8")
@@ -94,8 +94,8 @@ class RawManifestTests(unittest.TestCase):
 
         result = self.run_manifest(root, "--check", str(candidate))
 
-        self.assertEqual(result.returncode, 1)
-        self.assertIn("duplicate of raw/alpha.md", result.stdout)
+        self.assertEqual(result.returncode, 0, msg=result.stdout)
+        self.assertIn("no duplicate", result.stdout)
 
 
 if __name__ == "__main__":
