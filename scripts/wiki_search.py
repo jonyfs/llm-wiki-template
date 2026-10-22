@@ -120,7 +120,7 @@ def shortest_path(edges: dict[str, list[str]], start: str, goal: str) -> list[st
     return None
 
 
-VALID_BENCHMARK_MODES = ("query", "backlinks", "path", "negative", "stderr")
+VALID_BENCHMARK_MODES = ("query", "backlinks", "path", "negative")
 
 
 def _benchmark_item_ok(item: object) -> bool:
@@ -144,6 +144,8 @@ def _benchmark_item_ok(item: object) -> bool:
     return True
 
 def run_benchmark(connection: sqlite3.Connection, edges: dict[str, list[str]], benchmark: Path, limit: int) -> int:
+    if benchmark.stat().st_size > 10 * 1024 * 1024:
+        raise WikiSchemaError(f"benchmark file too large (>{10 * 1024 * 1024} bytes): {benchmark}")
     payload = json.loads(benchmark.read_text(encoding="utf-8"))
     questions = payload.get("questions") if isinstance(payload, dict) else None
     if not isinstance(questions, list) or not all(_benchmark_item_ok(item) for item in questions):
@@ -174,10 +176,6 @@ def run_benchmark(connection: sqlite3.Connection, edges: dict[str, list[str]], b
             hit = not returned_slugs
             rendered = "\n".join(f"{slug} [{kind}] {summary}" for slug, kind, summary in rows)
             reciprocal_rank_sum += 1.0 if hit else 0.0
-        elif mode == "stderr":
-            hit = False
-            rendered = ""
-            reciprocal_rank_sum += 0.0
         else:  # query
             try:
                 rows = search(connection, item["question"], limit, item.get("type"))

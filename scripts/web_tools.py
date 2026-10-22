@@ -165,10 +165,16 @@ def cached_fetch(
     path = web_cache_path(root, url)
     if path.is_file():
         meta = read_cache_meta(web_cache_meta_path(root, url))
+        status = meta.get("http_status")
+        if not (isinstance(status, int) and 100 <= status <= 599):
+            status = None
+        fetched_at = meta.get("fetched_at")
+        if not (isinstance(fetched_at, str) and re.fullmatch(r"\d{4}-\d{2}-\d{2}", fetched_at)):
+            fetched_at = None
         return FetchResult(
             html=path.read_text(encoding="utf-8"),
-            http_status=meta.get("http_status"),
-            fetched_at=meta.get("fetched_at"),
+            http_status=status,
+            fetched_at=fetched_at,
         )
     result = fetch_with_retry(fetch, url, sleep=sleep)
     path.parent.mkdir(parents=True, exist_ok=True)

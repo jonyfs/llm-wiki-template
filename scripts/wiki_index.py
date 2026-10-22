@@ -31,7 +31,7 @@ from wiki_schema import (
 INDEX_VERSION = 1
 SUMMARY_MAX_CHARS = 200
 # One catalog entry per line: "- [[slug]] - one-line summary" (wiki/index.md convention).
-INDEX_ENTRY_RE = re.compile(r"^\s*-\s*\[\[([^\]\[]+)\]\][ \t]*[-\u2013\u2014][ \t]*(.+?)\s*$", re.MULTILINE)
+INDEX_ENTRY_RE = re.compile(r"^\s*-\s*\[\[([^\]\[\s]+)\]\][ \t]*[-\u2013\u2014][ \t]*(.+?)\s*$", re.MULTILINE)
 INDEX_JSON_NAME = ".index.json"
 GRAPH_JSON_NAME = ".graph.json"
 INDEX_DB_NAME = ".index.sqlite"
@@ -79,7 +79,13 @@ def summarize(page: MarkdownPage) -> str:
 
 
 def index_md_summaries(root: Path) -> dict[str, str]:
-    """Catalog one-line summaries from wiki/index.md entries, keyed by slug (item 74)."""
+    """Catalog one-line summaries from wiki/index.md entries, keyed by slug (item 74).
+
+    Accepted entry form (one per line): "- [[slug]] - summary", "- [[slug]] – summary",
+    or "- [[slug]] — summary" (hyphen/en-dash/em-dash, with surrounding spaces). Leading
+    whitespace is allowed. Entries using any other separator are silently dropped and fall
+    back to the page-derived summary.
+    """
     try:
         text = (root / "wiki" / "index.md").read_text(encoding="utf-8")
     except OSError:
