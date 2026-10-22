@@ -3,3 +3,4 @@
 !.obsidian/
 !.obsidian/hotkeys.json
 __pycache__/
+.cache/

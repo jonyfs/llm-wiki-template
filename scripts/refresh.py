@@ -5,38 +5,44 @@ import argparse
 import heapq
 import json
 import sys
-from collections import deque
 from pathlib import Path
 
 from wiki_schema import (
     MarkdownPage,
+    ScriptCache,
     WikiSchemaError,
+    atomic_write_text,
     discover_pages,
+    parse_frontmatter,
     serialize_page,
     set_raw_sha256,
-    sha256_file,
     validate_refresh_pages,
 )
 
 
 def write_page_if_changed(page: MarkdownPage) -> bool:
-    new_text = page.path.read_text(encoding="utf-8")
+    original = page.source_text if page.source_text is not None else page.path.read_text(encoding="utf-8")
     rendered = serialize_page(page)
-    if rendered == new_text:
+    if rendered == original:
         return False
-    page.path.write_text(rendered, encoding="utf-8")
+    if parse_frontmatter(rendered, page.rel_path) == parse_frontmatter(original, page.rel_path):
+        return False
+    atomic_write_text(page.path, rendered)
+    page.source_text = rendered
     return True
 
 
 def topo_sort(
     targets: set[str],
     dependencies: dict[str, set[str]],
-    reverse_dependencies: dict[str, set[str]],
+    reverse_sorted: dict[str, list[str]],
 ) -> list[str]:
     indegree = {
         slug: len([dep for dep in dependencies.get(slug, set()) if dep in targets])
         for slug in targets
     }
+    # The ready set is a heap so the smallest slug is emitted first. The order must be deterministic:
+    # completion order would follow set iteration and make refresh_order differ between runs.
     ready = [slug for slug, count in indegree.items() if count == 0]
     heapq.heapify(ready)
     order: list[str] = []
@@ -44,7 +50,7 @@ def topo_sort(
     while ready:
         slug = heapq.heappop(ready)
         order.append(slug)
-        for dependent in sorted(reverse_dependencies.get(slug, set())):
+        for dependent in reverse_sorted.get(slug, []):
             if dependent not in indegree:
                 continue
             indegree[dependent] -= 1
@@ -60,53 +66,44 @@ def topo_sort(
     return order
 
 
+def dependent_closure(roots: set[str], reverse_sorted: dict[str, list[str]]) -> set[str]:
+    targets = set(roots)
+    pending = list(roots)
+    while pending:
+        slug = pending.pop()
+        for dependent in reverse_sorted.get(slug, []):
+            if dependent not in targets:
+                targets.add(dependent)
+                pending.append(dependent)
+    return targets
+
+
 def build_report(
     mode: str,
-    root: Path,
     pages_by_slug: dict[str, MarkdownPage],
     dependencies: dict[str, set[str]],
-    reverse_dependencies: dict[str, set[str]],
+    reverse_sorted: dict[str, list[str]],
     roots: dict[str, list[str]],
     changed_files: list[dict[str, object]],
+    verbose: bool,
 ) -> dict[str, object]:
     if mode == "full-rebuild":
         targets = set(pages_by_slug)
     else:
-        targets = set(roots)
-        queue = deque(sorted(roots))
-        while queue:
-            slug = queue.popleft()
-            for dependent in sorted(reverse_dependencies.get(slug, set())):
-                if dependent in targets:
-                    continue
-                targets.add(dependent)
-                queue.append(dependent)
+        targets = dependent_closure(set(roots), reverse_sorted)
 
-    refresh_order = topo_sort(targets, dependencies, reverse_dependencies) if targets else []
+    refresh_order = topo_sort(targets, dependencies, reverse_sorted) if targets else []
     refresh_rows = []
     for slug in refresh_order:
-        page = pages_by_slug[slug]
-        if slug in roots:
-            reasons = roots[slug]
-        else:
-            reasons = sorted(
-                f"depends_on:{dep}"
-                for dep in dependencies.get(slug, set())
-                if dep in targets
-            )
-        refresh_rows.append(
-            {
-                "slug": slug,
-                "type": page.page_type,
-                "path": page.rel_path,
-                "depends_on": sorted(dep for dep in dependencies.get(slug, set()) if dep in targets),
-                "reasons": reasons,
-            }
-        )
+        row: dict[str, object] = {"slug": slug, "path": pages_by_slug[slug].rel_path}
+        if verbose:
+            depends_on = sorted(dep for dep in dependencies.get(slug, set()) if dep in targets)
+            reasons = roots[slug] if slug in roots else [f"depends_on:{dep}" for dep in depends_on]
+            row.update({"type": pages_by_slug[slug].page_type, "depends_on": depends_on, "reasons": reasons})
+        refresh_rows.append(row)
 
     return {
         "mode": mode,
-        "repo_root": root.as_posix(),
         "changed_raw_files": changed_files,
         "refresh_roots": [
             {
@@ -121,9 +118,11 @@ def build_report(
     }
 
 
-def run(root: Path, full_rebuild: bool) -> dict[str, object]:
-    pages = discover_pages(root)
+def run(root: Path, full_rebuild: bool, verbose: bool = False, use_cache: bool = True) -> dict[str, object]:
+    cache = ScriptCache(root, enabled=use_cache)
+    pages = discover_pages(root, cache=cache)
     slug_map, raw_refs, raw_paths, dependencies, reverse_dependencies = validate_refresh_pages(pages, root)
+    reverse_sorted = {slug: sorted(deps) for slug, deps in reverse_dependencies.items()}
 
     mode = "full-rebuild" if full_rebuild else "changed-only"
     roots: dict[str, list[str]] = {}
@@ -132,7 +131,7 @@ def run(root: Path, full_rebuild: bool) -> dict[str, object]:
     for slug in sorted(raw_refs):
         page = slug_map[slug]
         old_digest = str(page.frontmatter.get("raw_sha256", "")).strip() or None
-        new_digest = sha256_file(Path(raw_paths[slug]))
+        new_digest = cache.digest(Path(raw_paths[slug]), raw_refs[slug])
 
         reasons: list[str] = []
         if old_digest is None:
@@ -145,8 +144,6 @@ def run(root: Path, full_rebuild: bool) -> dict[str, object]:
         if old_digest != new_digest:
             set_raw_sha256(page, new_digest)
             write_page_if_changed(page)
-
-        if old_digest != new_digest:
             changed_files.append(
                 {
                     "raw_path": raw_refs[slug],
@@ -160,7 +157,22 @@ def run(root: Path, full_rebuild: bool) -> dict[str, object]:
         if reasons:
             roots[slug] = sorted(set(reasons))
 
-    return build_report(mode, root, slug_map, dependencies, reverse_dependencies, roots, changed_files)
+    cache.save()
+    return build_report(mode, slug_map, dependencies, reverse_sorted, roots, changed_files, verbose)
+
+
+def render_text(report: dict[str, object], verbose: bool) -> list[str]:
+    rows = report["refresh_order"]
+    changed = report["changed_raw_files"]
+    lines = [f"refresh {report['mode']}: {len(changed)} changed raw file(s), {len(rows)} page(s) to refresh"]
+    for change in changed:
+        lines.append(f"  changed: {change['raw_path']} -> {change['source_slug']}")
+    if rows:
+        lines.append("order: " + ", ".join(row["slug"] for row in rows))
+    if verbose:
+        for row in rows:
+            lines.append(f"  {row['slug']}: {', '.join(row['reasons'])}")
+    return lines
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -177,6 +189,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         action="store_true",
         help="Report the full wiki dependency graph regardless of hash drift.",
     )
+    parser.add_argument("--json", action="store_true", help="Print the report as one compact JSON object.")
+    parser.add_argument("--verbose", action="store_true", help="Include reasons, types, and dependencies per page.")
+    parser.add_argument("--no-cache", action="store_true", help="Do not read or write the .cache/ digest cache.")
     return parser.parse_args(argv)
 
 
@@ -184,12 +199,16 @@ def main(argv: list[str]) -> int:
     args = parse_args(argv)
     root = Path(args.root).resolve()
     try:
-        report = run(root=root, full_rebuild=args.full_rebuild)
+        report = run(root=root, full_rebuild=args.full_rebuild, verbose=args.verbose, use_cache=not args.no_cache)
     except WikiSchemaError as exc:
         print(f"refresh failed: {exc}", file=sys.stderr)
         return 1
 
-    print(json.dumps(report, indent=2))
+    if args.json:
+        print(json.dumps(report, separators=(",", ":")))
+        return 0
+    for line in render_text(report, args.verbose):
+        print(line)
     return 0
 
 
