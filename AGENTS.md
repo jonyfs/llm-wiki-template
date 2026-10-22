@@ -99,6 +99,7 @@ Create-vs-update and entity-vs-concept rules: `wiki-writing/references/page-deci
 
 - Every content page starts with a short unheaded lead, then the required sections for its type (`wiki-writing/references/body-templates.md`).
 - Cite wiki pages inline with bare `[[slug]]` links. Cite direct raw support with a Markdown footnote whose first item is the `[[raw/...]]` link, then a short locator.
+- Source pages may keep an optional `## Claims ledger` as their last section; cite a claim from other pages as `[[slug]] C<n>` (mechanics: `wiki-writing/references/citations.md`).
 - Embed raw images only with `![[raw/assets/...]]`, never a website URL or relative path.
 - Frontmatter `sources`, `Related pages`, and index entries use normal wiki links, not footnotes.
 - Link new or materially updated pages to their most relevant related pages. Avoid isolated pages.

@@ -51,7 +51,7 @@ Teach the model first:
 Answer early:
 
 - State the main point in the lead or first section, not after several setup paragraphs.
-- Use the first required section as the page's fast take; do not add a non-schema `## Fast take` heading unless the user asks.
+- Use the first required section as the page's fast take; do not add a non-schema `## Fast take` heading unless the user asks. The optional `## Claims ledger` on source pages is schema, not a stray section.
 - On synthesis pages, give the synthesized answer before the supporting reasoning.
 - On source pages, summarize the source's contribution before listing details.
 
