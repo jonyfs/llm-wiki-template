@@ -90,8 +90,8 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 54. Replace the deque BFS plus list rebuild in `build_report` with a set-based traversal that avoids repeated `sorted` calls inside the loop.
 55. Precompute `sorted(reverse_dependencies[slug])` once instead of inside the BFS loop.
 56. Use `heapq` only where the ordering matters; document why `topo_sort` needs deterministic order.
-57. Add a benchmark script that generates a synthetic wiki of 1,000 pages and times lint and refresh, so performance claims are measured.
-58. Profile the scripts with `cProfile` on the synthetic wiki and record the top hotspots in the PR description.
+57. Add a benchmark script that generates a synthetic wiki of 1,000 pages and times lint and refresh, so performance claims are measured. Resolved: `scripts/benchmark.py` generates a synthetic wiki (default 1,000 pages) and times lint and refresh.
+58. Profile the scripts with `cProfile` on the synthetic wiki and record the top hotspots in the PR description. Resolved: `benchmark.py --profile` prints the top cumulative cProfile hotspots.
 59. Consider PyYAML's C-accelerated loader only if an optional dependency is acceptable; the current zero-dependency rule should be kept by default. Resolved as not adopted: the zero-dependency rule is kept (decision 2026-10-22).
 60. Evaluate `python-frontmatter` as an optional dependency only; it would replace the custom parser but breaks the stdlib-only property. Resolved as not adopted: same decision as item 59.
 61. Add `__slots__` to the `MarkdownPage` and `Heading` dataclasses to reduce per-page memory on large wikis.
@@ -117,19 +117,19 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## 6. External search and source ingestion
 
-78. Add a deduplication step before ingest: hash the normalized text of a candidate source and reject it if the hash already exists in `raw/` (prevents double ingest of the same article under two URLs).
+78. Add a deduplication step before ingest: hash the normalized text of a candidate source and reject it if the hash already exists in `raw/` (prevents double ingest of the same article under two URLs). Resolved: `scripts/raw_manifest.py` `find_duplicates` matches a candidate against exact and normalized SHA-256 digests of `raw/` files.
 79. Normalize `canonical_url` (strip tracking parameters such as `utm_*`) before storing it, so duplicate detection works.
-80. Add a `scripts/raw_manifest.py` that lists every `raw/` file with its SHA-256, size, and first heading, so ingest decisions are made from a manifest instead of opening files.
-81. Store that manifest outside `raw/` (for example `wiki/.manifest.json`), because `raw/` is protected corpus that must not be written by tooling.
-82. Add a per-source token budget: when a raw file is over N tokens, ingest reads it in chunks guided by its headings instead of loading it whole.
-83. Extract a heading outline per raw file with a script, so the agent reads the outline and only the needed sections.
+80. Add a `scripts/raw_manifest.py` that lists every `raw/` file with its SHA-256, size, and first heading, so ingest decisions are made from a manifest instead of opening files. Resolved: `scripts/raw_manifest.py` records `sha256`, `normalized_sha256`, `size`, and `first_heading` per `raw/` file.
+81. Store that manifest outside `raw/` (for example `wiki/.manifest.json`), because `raw/` is protected corpus that must not be written by tooling. Resolved: the manifest is written to `wiki/.manifest.json`, a git-ignored generated file; `raw/` is only ever read.
+82. Add a per-source token budget: when a raw file is over N tokens, ingest reads it in chunks guided by its headings instead of loading it whole. Resolved: `scripts/extract_outline.py` `plan_chunks` splits a file into token-budgeted chunks guided by its headings.
+83. Extract a heading outline per raw file with a script, so the agent reads the outline and only the needed sections. Resolved: `extract_outline.py` prints the heading outline so agents read only the needed sections.
 84. Add a "claims ledger" format for each source page, so later queries can cite a claim without re-reading the raw text. Resolved: optional `## Claims ledger` section on source pages, one `- C<n>: <claim> [[raw/...]]` line per claim; `lint.py` validates ids and the canonical raw file.
-85. Add `scripts/extract_outline.py` that prints heading levels and line numbers for a markdown file; agents then read with offset and limit.
-86. For web material, add a conversion step that strips navigation, ads, and boilerplate before the file enters `raw/` (only when the user explicitly asks to add raw material, per AGENTS.md).
+85. Add `scripts/extract_outline.py` that prints heading levels and line numbers for a markdown file; agents then read with offset and limit. Resolved: `scripts/extract_outline.py` prints heading levels, line numbers, and an optional chunk plan.
+86. For web material, add a conversion step that strips navigation, ads, and boilerplate before the file enters `raw/` (only when the user explicitly asks to add raw material, per AGENTS.md). Resolved: `scripts/web_tools.py` `html_to_markdown` strips scripts, styles, navigation, footers, asides, and ad-like blocks.
 87. Record the fetch date and HTTP status in source frontmatter when a source came from the web, so staleness can be detected by lint.
 88. Add a staleness rule: flag `source` pages whose `published_at` is older than a configurable number of years for fast-moving topics.
-89. Add a rate-limit-aware retry helper for any future network fetch script, with a cache directory outside `raw/`.
-90. Keep fetched web content cached under a git-ignored `.cache/` so repeated research does not refetch identical pages.
+89. Add a rate-limit-aware retry helper for any future network fetch script, with a cache directory outside `raw/`. Resolved: `web_tools.py` `fetch_with_retry` retries on `RateLimitError` with exponential backoff or the server's hint.
+90. Keep fetched web content cached under a git-ignored `.cache/` so repeated research does not refetch identical pages. Resolved: `web_tools.py` `cached_fetch` stores content under the git-ignored `.cache/`.
 
 ## 7. Skills, AGENTS.md, and repository gaps (token footprint of the harness)
 
@@ -138,10 +138,10 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it. Resolved: moved to `docs/migration.md`.
 94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core. Resolved: both live in `wiki-maintenance/references/checklists.md`.
 95. Deduplicate repeated rules across `AGENTS.md` and the five skills (for example the `raw/` protection rule and the `[[raw/...]]` citation rule appear in more than one place). Keep one canonical statement and link to it.
-96. Trim `wiki-writing` (14.7 KB, the largest skill) by moving examples into a `references/` subfolder that is read only on demand.
-97. Add a `wiki-router` skill that maps a request to exactly one playbook, so the agent loads one skill instead of reading several.
-98. Add a test that every skill folder under `.agents/skills/` has a `SKILL.md` with `name` and `description` frontmatter, and that `.claude/skills` and `.opencode/skills` resolve to it; also check that `CLAUDE.md`, `.cursorrules`, and `.github/copilot-instructions.md` resolve to `AGENTS.md`.
-99. Add a CI workflow under `.github/workflows/` that runs the unit tests on every push and pull request. No workflow exists today.
+96. Trim `wiki-writing` (14.7 KB, the largest skill) by moving examples into a `references/` subfolder that is read only on demand. Resolved: `wiki-writing/SKILL.md` is under 9 KB; examples and page-type guidance moved to its `references/` subfolder, read on demand.
+97. Add a `wiki-router` skill that maps a request to exactly one playbook, so the agent loads one skill instead of reading several. Resolved: the `wiki-router` skill maps a request to exactly one playbook.
+98. Add a test that every skill folder under `.agents/skills/` has a `SKILL.md` with `name` and `description` frontmatter, and that `.claude/skills` and `.opencode/skills` resolve to it; also check that `CLAUDE.md`, `.cursorrules`, and `.github/copilot-instructions.md` resolve to `AGENTS.md`. Resolved: `tests/test_skills_and_symlinks.py` checks frontmatter, skill symlinks, and the instruction-file symlinks.
+99. Add a CI workflow under `.github/workflows/` that runs the unit tests on every push and pull request. No workflow exists today. Resolved: `.github/workflows/test.yml` runs the unit tests on every push and pull request.
 100. Add `scripts/review-cycle.sh` and `scripts/push-guard.sh`, or remove the references to them. The `pr-reviewer` and `pr-fixer` skills reference both, but neither exists in this repository. Resolved: references removed; scripts live only in external skill directories.
 
 ## Recommended first batch
