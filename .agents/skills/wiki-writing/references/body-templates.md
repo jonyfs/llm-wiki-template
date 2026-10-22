@@ -56,7 +56,7 @@ Use plain language by default. Specialized terms are allowed when they improve p
 
 When a page is easy to misread, surface one key distinction or common confusion early. Keep that orientation compact so the page still reads like a durable wiki page rather than a primer.
 
-Use the first required section as the fast-take area. Do not add an extra `## Fast take` heading unless the user explicitly asks, because page headings are part of the schema. Instead, make `## Summary` or `## Synthesized answer` open with the page's compact answer before adding detail.
+Use the first required section as the fast-take area. Do not add an extra `## Fast take` heading unless the user explicitly asks, because page headings are part of the schema; the only optional extra section is `## Claims ledger` on `source` pages. Instead, make `## Summary` or `## Synthesized answer` open with the page's compact answer before adding detail.
 
 Prefer concrete examples, contrasts, and boundary statements when they speed understanding. Good pages often say what the topic is not, when it matters, where it breaks down, and what would change the current interpretation.
 
@@ -75,6 +75,7 @@ Recommended sentence-case headings for `source` pages:
 - `## Evidence or notable details`
 - `## Related pages`
 - `## Open questions`
+- `## Claims ledger` (optional; when present it must be the last level-2 section, format in `citations.md`)
 
 For `source` pages, use `## Evidence or notable details` and `## Open questions` to make the source's limits explicit. Note scope limits, missing measurements, methodological caveats, outdated assumptions, and notable absences there rather than smoothing them away in summary prose.
 

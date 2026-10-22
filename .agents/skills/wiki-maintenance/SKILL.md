@@ -68,7 +68,7 @@ Refresh must not:
 1. Start from `wiki/index.md` and the relevant areas of the wiki.
 2. Check whether learning paths still describe useful reading routes through the current page set.
 3. Use programmatic scans for link graphs, frontmatter shape, filename hygiene, and index completeness when the wiki is large enough that manual inspection is weak.
-4. Inspect the wiki for structural defects, integration gaps, and stale or contradictory claims.
+4. Inspect the wiki for structural defects, integration gaps, and stale or contradictory claims (`scripts/lint.py` also validates the optional `## Claims ledger` on source pages; treat it as schema, never strip it as a stray heading).
 5. Identify page clusters that would be easier to learn from with a comparison synthesis or map synthesis.
 6. Record the lint pass in `wiki/log.md` only if it materially affects the wiki or future work.
 
