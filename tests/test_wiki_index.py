@@ -90,6 +90,19 @@ class WikiIndexTests(unittest.TestCase):
 
         self.assertIsNone(wiki_index.load_index(root))
 
+    def test_edit_that_preserves_mtime_and_size_still_marks_index_stale(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        wiki_index.write_index(root, wiki_index.build_index(root))
+        path = root / "wiki" / "entities" / "wireguard.md"
+        stat = path.stat()
+        text = path.read_text(encoding="utf-8")
+        replaced = text.replace("WireGuard", "WireGuarX", 1)
+        self.assertEqual(len(replaced), len(text))
+        path.write_text(replaced, encoding="utf-8")
+        os.utime(path, ns=(stat.st_atime_ns, stat.st_mtime_ns))
+
+        self.assertIsNone(wiki_index.load_index(root))
+
     def test_index_is_not_a_content_page_and_is_not_listed_as_one(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         self.run_index(root)

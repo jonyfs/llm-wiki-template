@@ -72,15 +72,14 @@ def summarize(page: MarkdownPage) -> str:
 
 
 def fingerprint(root: Path) -> dict[str, object]:
-    """Cheap freshness key: content page count, newest mtime, and a hash of the slug list."""
-    paths = list(iter_page_paths(root))
-    newest = max((path.stat().st_mtime_ns for path in paths), default=0)
-    slugs = "\n".join(sorted(path.stem for path in paths))
-    return {
-        "pages": len(paths),
-        "max_mtime_ns": newest,
-        "slugs_sha256": hashlib.sha256(slugs.encode("utf-8")).hexdigest(),
-    }
+    """Freshness key: a digest over each content page's path, mtime, size, and content."""
+    digest = hashlib.sha256()
+    paths = sorted(iter_page_paths(root))
+    for path in paths:
+        stat = path.stat()
+        digest.update(f"{path.relative_to(root).as_posix()}\0{stat.st_mtime_ns}\0{stat.st_size}\0".encode("utf-8"))
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return {"pages": len(paths), "sha256": digest.hexdigest()}
 
 
 def build_index(root: Path, errors: list[str] | None = None) -> IndexData:
