@@ -1,10 +1,10 @@
 # LLM Wiki: Improvement Catalog
 
-This document lists 100 candidate improvements for this repository. It began as a proposal; the operator selects which items to implement. Items marked `Resolved:` record work already merged, verified against the code at the time of the note.
+This document lists 100 candidate improvements for this repository. It began as a proposal; the operator selects which items to implement. Items marked `Resolved:` record work already merged, verified against the code at the time of the note; `Resolved as not adopted:` records an operator decision not to implement.
 
 ## Scope and method
 
-The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). At baseline it had three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 24 unit tests; later batches add more, named in the item notes.
+The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). At baseline it had three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 24 unit tests; later batches add more.
 
 Baseline at HEAD `72d80b0`: `python3 -m unittest discover -s tests -t .` passes all 24 tests.
 
@@ -104,15 +104,15 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 65. Add a `scripts/wiki_index.py` that builds a compact machine-readable index (slug, type, title, one-line summary, outbound links) as JSON. Agents read this instead of scanning every page. Resolved: `scripts/wiki_index.py` writes `wiki/.index.json` (git-ignored).
 66. Store the index as SQLite with an FTS5 table for full-text search over titles and summaries. Stdlib `sqlite3` supports FTS5 in most CPython builds, so no new dependency is needed. Resolved: `wiki/.index.sqlite` with a `pages_fts` FTS5 table; stdlib only.
 67. Add `scripts/wiki_search.py "<query>" --limit 5` that returns slug, type, and the matching summary line only, not full pages. Resolved: `wiki_search.py` with `--limit` defaulting to 5 and snippets capped at 200 characters.
-68. Return a snippet of at most 200 characters per hit, so one query costs a bounded number of tokens.
-69. Add a `--type` filter (source, entity, concept, synthesis) to search.
-70. Add a `--backlinks <slug>` query that lists pages linking to a slug, which replaces repeated grep work in `wiki-query`.
-71. Add a `--path <a> <b>` query that returns the shortest link path between two pages (BFS over wiki links).
-72. Maintain a precomputed `wiki/.graph.json` adjacency list so backlink and path queries do not reparse pages.
-73. Make the search script the single entry point in `wiki-query`: run it first, then read only the returned pages.
+68. Return a snippet of at most 200 characters per hit, so one query costs a bounded number of tokens. Resolved: `SNIPPET_MAX_CHARS = 200` caps each hit in `scripts/wiki_search.py`.
+69. Add a `--type` filter (source, entity, concept, synthesis) to search. Resolved: `--type` accepts exactly those four values.
+70. Add a `--backlinks <slug>` query that lists pages linking to a slug, which replaces repeated grep work in `wiki-query`. Resolved: `--backlinks SLUG` is a search mode.
+71. Add a `--path <a> <b>` query that returns the shortest link path between two pages (BFS over wiki links). Resolved: `--path FROM TO` returns the shortest wiki-link chain.
+72. Maintain a precomputed `wiki/.graph.json` adjacency list so backlink and path queries do not reparse pages. Resolved: `wiki_index.py` writes the `.graph.json` adjacency consumed by backlink and path queries.
+73. Make the search script the single entry point in `wiki-query`: run it first, then read only the returned pages. Resolved: the `wiki-query` playbook runs `wiki_search.py` first and reads only returned pages.
 74. Keep `wiki/index.md` as the human catalog, and generate a second, compact `wiki/.index.json` from it for agents. Do not hand-edit the JSON.
-75. Add a freshness check: the search index stores the max `mtime` of its inputs and warns when stale.
-76. Add a `--rebuild` flag and make the index optional; the wiki must still work without it (degradation path).
+75. Add a freshness check: the search index stores the max `mtime` of its inputs and warns when stale. Resolved: `wiki_search.py` prints a stale-index warning naming `wiki_index.py` and `--rebuild`.
+76. Add a `--rebuild` flag and make the index optional; the wiki must still work without it (degradation path). Resolved: `--rebuild` exists and search falls back to scanning pages when the index artifacts are absent.
 77. Measure retrieval quality with a set of 10 benchmark questions and their expected slugs, so changes to the index can be scored.
 
 ## 6. External search and source ingestion
@@ -134,7 +134,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 ## 7. Skills, AGENTS.md, and repository gaps (token footprint of the harness)
 
 91. Split `AGENTS.md` into a short always-loaded core (rules that apply to every turn) and load-on-demand sections (page templates, lint checklist, migration notes). Target: reduce the always-loaded file to under 8 KB. Resolved: `AGENTS.md` is under 8 KB; migration notes moved to `docs/migration.md`, templates and checklists to skill references.
-92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core. Resolved: body templates live in `wiki-writing/references/body-templates.md`; only the frontmatter schema stays in `AGENTS.md`.
+92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core. Resolved: body templates live in `wiki-writing/references/body-templates.md`; the template and checklist sections no longer sit in the always-loaded file.
 93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it. Resolved: moved to `docs/migration.md`.
 94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core. Resolved: both live in `wiki-maintenance/references/checklists.md`.
 95. Deduplicate repeated rules across `AGENTS.md` and the five skills (for example the `raw/` protection rule and the `[[raw/...]]` citation rule appear in more than one place). Keep one canonical statement and link to it.
@@ -158,6 +158,6 @@ If the operator wants a small first step, the highest value items are:
 ## Open questions
 
 - ~~Should the zero-dependency rule be kept?~~ Decided 2026-10-22: keep it. Items 59 and 60 are resolved as not adopted; SQLite FTS5 (items 65 to 67) is stdlib and unaffected.
-- ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated artifact?~~ Decided 2026-10-22: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*` and `wiki/.manifest.json*`. This decides artifact placement only; items 68 to 77 stay open unless marked.
+- ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated artifact?~~ Decided 2026-10-22: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*` and `wiki/.manifest.json*`. This decides artifact placement only; items 68 to 73 and 75 and 76 are marked resolved, 74 and 77 stay open.
 - ~~Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its symlink?~~ Decided 2026-10-22: split done; the symlinks still resolve to `AGENTS.md`, now under 8 KB.
 - Which benchmark questions (item 77) best represent the operator's real use?
