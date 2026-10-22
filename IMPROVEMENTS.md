@@ -121,7 +121,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 81. Store that manifest outside `raw/` (for example `wiki/.manifest.json`), because `raw/` is protected corpus that must not be written by tooling.
 82. Add a per-source token budget: when a raw file is over N tokens, ingest reads it in chunks guided by its headings instead of loading it whole.
 83. Extract a heading outline per raw file with a script, so the agent reads the outline and only the needed sections.
-84. Add a "claims ledger" format for each source page, so later queries can cite a claim without re-reading the raw text.
+84. Add a "claims ledger" format for each source page, so later queries can cite a claim without re-reading the raw text. Resolved: optional `## Claims ledger` section on source pages, one `- C<n>: <claim> [[raw/...]]` line per claim; `lint.py` validates ids and the canonical raw file.
 85. Add `scripts/extract_outline.py` that prints heading levels and line numbers for a markdown file; agents then read with offset and limit.
 86. For web material, add a conversion step that strips navigation, ads, and boilerplate before the file enters `raw/` (only when the user explicitly asks to add raw material, per AGENTS.md).
 87. Record the fetch date and HTTP status in source frontmatter when a source came from the web, so staleness can be detected by lint.
