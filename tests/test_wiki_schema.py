@@ -116,6 +116,15 @@ class RoundTripTests(unittest.TestCase):
             wiki_schema.parse_frontmatter_with_raw("no frontmatter\n", "wiki/concepts/x.md")
 
 
+class RawTargetContainmentTests(unittest.TestCase):
+    def test_raw_target_rejects_path_escaping_raw_directory(self) -> None:
+        self.assertIsNone(wiki_schema.raw_target("[[raw/../../../../etc/hosts]]"))
+        self.assertIsNone(wiki_schema.raw_target("[[raw/../wiki/index.md]]"))
+
+    def test_raw_target_accepts_nested_file_inside_raw(self) -> None:
+        self.assertEqual(wiki_schema.raw_target("[[raw/assets/a.png]]"), "raw/assets/a.png")
+
+
 class CanonicalUrlNormalizationTests(unittest.TestCase):
     def test_utm_parameters_are_stripped_and_other_parameters_kept(self) -> None:
         url = "https://example.com/a?id=7&utm_source=news&UTM_medium=x&page=2&utm_campaign=y"

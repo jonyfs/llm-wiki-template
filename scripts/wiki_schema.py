@@ -11,7 +11,7 @@ import tempfile
 from collections.abc import Iterator
 from dataclasses import dataclass, field
 from datetime import date
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import NamedTuple
 from urllib.parse import urlparse, urlunparse
 
@@ -345,9 +345,11 @@ def split_wikilink(link: str) -> str | None:
 
 def raw_target(link: str) -> str | None:
     target = split_wikilink(link)
-    if target and target.startswith("raw/"):
-        return target
-    return None
+    if not target or not target.startswith("raw/"):
+        return None
+    if ".." in PurePosixPath(target).parts:
+        return None
+    return target
 
 
 def wiki_target(link: str) -> str | None:
