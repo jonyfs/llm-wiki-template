@@ -1,10 +1,10 @@
 # LLM Wiki: Improvement Catalog
 
-This document lists 100 candidate improvements for this repository. It is a proposal only. No code, skill, or contract file is changed by this document. The operator selects which items to implement.
+This document lists 100 candidate improvements for this repository. It began as a proposal; the operator selects which items to implement. Items marked `Resolved:` record work already merged, verified against the code at the time of the note.
 
 ## Scope and method
 
-The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). It has three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 24 unit tests.
+The repository is a three-layer LLM Wiki: `raw/` (curated sources), `wiki/` (LLM-maintained markdown), and `AGENTS.md` plus `.agents/skills/` (the operating contract). At baseline it had three stdlib-only Python scripts (`scripts/lint.py`, `scripts/refresh.py`, `scripts/wiki_schema.py`) and 24 unit tests; later batches add more, named in the item notes.
 
 Baseline at HEAD `72d80b0`: `python3 -m unittest discover -s tests -t .` passes all 24 tests.
 
@@ -19,7 +19,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 ## Verified defect (highest priority)
 
-> Status: fixed. `parse_scalar` unescapes only `\\` and `\"` via `unescape_double_quoted`; see item 1.
+> Resolved: `parse_scalar` unescapes only `\\` and `\"` via `unescape_double_quoted`; see item 1.
 
 `scripts/wiki_schema.py` `parse_scalar` decodes quoted values with `bytes(value, "utf-8").decode("unicode_escape")`. This corrupts non-ASCII text. Reproduced: the string `Coordenação de Ação — café` does not survive a round-trip; it comes back as mojibake (`CoordenaÃ§Ã£o...`). The corruption is reachable through `refresh.py`, because `serialize_page` rewrites the full frontmatter from parsed values whenever a source hash changes. An accented title, author, or publisher on a source page is silently damaged on refresh. Fix by unescaping only backslash and double-quote sequences, or by using a real YAML parser.
 
@@ -76,7 +76,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 41. Parse each page once per run. `discover_pages` is called separately by each script, and every script reads and parses every page again. Resolved: `discover_pages` accepts a `ScriptCache`; each run parses each page at most once.
 42. Cache parsed pages keyed by `(path, mtime_ns, size)` in a small JSON file under a git-ignored `.cache/` directory. Resolved: `ScriptCache` under `.cache/`, with `--no-cache` opt-out.
-43. Cache SHA-256 digests of raw files keyed by `(path, mtime_ns, size)`. Today every raw file is re-hashed on every refresh. Resolved: the same `ScriptCache` stores digests keyed by `(mtime_ns, size)`.
+43. Cache SHA-256 digests of raw files keyed by `(path, mtime_ns, size)`. Today every raw file is re-hashed on every refresh. Resolved: the same `ScriptCache` stores digests keyed by path and validated by the `(mtime_ns, size)` stamp.
 44. Use `os.scandir` or a single `Path.rglob` pass instead of several `glob` calls per content directory.
 45. Compile regular expressions once at module level (mostly done; audit the remaining inline calls).
 46. Remove the function-local `from wiki_schema import is_absolute_url` inside the `validate_frontmatter` loop; import at module top.
@@ -134,9 +134,9 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 ## 7. Skills, AGENTS.md, and repository gaps (token footprint of the harness)
 
 91. Split `AGENTS.md` into a short always-loaded core (rules that apply to every turn) and load-on-demand sections (page templates, lint checklist, migration notes). Target: reduce the always-loaded file to under 8 KB. Resolved: `AGENTS.md` is under 8 KB; migration notes moved to `docs/migration.md`, templates and checklists to skill references.
-92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core.
-93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it.
-94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core.
+92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core. Resolved: body templates live in `wiki-writing/references/body-templates.md`; only the frontmatter schema stays in `AGENTS.md`.
+93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it. Resolved: moved to `docs/migration.md`.
+94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core. Resolved: both live in `wiki-maintenance/references/checklists.md`.
 95. Deduplicate repeated rules across `AGENTS.md` and the five skills (for example the `raw/` protection rule and the `[[raw/...]]` citation rule appear in more than one place). Keep one canonical statement and link to it.
 96. Trim `wiki-writing` (14.7 KB, the largest skill) by moving examples into a `references/` subfolder that is read only on demand.
 97. Add a `wiki-router` skill that maps a request to exactly one playbook, so the agent loads one skill instead of reading several.
@@ -157,11 +157,7 @@ If the operator wants a small first step, the highest value items are:
 
 ## Open questions
 
-- ~~Should the zero-dependency rule be kept?~~ Decided 2026-10-22: keep it. Items 59 and 60 stay
-  optional-only or unadopted; SQLite FTS5 (items 65 to 67) is stdlib and unaffected.
-- ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated
-  artifact?~~ Decided: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*`
-  and `wiki/.manifest.json*`.
-- ~~Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its
-  symlink?~~ Decided: split done; the symlinks still resolve to `AGENTS.md`, now under 8KB.
+- ~~Should the zero-dependency rule be kept?~~ Decided 2026-10-22: keep it. Items 59 and 60 are resolved as not adopted; SQLite FTS5 (items 65 to 67) is stdlib and unaffected.
+- ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated artifact?~~ Decided 2026-10-22: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*` and `wiki/.manifest.json*`. This decides artifact placement only; items 68 to 77 stay open unless marked.
+- ~~Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its symlink?~~ Decided 2026-10-22: split done; the symlinks still resolve to `AGENTS.md`, now under 8 KB.
 - Which benchmark questions (item 77) best represent the operator's real use?
