@@ -180,7 +180,7 @@ class WikiSearchTests(unittest.TestCase):
         self.assertEqual(len(questions), 10)
         for item in questions:
             self.assertTrue(item["question"].strip())
-            self.assertTrue(item["expected"])
+            self.assertTrue(item["expected"] or item.get("mode") in {"negative", "stderr"})
 
     def test_benchmark_rejects_malformed_questions_with_exit_two(self) -> None:
         root = self.copy_fixture()
