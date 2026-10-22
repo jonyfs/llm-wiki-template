@@ -203,6 +203,32 @@ class PageLoadingTests(unittest.TestCase):
         self.assertTrue(inspect.isgenerator(result))
         self.assertIn("wireguard", set(result))
 
+    def test_iter_page_paths_is_single_scandir_pass_filtered_and_sorted(self) -> None:
+        temp_dir = Path(tempfile.mkdtemp(prefix="walk-"))
+        self.addCleanup(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
+        for directory in wiki_schema.CONTENT_DIRS:
+            (temp_dir / "wiki" / directory).mkdir(parents=True)
+        sources = temp_dir / "wiki" / "sources"
+        (sources / "b.md").write_text("---\n---\n", encoding="utf-8")
+        (sources / "a.md").write_text("---\n---\n", encoding="utf-8")
+        (sources / ".hidden.md").write_text("---\n---\n", encoding="utf-8")
+        (sources / "notes.txt").write_text("text\n", encoding="utf-8")
+        (sources / "nested").mkdir()
+        (sources / "nested" / "c.md").write_text("---\n---\n", encoding="utf-8")
+
+        paths = wiki_schema.iter_page_paths(temp_dir)
+        self.assertTrue(inspect.isgenerator(paths))
+        rel_paths = [path.relative_to(temp_dir).as_posix() for path in paths]
+
+        self.assertEqual(rel_paths, ["wiki/sources/a.md", "wiki/sources/b.md"])
+
+    def test_heading_is_slotted_dataclass(self) -> None:
+        heading = wiki_schema.Heading(level=2, title="Summary", line_no=1)
+
+        self.assertFalse(hasattr(heading, "__dict__"))
+        with self.assertRaises(AttributeError):
+            heading.unexpected_attribute = 1  # type: ignore[attr-defined]
+
 
 class AtomicWriteTests(unittest.TestCase):
     def test_atomic_write_replaces_content_and_keeps_mode(self) -> None:
