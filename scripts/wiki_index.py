@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import sys
 from dataclasses import dataclass
@@ -29,6 +30,8 @@ from wiki_schema import (
 
 INDEX_VERSION = 1
 SUMMARY_MAX_CHARS = 200
+# One catalog entry per line: "- [[slug]] - one-line summary" (wiki/index.md convention).
+INDEX_ENTRY_RE = re.compile(r"^- \[\[([^\]\[]+)\]\][ \t]*[-\u2013\u2014][ \t]*(.+)$", re.MULTILINE)
 INDEX_JSON_NAME = ".index.json"
 GRAPH_JSON_NAME = ".graph.json"
 INDEX_DB_NAME = ".index.sqlite"
@@ -50,6 +53,13 @@ def artifact_paths(root: Path) -> dict[str, Path]:
     }
 
 
+def _cap(text: str) -> str:
+    text = " ".join(text.split())
+    if len(text) > SUMMARY_MAX_CHARS:
+        text = text[: SUMMARY_MAX_CHARS - 3].rstrip() + "..."
+    return text
+
+
 def summarize(page: MarkdownPage) -> str:
     """First non-empty line under the page's first required heading, else the first body line."""
     lines = page.body.splitlines()
@@ -65,15 +75,29 @@ def summarize(page: MarkdownPage) -> str:
                 break
     else:
         text = next((line.strip() for line in lines if line.strip()), "")
-    text = " ".join(text.split())
-    if len(text) > SUMMARY_MAX_CHARS:
-        text = text[: SUMMARY_MAX_CHARS - 3].rstrip() + "..."
-    return text
+    return _cap(text)
+
+
+def index_md_summaries(root: Path) -> dict[str, str]:
+    """Catalog one-line summaries from wiki/index.md entries, keyed by slug (item 74)."""
+    try:
+        text = (root / "wiki" / "index.md").read_text(encoding="utf-8")
+    except OSError:
+        return {}
+    return {slug: _cap(summary) for slug, summary in INDEX_ENTRY_RE.findall(text)}
 
 
 def fingerprint(root: Path) -> dict[str, object]:
-    """Freshness key: a digest over each content page's path, mtime, size, and content."""
+    """Freshness key: a digest over wiki/index.md plus each content page's path, mtime, size, and content.
+
+    index.md is covered because --from-index sources summaries from it; a catalog edit must mark
+    the artifacts stale. In the default mode the extra input only risks a harmless false-stale.
+    """
     digest = hashlib.sha256()
+    index_md = root / "wiki" / "index.md"
+    if index_md.is_file():
+        digest.update(f"index.md\0{index_md.stat().st_size}\0".encode("utf-8"))
+        digest.update(hashlib.sha256(index_md.read_bytes()).digest())
     paths = sorted(iter_page_paths(root))
     for path in paths:
         stat = path.stat()
@@ -82,8 +106,11 @@ def fingerprint(root: Path) -> dict[str, object]:
     return {"pages": len(paths), "sha256": digest.hexdigest()}
 
 
-def build_index(root: Path, errors: list[str] | None = None) -> IndexData:
+def build_index(root: Path, errors: list[str] | None = None, from_index: bool = False) -> IndexData:
+    """Build records and edges. With from_index, summaries come from wiki/index.md catalog
+    entries when present, falling back to the page-derived summary (item 74)."""
     pages = discover_pages(root, errors=errors if errors is not None else [])
+    catalog = index_md_summaries(root) if from_index else {}
     slugs = {page.slug for page in pages}
     records: list[dict[str, str]] = []
     edges: dict[str, list[str]] = {}
@@ -93,7 +120,7 @@ def build_index(root: Path, errors: list[str] | None = None) -> IndexData:
                 "slug": page.slug,
                 "type": page.page_type,
                 "title": str(page.frontmatter.get("title", page.slug)),
-                "summary": summarize(page),
+                "summary": catalog.get(page.slug) or summarize(page),
                 "path": page.rel_path,
             }
         )
@@ -173,6 +200,11 @@ def artifacts_exist(root: Path) -> bool:
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Build the generated wiki search index.")
     parser.add_argument("--root", default=".", help="Repository root. Defaults to the current directory.")
+    parser.add_argument(
+        "--from-index",
+        action="store_true",
+        help="Source summaries from wiki/index.md catalog entries when present, else from the page.",
+    )
     return parser.parse_args(argv)
 
 
@@ -181,7 +213,7 @@ def main(argv: list[str]) -> int:
     root = Path(args.root).resolve()
     errors: list[str] = []
     try:
-        data = build_index(root, errors)
+        data = build_index(root, errors, from_index=args.from_index)
     except (WikiSchemaError, OSError) as exc:
         print(f"index failed: {exc}", file=sys.stderr)
         return 1
