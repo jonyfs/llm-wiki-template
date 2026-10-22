@@ -8,7 +8,7 @@ import re
 import subprocess
 import sys
 from collections import Counter, defaultdict
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 from wiki_schema import (
@@ -29,6 +29,7 @@ from wiki_schema import (
     build_slug_map,
     canonical_url_problem,
     date_problem,
+    normalize_canonical_url,
     discover_pages,
     ensure_list,
     find_dependency_cycle,
@@ -188,10 +189,51 @@ def validate_frontmatter(page, slug_map, root: Path, errors: list[str]) -> None:
             problem = canonical_url_problem(str(canonical_url))
             if problem:
                 add_error(errors, page.rel_path, f"`canonical_url` {problem}")
+            elif normalize_canonical_url(str(canonical_url)) != str(canonical_url):
+                add_error(errors, page.rel_path, "`canonical_url` must not carry utm_* tracking parameters")
+
+        fetched_at = page.frontmatter.get("fetched_at")
+        if fetched_at is not None:
+            problem = date_problem(fetched_at)
+            if problem:
+                add_error(errors, page.rel_path, f"`fetched_at` {problem}")
+
+        http_status = page.frontmatter.get("http_status")
+        if http_status is not None and not (
+            str(http_status).isdigit() and 100 <= int(str(http_status)) <= 599
+        ):
+            add_error(errors, page.rel_path, "`http_status` must be an integer from 100 to 599")
     else:
-        for key in ("raw_sha256", "source_role", "source_format", "authors", "published_at", "canonical_url"):
+        for key in (
+            "raw_sha256",
+            "source_role",
+            "source_format",
+            "authors",
+            "published_at",
+            "canonical_url",
+            "fetched_at",
+            "http_status",
+        ):
             if key in page.frontmatter:
                 add_error(errors, page.rel_path, f"`{key}` is only valid on source pages")
+
+
+def stale_source_findings(
+    entries: list[tuple[str, object]], today: date, max_age_years: int | None
+) -> list[str]:
+    """Warn for each (rel_path, published_at) older than `max_age_years`; disabled when None."""
+    if max_age_years is None:
+        return []
+    cutoff = today - timedelta(days=round(365.25 * max_age_years))
+    findings: list[str] = []
+    for rel_path, published_at in entries:
+        if published_at is None or date_problem(published_at) is not None:
+            continue
+        if date.fromisoformat(str(published_at)) < cutoff:
+            findings.append(
+                f"{rel_path}: source is older than {max_age_years} year(s) by `published_at` {published_at}"
+            )
+    return findings
 
 
 def validate_headings(page, errors: list[str]) -> tuple[str, ...]:
@@ -582,7 +624,13 @@ def git_changed_paths(root: Path) -> set[str]:
     return set(tracked) | set(untracked)
 
 
-def run(root: Path, changed_only: bool = False, use_cache: bool = True, today: date | None = None) -> dict[str, object]:
+def run(
+    root: Path,
+    changed_only: bool = False,
+    use_cache: bool = True,
+    today: date | None = None,
+    max_source_age_years: int | None = None,
+) -> dict[str, object]:
     today = today or date.today()
     cache = ScriptCache(root, enabled=use_cache)
     errors: list[str] = []
@@ -619,6 +667,12 @@ def run(root: Path, changed_only: bool = False, use_cache: bool = True, today: d
     errors.extend(path_errors)
     warnings.extend(path_warnings)
 
+    stale_entries = [
+        (page.rel_path, page.frontmatter.get("published_at"))
+        for page in scope
+        if page.page_type == "source"
+    ]
+    warnings.extend(stale_source_findings(stale_entries, today, max_source_age_years))
     validate_dependency_cycles(pages, slug_map, errors)
     validate_log(root, errors, today)
     validate_wiki_layout(root, errors)
@@ -676,13 +730,24 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--limit", type=int, default=DEFAULT_LIMIT, help="Maximum messages per section; 0 shows all.")
     parser.add_argument("--changed-only", action="store_true", help="Check only pages changed in git.")
     parser.add_argument("--no-cache", action="store_true", help="Do not read or write the .cache/ parse cache.")
+    parser.add_argument(
+        "--max-source-age-years",
+        type=int,
+        default=None,
+        help="Warn about source pages whose published_at is older than N years. Off by default.",
+    )
     return parser.parse_args(argv)
 
 
 def main(argv: list[str]) -> int:
     args = parse_args(argv)
     try:
-        report = run(Path(args.root).resolve(), changed_only=args.changed_only, use_cache=not args.no_cache)
+        report = run(
+            Path(args.root).resolve(),
+            changed_only=args.changed_only,
+            use_cache=not args.no_cache,
+            max_source_age_years=args.max_source_age_years,
+        )
     except WikiSchemaError as exc:
         if not args.quiet:
             print(f"lint failed: {exc}", file=sys.stderr)

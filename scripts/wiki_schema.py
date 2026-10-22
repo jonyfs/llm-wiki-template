@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from pathlib import Path
 from typing import NamedTuple
-from urllib.parse import urlparse
+from urllib.parse import urlparse, urlunparse
 
 
 CONTENT_DIRS = ("sources", "entities", "concepts", "syntheses")
@@ -533,6 +533,19 @@ def canonical_url_problem(value: str) -> str | None:
     if not parsed.hostname:
         return "must include a host name"
     return None
+
+
+def normalize_canonical_url(value: str) -> str:
+    """Drop `utm_*` tracking parameters (case-insensitive) so duplicate URLs compare equal."""
+    parsed = urlparse(value)
+    if not parsed.query:
+        return value
+    kept = [
+        part
+        for part in parsed.query.split("&")
+        if part and not part.split("=", 1)[0].lower().startswith("utm_")
+    ]
+    return urlunparse(parsed._replace(query="&".join(kept)))
 
 
 def find_dependency_cycle(dependencies: dict[str, set[str]]) -> list[str] | None:

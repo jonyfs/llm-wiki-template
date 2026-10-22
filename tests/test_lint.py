@@ -282,6 +282,48 @@ class LintScriptTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("`canonical_url` must not embed credentials", result.stderr)
 
+    def test_lint_fails_when_canonical_url_carries_utm_tracking(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(
+            path,
+            'canonical_url: "https://example.com/alpha"',
+            'canonical_url: "https://example.com/alpha?utm_source=news"',
+        )
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("`canonical_url` must not carry utm_* tracking parameters", result.stderr)
+
+    def test_lint_fails_when_fetch_metadata_is_malformed(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(
+            path,
+            'canonical_url: "https://example.com/alpha"\n',
+            'canonical_url: "https://example.com/alpha"\nfetched_at: "2026-02-30"\nhttp_status: "200 OK"\n',
+        )
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("`fetched_at` must be a real calendar date", result.stderr)
+        self.assertIn("`http_status` must be an integer from 100 to 599", result.stderr)
+
+    def test_lint_accepts_valid_fetch_metadata(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(
+            path,
+            'canonical_url: "https://example.com/alpha"\n',
+            'canonical_url: "https://example.com/alpha"\nfetched_at: "2026-04-09"\nhttp_status: 200\n',
+        )
+
+        result = self.run_lint(root)
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+
     def test_lint_fails_when_raw_sha256_is_not_64_lowercase_hex(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         path = root / "wiki" / "sources" / "alpha-source.md"
@@ -687,6 +729,28 @@ class LintModuleTests(unittest.TestCase):
 
     def test_normalize_title_strips_case_punctuation_and_spaces(self) -> None:
         self.assertEqual(self.lint.normalize_title("Wire-Guard!"), self.lint.normalize_title("WIRE GUARD"))
+
+    def test_stale_source_warning_is_off_without_a_limit(self) -> None:
+        from datetime import date
+
+        warnings = self.lint.stale_source_findings(
+            [("a.md", "2010-01-01")], today=date(2026, 10, 22), max_age_years=None
+        )
+
+        self.assertEqual(warnings, [])
+
+    def test_stale_source_warning_flags_sources_older_than_limit(self) -> None:
+        from datetime import date
+
+        warnings = self.lint.stale_source_findings(
+            [("old.md", "2020-01-01"), ("new.md", "2026-01-01"), ("none.md", None)],
+            today=date(2026, 10, 22),
+            max_age_years=3,
+        )
+
+        self.assertEqual(len(warnings), 1)
+        self.assertIn("old.md", warnings[0])
+        self.assertIn("older than 3 year(s)", warnings[0])
 
 
 if __name__ == "__main__":

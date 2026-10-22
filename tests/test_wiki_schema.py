@@ -116,6 +116,20 @@ class RoundTripTests(unittest.TestCase):
             wiki_schema.parse_frontmatter_with_raw("no frontmatter\n", "wiki/concepts/x.md")
 
 
+class CanonicalUrlNormalizationTests(unittest.TestCase):
+    def test_utm_parameters_are_stripped_and_other_parameters_kept(self) -> None:
+        url = "https://example.com/a?id=7&utm_source=news&UTM_medium=x&page=2&utm_campaign=y"
+        self.assertEqual(wiki_schema.normalize_canonical_url(url), "https://example.com/a?id=7&page=2")
+
+    def test_url_without_remaining_query_drops_question_mark(self) -> None:
+        url = "https://example.com/a?utm_source=news"
+        self.assertEqual(wiki_schema.normalize_canonical_url(url), "https://example.com/a")
+
+    def test_url_without_tracking_parameters_is_unchanged(self) -> None:
+        url = "https://example.com/a?id=7#top"
+        self.assertEqual(wiki_schema.normalize_canonical_url(url), url)
+
+
 class ValidationHelperTests(unittest.TestCase):
     def test_date_problem_distinguishes_format_from_calendar_validity(self) -> None:
         self.assertIsNone(wiki_schema.date_problem("2026-02-28"))
