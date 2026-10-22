@@ -110,7 +110,14 @@ def shortest_path(edges: dict[str, list[str]], start: str, goal: str) -> list[st
 
 def run_benchmark(connection: sqlite3.Connection, benchmark: Path, limit: int) -> int:
     payload = json.loads(benchmark.read_text(encoding="utf-8"))
-    questions = payload.get("questions", [])
+    questions = payload.get("questions") if isinstance(payload, dict) else None
+    if not isinstance(questions, list) or not all(
+        isinstance(item, dict)
+        and isinstance(item.get("question"), str)
+        and isinstance(item.get("expected"), list)
+        for item in questions
+    ):
+        raise WikiSchemaError(f"benchmark file must hold a `questions` list of question/expected objects: {benchmark}")
     hits = 0
     for item in questions:
         slugs = {slug for slug, _, _ in search(connection, item["question"], limit, None)}
@@ -149,7 +156,11 @@ def main(argv: list[str]) -> int:
 
     try:
         if args.benchmark:
-            return run_benchmark(connection, Path(args.benchmark), args.limit)
+            try:
+                return run_benchmark(connection, Path(args.benchmark), args.limit)
+            except (WikiSchemaError, OSError, json.JSONDecodeError) as exc:
+                print(f"benchmark failed: {exc}", file=sys.stderr)
+                return 2
         if args.backlinks:
             if args.backlinks not in data.edges:
                 print(f"unknown slug: {args.backlinks}", file=sys.stderr)

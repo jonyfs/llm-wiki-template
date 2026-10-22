@@ -174,6 +174,17 @@ class WikiSearchTests(unittest.TestCase):
             self.assertIn("PLACEHOLDER", item["question"])
             self.assertTrue(item["expected"])
 
+    def test_benchmark_rejects_malformed_questions_with_exit_two(self) -> None:
+        root = self.copy_fixture()
+        benchmark = root / "benchmark.json"
+        benchmark.write_text(json.dumps({"questions": [{"question": "rotation"}]}), encoding="utf-8")
+
+        result = self.run_search(root, "--benchmark", str(benchmark))
+
+        self.assertEqual(result.returncode, 2)
+        self.assertIn("benchmark", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
     def test_benchmark_scores_hits_at_limit(self) -> None:
         root = self.copy_fixture()
         benchmark = root / "benchmark.json"
