@@ -7,6 +7,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
@@ -349,6 +350,16 @@ class LintScriptTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("`raw_sha256` must be 64 lowercase hex characters", result.stderr)
 
+    def test_lint_fails_when_raw_sha256_is_too_short(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(path, "0123456789abcdef" * 4, ("0123456789abcdef" * 4)[:-1])
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("`raw_sha256` must be 64 lowercase hex characters", result.stderr)
+
     def test_lint_fails_when_source_page_cites_another_source_page(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         alpha = root / "wiki" / "sources" / "alpha-source.md"
@@ -512,6 +523,17 @@ class LintScriptTests(unittest.TestCase):
         self.assertIn("wiki/concepts/key-rotation.md\n  - duplicate frontmatter key `title`", result.stderr)
         self.assertNotIn("Traceback", result.stderr)
 
+    def test_lint_reports_unescaped_quote_as_violation_not_traceback(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "concepts" / "key-rotation.md"
+        self.replace_in_file(path, 'title: "Key Rotation"', 'title: "Key "Rotation""')
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("unescaped", result.stderr)
+        self.assertNotIn("Traceback", result.stderr)
+
     def test_lint_warns_on_orphan_page_without_failing(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         self.add_concept(root, "lonely-idea", "Lonely Idea")
@@ -621,6 +643,17 @@ class LintScriptTests(unittest.TestCase):
         self.assertEqual(len(report["violations"]), 1)
         self.assertGreater(report["violation_count"], 1)
 
+    def test_lint_limit_text_output_shows_hidden_count(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(path, 'source_role: "primary"\n', "")
+        self.replace_in_file(path, 'source_format: "paper"', 'source_format: "memo"')
+
+        result = self.run_lint(root, "--limit", "1")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("... 2 more (use --limit 0 to show all)", result.stderr)
+
     def test_lint_groups_violations_by_file(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         path = root / "wiki" / "sources" / "alpha-source.md"
@@ -723,6 +756,26 @@ class LintModuleTests(unittest.TestCase):
         import lint
 
         cls.lint = lint
+
+    def copy_valid_fixture(self) -> Path:
+        temp_dir = Path(tempfile.mkdtemp(prefix="lint-module-"))
+        self.addCleanup(lambda: shutil.rmtree(temp_dir, ignore_errors=True))
+        shutil.copytree(FIXTURES_ROOT / "lint_valid_research", temp_dir, dirs_exist_ok=True)
+        return temp_dir
+
+    def test_headings_validation_helpers_run_once_per_page(self) -> None:
+        # perf items 47/48: find_section_ranges and validate_related_pages must
+        # be computed once per page, not recomputed per check.
+        root = self.copy_valid_fixture()
+        with (
+            mock.patch.object(self.lint, "find_section_ranges", wraps=self.lint.find_section_ranges) as ranges_spy,
+            mock.patch.object(self.lint, "validate_related_pages", wraps=self.lint.validate_related_pages) as related_spy,
+        ):
+            report = self.lint.run(root, use_cache=False)
+
+        self.assertEqual(report["violations"], [])
+        self.assertEqual(ranges_spy.call_count, report["page_count"])
+        self.assertEqual(related_spy.call_count, report["page_count"])
 
     def test_find_section_ranges_is_linear_and_bounds_each_level_two_section(self) -> None:
         lines = ["lead", "## A", "x", "### sub", "y", "## B", "z", "", ""]
