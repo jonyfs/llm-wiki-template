@@ -27,77 +27,77 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 
 1. Fix `parse_scalar` so non-ASCII frontmatter values survive a refresh round-trip. Add a regression test with accented titles. Resolved: `parse_scalar` now unescapes only `\\` and `\"` (`unescape_double_quoted`); regression tests cover accented titles and the refresh round-trip.
 2. Add a round-trip test: parse then serialize a page and assert byte-equal frontmatter for representative values. Resolved: `test_round_trip_is_byte_equal_for_representative_frontmatter` in `tests/test_wiki_schema.py`.
-3. Make `serialize_page` preserve original key order and quoting style, so refresh produces minimal diffs.
-4. Make `refresh.py` write atomically (write to a temp file in the same directory, then `os.replace`) to avoid truncated pages on crash.
-5. Check for duplicate frontmatter keys during parse and report them as errors instead of silently overwriting.
-6. Reject frontmatter values that contain an unescaped `"` in quoted scalars before parsing, with a clear message.
-7. Validate `raw_sha256` is exactly 64 lowercase hex characters in lint, not only present.
-8. Validate that `created_at` is not later than `updated_at`.
-9. Validate that `published_at` is a real calendar date (for example reject `2026-02-30`), not only a regex match.
-10. Validate `canonical_url` host and reject URLs with embedded credentials.
-11. Detect a `source` page that cites another `source` page as its only supporting link, since the raw reference is the only valid backing.
-12. Detect a `source` page whose raw file has been deleted but whose page is still listed in `wiki/index.md` (lint, not only refresh).
-13. Detect dependency cycles in lint, not only in refresh.
-14. Detect self-referencing `sources` entries.
-15. Warn when `title` in frontmatter differs from the first `#` heading or the index summary anchor.
+3. Make `serialize_page` preserve original key order and quoting style, so refresh produces minimal diffs. Resolved: Implemented in 3a5f45a and pinned by tests; `serialize_page` preserves key order and quoting (`scripts/wiki_schema.py`).
+4. Make `refresh.py` write atomically (write to a temp file in the same directory, then `os.replace`) to avoid truncated pages on crash. Resolved: Implemented in 3a5f45a; `refresh.py` writes via temp file + `os.replace` (`scripts/refresh.py`).
+5. Check for duplicate frontmatter keys during parse and report them as errors instead of silently overwriting. Resolved: Implemented in 3a5f45a; duplicate frontmatter keys are errors (`scripts/wiki_schema.py`).
+6. Reject frontmatter values that contain an unescaped `"` in quoted scalars before parsing, with a clear message. Resolved: Implemented in 3a5f45a; unescaped quotes rejected before parse (`scripts/wiki_schema.py` `unescape_double_quoted`).
+7. Validate `raw_sha256` is exactly 64 lowercase hex characters in lint, not only present. Resolved: Implemented in 3a5f45a; `raw_sha256` must be 64 lowercase hex (`scripts/lint.py`).
+8. Validate that `created_at` is not later than `updated_at`. Resolved: Implemented in 3a5f45a; `created_at <= updated_at` enforced (`scripts/lint.py`).
+9. Validate that `published_at` is a real calendar date (for example reject `2026-02-30`), not only a regex match. Resolved: Implemented in 3a5f45a; `published_at` validated as a real calendar date (`scripts/wiki_schema.py`).
+10. Validate `canonical_url` host and reject URLs with embedded credentials. Resolved: Implemented in 3a5f45a; `canonical_url` host validated and embedded credentials rejected (`scripts/wiki_schema.py`).
+11. Detect a `source` page that cites another `source` page as its only supporting link, since the raw reference is the only valid backing. Resolved: Implemented in 3a5f45a; source-citing-source detected (`scripts/lint.py`).
+12. Detect a `source` page whose raw file has been deleted but whose page is still listed in `wiki/index.md` (lint, not only refresh). Resolved: Implemented in 3a5f45a; deleted raw files reported by lint (`scripts/lint.py`).
+13. Detect dependency cycles in lint, not only in refresh. Resolved: Implemented in 3a5f45a; dependency cycles detected in lint (`scripts/lint.py` + `wiki_schema.find_dependency_cycle`).
+14. Detect self-referencing `sources` entries. Resolved: Implemented in 3a5f45a; self-references detected (`scripts/lint.py`).
+15. Warn when `title` in frontmatter differs from the first `#` heading or the index summary anchor. Resolved: Implemented in 3a5f45a; title-vs-`#`-heading mismatch warned (`scripts/lint.py`).
 
 ## 2. Lint coverage gaps against AGENTS.md
 
-16. Implement lint item 3: orphan page detection (pages with no inbound wiki links from other pages or the index).
-17. Implement lint item 4: broken wikilinks inside the body text (currently only frontmatter and index are checked).
-18. Implement lint item 15: missing or stale learning-path detection in `wiki/index.md`.
-19. Implement lint item 16: prose-density heuristic (flag sentences over a word threshold) as an advisory warning.
-20. Detect `[[raw/...]]` body links that point to files outside `raw/` or to files that do not exist.
-21. Detect `![[raw/assets/...]]` embeds whose asset file is missing.
-22. Detect markdown footnotes that reference raw files not listed in `sources` (drift between prose and frontmatter).
-23. Detect `synthesis` pages whose `## Related pages` list is identical to another synthesis page (near-duplicate detection).
-24. Add a near-duplicate check using normalized titles (casefolded, punctuation stripped) across all pages.
-25. Detect slug drift: a file name that differs from `title` by more than a threshold, as a warning.
-26. Lint `wiki/log.md` headings against the `## [YYYY-MM-DD] operation | title` format.
-27. Detect `wiki/log.md` entries with dates later than today or not in chronological order.
-28. Detect files under `wiki/` that are neither index-listed content pages nor the two required files.
-29. Detect files inside `raw/` that changed without a corresponding source page (report only, never write).
-30. Add `--format text|json` so humans get a short report and agents get structured output.
+16. Implement lint item 3: orphan page detection (pages with no inbound wiki links from other pages or the index). Resolved: Implemented in 3a5f45a; orphan page detection (`scripts/lint.py`).
+17. Implement lint item 4: broken wikilinks inside the body text (currently only frontmatter and index are checked). Resolved: Implemented in 3a5f45a; broken body wikilinks reported (`scripts/lint.py`).
+18. Implement lint item 15: missing or stale learning-path detection in `wiki/index.md`. Resolved: Implemented in 3a5f45a; stale learning paths checked (`scripts/lint.py`).
+19. Implement lint item 16: prose-density heuristic (flag sentences over a word threshold) as an advisory warning. Resolved: Implemented in 3a5f45a; prose density advisory (`scripts/lint.py`).
+20. Detect `[[raw/...]]` body links that point to files outside `raw/` or to files that do not exist. Resolved: Implemented in 3a5f45a; raw body links outside `raw/` flagged (`scripts/lint.py`).
+21. Detect `![[raw/assets/...]]` embeds whose asset file is missing. Resolved: Implemented in 3a5f45a; missing assets detected (`scripts/lint.py`).
+22. Detect markdown footnotes that reference raw files not listed in `sources` (drift between prose and frontmatter). Resolved: Implemented in 3a5f45a; footnote/sources drift checked (`scripts/lint.py`).
+23. Detect `synthesis` pages whose `## Related pages` list is identical to another synthesis page (near-duplicate detection). Resolved: Implemented in 3a5f45a; near-duplicate synthesis detected (`scripts/lint.py`).
+24. Add a near-duplicate check using normalized titles (casefolded, punctuation stripped) across all pages. Resolved: Implemented in 3a5f45a; near-duplicate titles detected (`scripts/lint.py`).
+25. Detect slug drift: a file name that differs from `title` by more than a threshold, as a warning. Resolved: Implemented in 3a5f45a; slug drift detected (`scripts/lint.py`).
+26. Lint `wiki/log.md` headings against the `## [YYYY-MM-DD] operation | title` format. Resolved: Implemented in 3a5f45a; `log.md` format validated (`scripts/lint.py`).
+27. Detect `wiki/log.md` entries with dates later than today or not in chronological order. Resolved: Implemented in 3a5f45a; future/unordered dates rejected (`scripts/lint.py`).
+28. Detect files under `wiki/` that are neither index-listed content pages nor the two required files. Resolved: Implemented in 3a5f45a; stray files under `wiki/` flagged (`scripts/lint.py`).
+29. Detect files inside `raw/` that changed without a corresponding source page (report only, never write). Resolved: Implemented in 3a5f45a; raw changes without a source page warned (`scripts/lint.py`).
+30. Add `--format text|json` so humans get a short report and agents get structured output. Resolved: Implemented in 3a5f45a; `--format text|json` supported (`scripts/lint.py`).
 
 ## 3. Output and token efficiency of the scripts
 
 31. Print the JSON success report only with `--verbose`. Default success output should be one line, such as `lint ok: 4 pages, 0 violations`. Resolved: default prints the one-line summary; `--verbose` adds the JSON report.
 32. Make `refresh.py` default to a compact report, with the full JSON behind `--json`. Resolved: `render_text` is the default output; `--json` prints the compact report.
-33. Emit only slugs and paths in `refresh_order` by default; move `reasons` and `depends_on` behind `--verbose`.
+33. Emit only slugs and paths in `refresh_order` by default; move `reasons` and `depends_on` behind `--verbose`. Resolved: Implemented in 3a5f45a; `refresh_order` defaults to slugs/paths, details behind `--verbose` (`scripts/refresh.py`).
 34. Use compact JSON separators (`separators=(",", ":")`) in machine mode. This is a real byte reduction for agents that parse the output. Resolved: all machine-mode output uses the compact separators.
-35. Truncate long violation lists with a count and a `--limit N` flag, so a broken wiki does not flood the context window.
-36. Group violations by file in the error output so each file name is printed once.
-37. Add a `--quiet` flag that prints exit status only, for hook and CI use.
-38. Make error messages shorter and stable, so repeated runs can be compared by diff.
-39. Add a `--changed-only` lint mode that checks only files changed in git, reducing work and output on large wikis.
-40. Add a `--summary` mode that prints counts per violation kind instead of every message.
+35. Truncate long violation lists with a count and a `--limit N` flag, so a broken wiki does not flood the context window. Resolved: Implemented in 3a5f45a; long violation lists truncated with `--limit N` (`scripts/lint.py`).
+36. Group violations by file in the error output so each file name is printed once. Resolved: Implemented in 3a5f45a; violations grouped by file (`scripts/lint.py`).
+37. Add a `--quiet` flag that prints exit status only, for hook and CI use. Resolved: Implemented in 3a5f45a; `--quiet` suppresses output (`scripts/lint.py`, `scripts/refresh.py`).
+38. Make error messages shorter and stable, so repeated runs can be compared by diff. Resolved: Implemented in 3a5f45a; stable short error messages (`scripts/lint.py`).
+39. Add a `--changed-only` lint mode that checks only files changed in git, reducing work and output on large wikis. Resolved: Implemented in 3a5f45a; `--changed-only` git mode (`scripts/lint.py`).
+40. Add a `--summary` mode that prints counts per violation kind instead of every message. Resolved: Implemented in 3a5f45a; `--summary` counts per violation kind (`scripts/lint.py`, `scripts/refresh.py`).
 
 ## 4. Performance of the Python scripts
 
 41. Parse each page once per run. `discover_pages` is called separately by each script, and every script reads and parses every page again. Resolved: `discover_pages` accepts a `ScriptCache`; each run parses each page at most once.
 42. Cache parsed pages keyed by `(path, mtime_ns, size)` in a small JSON file under a git-ignored `.cache/` directory. Resolved: `ScriptCache` under `.cache/`, with `--no-cache` opt-out.
 43. Cache SHA-256 digests of raw files keyed by `(path, mtime_ns, size)`. Today every raw file is re-hashed on every refresh. Resolved: the same `ScriptCache` stores digests keyed by path and validated by the `(mtime_ns, size)` stamp.
-44. Use `os.scandir` or a single `Path.rglob` pass instead of several `glob` calls per content directory.
-45. Compile regular expressions once at module level (mostly done; audit the remaining inline calls).
-46. Remove the function-local `from wiki_schema import is_absolute_url` inside the `validate_frontmatter` loop; import at module top.
-47. In `lint.py`, call `validate_related_pages` once per page instead of twice for synthesis pages.
-48. Compute `find_section_ranges` once per page and reuse it for both the related-pages check and the evidence-base check.
-49. Replace the nested scan in `find_section_ranges` (quadratic in the number of headings in the worst case) with a single linear pass.
-50. Avoid reading a raw file fully when only its hash is needed: stream it in 64 KiB chunks (already done) and skip the re-hash when the cache is valid.
-51. In `refresh.write_page_if_changed`, compare the rendered string with the in-memory original instead of re-reading the file from disk.
-52. Avoid rewriting a page when only key order changed, by comparing parsed frontmatter dictionaries before writing.
-53. Build the reverse-dependency graph once and reuse it for both closure computation and reporting.
-54. Replace the deque BFS plus list rebuild in `build_report` with a set-based traversal that avoids repeated `sorted` calls inside the loop.
-55. Precompute `sorted(reverse_dependencies[slug])` once instead of inside the BFS loop.
-56. Use `heapq` only where the ordering matters; document why `topo_sort` needs deterministic order.
+44. Use `os.scandir` or a single `Path.rglob` pass instead of several `glob` calls per content directory. Resolved: Implemented in 3a5f45a; single `os.scandir` pass for page discovery (`scripts/wiki_schema.py`).
+45. Compile regular expressions once at module level (mostly done; audit the remaining inline calls). Resolved: Implemented in 3a5f45a; module-level compiled regexes (`scripts/lint.py`, `scripts/wiki_schema.py`).
+46. Remove the function-local `from wiki_schema import is_absolute_url` inside the `validate_frontmatter` loop; import at module top. Resolved: Implemented in 3a5f45a; function-local imports hoisted (`scripts/lint.py`).
+47. In `lint.py`, call `validate_related_pages` once per page instead of twice for synthesis pages. Resolved: Implemented in 3a5f45a; `validate_related_pages` runs once per synthesis (`scripts/lint.py`).
+48. Compute `find_section_ranges` once per page and reuse it for both the related-pages check and the evidence-base check. Resolved: Implemented in 3a5f45a; section ranges computed once (`scripts/lint.py`).
+49. Replace the nested scan in `find_section_ranges` (quadratic in the number of headings in the worst case) with a single linear pass. Resolved: Implemented in 3a5f45a; linear section scan (`scripts/lint.py`).
+50. Avoid reading a raw file fully when only its hash is needed: stream it in 64 KiB chunks (already done) and skip the re-hash when the cache is valid. Resolved: Implemented in 3a5f45a; chunked hashing with cache skip (`scripts/wiki_schema.py` `ScriptCache`).
+51. In `refresh.write_page_if_changed`, compare the rendered string with the in-memory original instead of re-reading the file from disk. Resolved: Implemented in 3a5f45a; in-memory compare before writing (`scripts/refresh.py`).
+52. Avoid rewriting a page when only key order changed, by comparing parsed frontmatter dictionaries before writing. Resolved: Implemented in 3a5f45a; key-order-only rewrites skipped (`scripts/refresh.py`).
+53. Build the reverse-dependency graph once and reuse it for both closure computation and reporting. Resolved: Implemented in 3a5f45a; reverse-dependency graph reused (`scripts/lint.py`).
+54. Replace the deque BFS plus list rebuild in `build_report` with a set-based traversal that avoids repeated `sorted` calls inside the loop. Resolved: Implemented in 3a5f45a; set-based BFS (`scripts/lint.py`).
+55. Precompute `sorted(reverse_dependencies[slug])` once instead of inside the BFS loop. Resolved: Implemented in 3a5f45a; precomputed sorted neighbors (`scripts/wiki_index.py`).
+56. Use `heapq` only where the ordering matters; document why `topo_sort` needs deterministic order. Resolved: Implemented in 3a5f45a; `heapq` documented for deterministic ordering (`scripts/lint.py`).
 57. Add a benchmark script that generates a synthetic wiki of 1,000 pages and times lint and refresh, so performance claims are measured. Resolved: `scripts/benchmark.py` generates a synthetic wiki (default 1,000 pages) and times lint and refresh.
 58. Profile the scripts with `cProfile` on the synthetic wiki and record the top hotspots in the PR description. Resolved: `benchmark.py --profile` prints the top cumulative cProfile hotspots.
 59. Consider PyYAML's C-accelerated loader only if an optional dependency is acceptable; the current zero-dependency rule should be kept by default. Resolved as not adopted: the zero-dependency rule is kept (decision 2026-10-22).
 60. Evaluate `python-frontmatter` as an optional dependency only; it would replace the custom parser but breaks the stdlib-only property. Resolved as not adopted: same decision as item 59.
-61. Add `__slots__` to the `MarkdownPage` and `Heading` dataclasses to reduce per-page memory on large wikis.
-62. Make `discover_pages` lazy (generator) when the caller only needs slugs.
-63. Avoid building `slug_map` twice (once in `lint.run` and once inside `validate_refresh_pages`).
-64. Keep the scripts importable without executing `main` (already true; preserve it).
+61. Add `__slots__` to the `MarkdownPage` and `Heading` dataclasses to reduce per-page memory on large wikis. Resolved: Implemented in 3a5f45a; `__slots__` on hot dataclasses (`scripts/wiki_schema.py`).
+62. Make `discover_pages` lazy (generator) when the caller only needs slugs. Resolved: Implemented in 3a5f45a; lazy `discover_pages` (`scripts/wiki_schema.py`).
+63. Avoid building `slug_map` twice (once in `lint.run` and once inside `validate_refresh_pages`). Resolved: Implemented in 3a5f45a; `slug_map` computed once (`scripts/lint.py`).
+64. Keep the scripts importable without executing `main` (already true; preserve it). Resolved: Implemented in 3a5f45a; scripts stay importable without running `main`.
 
 ## 5. Search and retrieval (internal wiki)
 
@@ -110,10 +110,10 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 71. Add a `--path <a> <b>` query that returns the shortest link path between two pages (BFS over wiki links). Resolved: `--path FROM TO` returns the shortest wiki-link chain.
 72. Maintain a precomputed `wiki/.graph.json` adjacency list so backlink and path queries do not reparse pages. Resolved: `wiki_index.py` writes the `.graph.json` adjacency consumed by backlink and path queries.
 73. Make the search script the single entry point in `wiki-query`: run it first, then read only the returned pages. Resolved: the `wiki-query` playbook runs `wiki_search.py` first and reads only returned pages.
-74. Keep `wiki/index.md` as the human catalog, and generate a second, compact `wiki/.index.json` from it for agents. Do not hand-edit the JSON.
+74. Keep `wiki/index.md` as the human catalog, and generate a second, compact `wiki/.index.json` from it for agents. Do not hand-edit the JSON. Resolved: Implemented: `--from-index` sources summaries from `wiki/index.md` catalog entries with page-derived fallback; fingerprint covers `index.md` (`scripts/wiki_index.py`).
 75. Add a freshness check: the search index stores the max `mtime` of its inputs and warns when stale. Resolved: `wiki_search.py` prints a stale-index warning naming `wiki_index.py` and `--rebuild`.
 76. Add a `--rebuild` flag and make the index optional; the wiki must still work without it (degradation path). Resolved: `--rebuild` exists and search falls back to scanning pages when the index artifacts are absent.
-77. Measure retrieval quality with a set of 10 benchmark questions and their expected slugs, so changes to the index can be scored.
+77. Measure retrieval quality with a set of 10 benchmark questions and their expected slugs, so changes to the index can be scored. Resolved: Implemented: 10-question retrieval benchmark with modes (query/backlinks/path/negative), MRR@5, output-bytes proxy, grounded in real llm-wiki retrieval patterns (`scripts/wiki_search.py`, `tests/fixtures/search_benchmark.json`).
 
 ## 6. External search and source ingestion
 
@@ -126,7 +126,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 84. Add a "claims ledger" format for each source page, so later queries can cite a claim without re-reading the raw text. Resolved: optional `## Claims ledger` section on source pages, one `- C<n>: <claim> [[raw/...]]` line per claim; `lint.py` validates ids and the canonical raw file.
 85. Add `scripts/extract_outline.py` that prints heading levels and line numbers for a markdown file; agents then read with offset and limit. Resolved: `scripts/extract_outline.py` prints heading levels, line numbers, and an optional chunk plan.
 86. For web material, add a conversion step that strips navigation, ads, and boilerplate before the file enters `raw/` (only when the user explicitly asks to add raw material, per AGENTS.md). Resolved: `scripts/web_tools.py` `html_to_markdown` strips scripts, styles, navigation, footers, asides, and ad-like blocks.
-87. Record the fetch date and HTTP status in source frontmatter when a source came from the web, so staleness can be detected by lint.
+87. Record the fetch date and HTTP status in source frontmatter when a source came from the web, so staleness can be detected by lint. Resolved: Implemented: `fetch_with_retry`/`cached_fetch` return `FetchResult(html, http_status, fetched_at)` and persist provenance sidecars; ingest docs record `fetched_at`/`http_status` (`scripts/web_tools.py`, `.agents/skills/wiki-ingest/SKILL.md`).
 88. Add a staleness rule: flag `source` pages whose `published_at` is older than a configurable number of years for fast-moving topics. Resolved: `stale_source_findings` in `scripts/lint.py` with the `--max-source-age-years` flag, covered by tests in `tests/test_lint.py`.
 89. Add a rate-limit-aware retry helper for any future network fetch script, with a cache directory outside `raw/`. Resolved: `web_tools.py` `fetch_with_retry` retries on `RateLimitError` with exponential backoff or the server's hint.
 90. Keep fetched web content cached under a git-ignored `.cache/` so repeated research does not refetch identical pages. Resolved: `web_tools.py` `cached_fetch` stores content under the git-ignored `.cache/`.
@@ -137,7 +137,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 92. Move the page body templates out of `AGENTS.md` into `wiki-writing`, which is loaded only when writing prose. Keep only the frontmatter schema in the core. Resolved: body templates live in `wiki-writing/references/body-templates.md`; the template and checklist sections no longer sit in the always-loaded file.
 93. Move the "Migration for derived wikis" section into a separate skill or doc, since most sessions do not need it. Resolved: moved to `docs/migration.md`.
 94. Move the "Pitfalls" and "Completion checklist" sections into `wiki-maintenance` and reference them by a one-line pointer from the core. Resolved: both live in `wiki-maintenance/references/checklists.md`.
-95. Deduplicate repeated rules across `AGENTS.md` and the five skills (for example the `raw/` protection rule and the `[[raw/...]]` citation rule appear in more than one place). Keep one canonical statement and link to it.
+95. Deduplicate repeated rules across `AGENTS.md` and the five skills (for example the `raw/` protection rule and the `[[raw/...]]` citation rule appear in more than one place). Keep one canonical statement and link to it. Resolved: Implemented: raw/ protection and citation rules now state the canonical source (`AGENTS.md`) and link to it instead of restating (`wiki-delete/SKILL.md`, `wiki/SKILL.md`).
 96. Trim `wiki-writing` (14.7 KB, the largest skill) by moving examples into a `references/` subfolder that is read only on demand. Resolved: `wiki-writing/SKILL.md` is under 9 KB; examples and page-type guidance moved to its `references/` subfolder, read on demand.
 97. Add a `wiki-router` skill that maps a request to exactly one playbook, so the agent loads one skill instead of reading several. Resolved: the `wiki-router` skill maps a request to exactly one playbook.
 98. Add a test that every skill folder under `.agents/skills/` has a `SKILL.md` with `name` and `description` frontmatter, and that `.claude/skills` and `.opencode/skills` resolve to it; also check that `CLAUDE.md`, `.cursorrules`, and `.github/copilot-instructions.md` resolve to `AGENTS.md`. Resolved: `tests/test_skills_and_symlinks.py` checks frontmatter, skill symlinks, and the instruction-file symlinks.
@@ -160,4 +160,4 @@ If the operator wants a small first step, the highest value items are:
 - ~~Should the zero-dependency rule be kept?~~ Decided 2026-10-22: keep it. Items 59 and 60 are resolved as not adopted; SQLite FTS5 (items 65 to 67) is stdlib and unaffected.
 - ~~Should the wiki search index (items 65 to 77) be committed to git or treated as a generated artifact?~~ Decided 2026-10-22: generated artifact. `.gitignore` excludes `wiki/.index.*`, `wiki/.graph.json*` and `wiki/.manifest.json*`. This decides artifact placement only; items 68 to 73 and 75 and 76 are marked resolved, 74 and 77 stay open.
 - ~~Should `AGENTS.md` be split (item 91), given that every agent reads the whole file through its symlink?~~ Decided 2026-10-22: split done; the symlinks still resolve to `AGENTS.md`, now under 8 KB.
-- Which benchmark questions (item 77) best represent the operator's real use?
+- ~~Which benchmark questions (item 77) best represent the operator's real use?~~ Decided 2026-10-22: grounded in Karpathy llm-wiki, tobi/qmd, MultiHop-RAG, HotpotQA, muSiQue, GaRAGe (see `tests/fixtures/search_benchmark.json`).
