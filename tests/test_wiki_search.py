@@ -165,13 +165,13 @@ class WikiSearchTests(unittest.TestCase):
         self.assertFalse((root / "wiki" / ".index.json").exists())
         self.assertFalse((root / "wiki" / ".index.sqlite").exists())
 
-    def test_benchmark_fixture_has_ten_marked_placeholder_questions(self) -> None:
+    def test_benchmark_fixture_has_ten_questions_with_expected_slugs(self) -> None:
         payload = json.loads(BENCHMARK_PATH.read_text(encoding="utf-8"))
 
         questions = payload["questions"]
         self.assertEqual(len(questions), 10)
         for item in questions:
-            self.assertIn("PLACEHOLDER", item["question"])
+            self.assertTrue(item["question"].strip())
             self.assertTrue(item["expected"])
 
     def test_benchmark_rejects_malformed_questions_with_exit_two(self) -> None:
