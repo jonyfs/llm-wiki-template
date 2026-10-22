@@ -154,6 +154,17 @@ class WikiSearchTests(unittest.TestCase):
         self.assertTrue((root / "wiki" / ".index.json").is_file())
         self.assertTrue((root / "wiki" / ".index.sqlite").is_file())
 
+    def test_rebuild_aborts_without_writing_when_a_page_is_unparseable(self) -> None:
+        root = self.copy_fixture()
+        (root / "wiki" / "concepts" / "broken.md").write_text("no frontmatter here\n", encoding="utf-8")
+
+        result = self.run_search(root, "rotation", "--rebuild")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("broken.md", result.stderr)
+        self.assertFalse((root / "wiki" / ".index.json").exists())
+        self.assertFalse((root / "wiki" / ".index.sqlite").exists())
+
     def test_benchmark_fixture_has_ten_marked_placeholder_questions(self) -> None:
         payload = json.loads(BENCHMARK_PATH.read_text(encoding="utf-8"))
 

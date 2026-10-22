@@ -41,7 +41,10 @@ def open_database(root: Path, data: IndexData, from_disk: bool) -> sqlite3.Conne
 
 def load_state(root: Path, rebuild: bool) -> tuple[IndexData, sqlite3.Connection]:
     if rebuild:
-        data = build_index(root)
+        errors: list[str] = []
+        data = build_index(root, errors)
+        if errors:
+            raise WikiSchemaError("unparseable pages; nothing written:\n" + "\n".join(errors))
         write_index(root, data)
         return data, open_database(root, data, from_disk=True)
     data = load_index(root)
