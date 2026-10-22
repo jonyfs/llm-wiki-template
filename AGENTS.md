@@ -86,10 +86,10 @@ Rules:
 - `sources` lists wiki-link strings: `[[raw/...]]` for raw files (including `[[raw/assets/...]]`), bare `[[slug]]` for supporting wiki pages. A `source` page cites exactly one canonical `[[raw/...]]` file.
 - `created_at` (creation date) and `updated_at` (last material edit) are `YYYY-MM-DD`. All types require all five fields.
 - `source` pages require `source_role`: `primary` (main evidence or specification), `secondary` (interprets primary material), `reference` (definitions, background), `operational` (live procedures, runbooks), or `informal` (notes, threads, chats). Classify by research use, not prestige.
-- `source` pages may add `source_format` (`paper`, `article`, `book`, `report`, `spec`, `documentation`, `dataset`, `benchmark`, `transcript`, `notes`, `other`), `authors` (non-empty strings), `published_at` (`YYYY-MM-DD`), and `canonical_url` (absolute `http` or `https`).
+- `source` pages may add `source_format` (`paper`, `article`, `book`, `report`, `spec`, `documentation`, `dataset`, `benchmark`, `transcript`, `notes`, `other`), `authors` (non-empty strings), `published_at` (`YYYY-MM-DD`), `canonical_url` (absolute `http` or `https`), `fetched_at` (`YYYY-MM-DD`, UTC date the source was fetched), and `http_status` (integer 100-599, HTTP status of the fetch).
 - `source` pages require `raw_sha256`: the SHA-256 of the single canonical raw file, set by the creator at creation. `refresh` reconciles or bootstraps it.
 - Keep the single-file source model. Appendices, dataset cards, and changelogs become separate `source` pages.
-- `raw_sha256`, `source_role`, `source_format`, `authors`, `published_at`, and `canonical_url` must not appear on `entity`, `concept`, or `synthesis` pages.
+- `raw_sha256`, `source_role`, `source_format`, `authors`, `published_at`, `canonical_url`, `fetched_at`, and `http_status` must not appear on `entity`, `concept`, or `synthesis` pages.
 
 Filenames are lowercase `kebab-case`, `<slug>.md`. Slugs are unique across all four content directories. On collision, append a short stable qualifier, and prefer updating an existing slug over an alternate spelling.
 
