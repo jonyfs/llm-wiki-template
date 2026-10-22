@@ -118,7 +118,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 ## 6. External search and source ingestion
 
 78. Add a deduplication step before ingest: hash the normalized text of a candidate source and reject it if the hash already exists in `raw/` (prevents double ingest of the same article under two URLs). Resolved: `scripts/raw_manifest.py` `find_duplicates` matches a candidate against exact and normalized SHA-256 digests of `raw/` files.
-79. Normalize `canonical_url` (strip tracking parameters such as `utm_*`) before storing it, so duplicate detection works.
+79. Normalize `canonical_url` (strip tracking parameters such as `utm_*`) before storing it, so duplicate detection works. Resolved: `normalize_canonical_url` in `scripts/wiki_schema.py` strips the tracking parameters, and `scripts/lint.py` rejects a `canonical_url` that still carries them (enforcement is reject-on-dirty; the helper is available for ingest to call before storing).
 80. Add a `scripts/raw_manifest.py` that lists every `raw/` file with its SHA-256, size, and first heading, so ingest decisions are made from a manifest instead of opening files. Resolved: `scripts/raw_manifest.py` records `sha256`, `normalized_sha256`, `size`, and `first_heading` per `raw/` file.
 81. Store that manifest outside `raw/` (for example `wiki/.manifest.json`), because `raw/` is protected corpus that must not be written by tooling. Resolved: the manifest is written to `wiki/.manifest.json`, a git-ignored generated file; `raw/` is only ever read.
 82. Add a per-source token budget: when a raw file is over N tokens, ingest reads it in chunks guided by its headings instead of loading it whole. Resolved: `scripts/extract_outline.py` `plan_chunks` splits a file into token-budgeted chunks guided by its headings.
@@ -127,7 +127,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 85. Add `scripts/extract_outline.py` that prints heading levels and line numbers for a markdown file; agents then read with offset and limit. Resolved: `scripts/extract_outline.py` prints heading levels, line numbers, and an optional chunk plan.
 86. For web material, add a conversion step that strips navigation, ads, and boilerplate before the file enters `raw/` (only when the user explicitly asks to add raw material, per AGENTS.md). Resolved: `scripts/web_tools.py` `html_to_markdown` strips scripts, styles, navigation, footers, asides, and ad-like blocks.
 87. Record the fetch date and HTTP status in source frontmatter when a source came from the web, so staleness can be detected by lint.
-88. Add a staleness rule: flag `source` pages whose `published_at` is older than a configurable number of years for fast-moving topics.
+88. Add a staleness rule: flag `source` pages whose `published_at` is older than a configurable number of years for fast-moving topics. Resolved: `stale_source_findings` in `scripts/lint.py` with the `--max-source-age-years` flag, covered by tests in `tests/test_lint.py`.
 89. Add a rate-limit-aware retry helper for any future network fetch script, with a cache directory outside `raw/`. Resolved: `web_tools.py` `fetch_with_retry` retries on `RateLimitError` with exponential backoff or the server's hint.
 90. Keep fetched web content cached under a git-ignored `.cache/` so repeated research does not refetch identical pages. Resolved: `web_tools.py` `cached_fetch` stores content under the git-ignored `.cache/`.
 
