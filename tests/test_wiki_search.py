@@ -107,6 +107,14 @@ class WikiSearchTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         self.assertEqual(result.stdout.strip(), "alpha-source -> wireguard -> key-rotation")
 
+    def test_path_from_a_page_to_itself_is_trivial(self) -> None:
+        root = self.copy_fixture()
+
+        result = self.run_search(root, "--path", "wireguard", "wireguard")
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        self.assertEqual(result.stdout.strip(), "wireguard")
+
     def test_path_reports_when_no_chain_exists(self) -> None:
         root = self.copy_fixture()
         (root / "wiki" / "concepts" / "island.md").write_text(

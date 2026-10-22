@@ -88,23 +88,35 @@ def backlinks(edges: dict[str, list[str]], slug: str) -> list[str]:
     return sorted(source for source, targets in edges.items() if slug in targets)
 
 
+def _reconstruct_path(parents: dict[str, str | None], node: str) -> list[str]:
+    path: list[str] = []
+    current: str | None = node
+    while current is not None:
+        path.append(current)
+        current = parents[current]
+    return list(reversed(path))
+
+
 def shortest_path(edges: dict[str, list[str]], start: str, goal: str) -> list[str] | None:
-    """Breadth-first search over outbound wiki links, so the first path found is a shortest one."""
+    """Breadth-first search over outbound wiki links, so the first path found is a shortest one.
+
+    BFS expands the goal at enqueue time, skipping the rest of its distance level. Adjacency
+    lists are sorted at build time, so among equal-length paths the result is deterministic;
+    item 56's heapq does not apply because the graph is unweighted and a queue is exact.
+    """
     parents: dict[str, str | None] = {start: None}
     queue: deque[str] = deque([start])
     while queue:
         node = queue.popleft()
         if node == goal:
-            path: list[str] = []
-            current: str | None = node
-            while current is not None:
-                path.append(current)
-                current = parents[current]
-            return list(reversed(path))
+            return _reconstruct_path(parents, node)
         for target in edges.get(node, []):
-            if target not in parents:
-                parents[target] = node
-                queue.append(target)
+            if target in parents:
+                continue
+            parents[target] = node
+            if target == goal:
+                return _reconstruct_path(parents, goal)
+            queue.append(target)
     return None
 
 
