@@ -3,3 +3,8 @@
 !.obsidian/
 !.obsidian/hotkeys.json
 __pycache__/
+.cache/
+# Generated search and manifest artifacts (rebuilt by scripts/wiki_index.py and scripts/raw_manifest.py)
+wiki/.index.*
+wiki/.graph.json*
+wiki/.manifest.json*

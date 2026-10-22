@@ -21,6 +21,10 @@ Before answering a substantive question:
 4. Scan recent relevant entries in `wiki/log.md` when freshness, recent ingest work, or recently changed syntheses may matter.
 5. If `wiki/index.md` is not enough, run a targeted search across `wiki/` for likely slugs, synonyms, entities, concepts, and question phrases before touching `raw/`.
 
+## Search entry point
+
+When the wiki has many pages, run `python3 scripts/wiki_search.py "<terms>" --limit 5` first. It prints `slug [type] summary` lines only (each summary is at most 200 characters). Then read only the returned pages. Other modes: `--type`, `--backlinks <slug>`, and `--path <from> <to>`. If the search reports a stale index, run `python3 scripts/wiki_index.py` or pass `--rebuild`. The wiki works without the index, so falling back to `wiki/index.md` and `rg` is always valid.
+
 ## Query workflow
 
 1. Start from `wiki/index.md` to locate the relevant parts of the wiki.

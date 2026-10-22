@@ -1,4 +1,4 @@
-# LLM Wiki Template
+# LLM Wiki
 
 An LLM wiki template that turns curated `raw/` sources into a persistent markdown knowledge base. It follows the LLM wiki pattern from Andrej Karpathy's [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
 

@@ -1,0 +1,65 @@
+{
+  "_note": "PLACEHOLDER benchmark. The operator must supply real questions and expected slugs from their own wiki. Expected slugs here come from the lint_valid_research test fixture only and say nothing about a real wiki.",
+  "questions": [
+    {
+      "question": "PLACEHOLDER question 1: operator must replace with a real question",
+      "expected": [
+        "alpha-source"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 2: operator must replace with a real question",
+      "expected": [
+        "wireguard"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 3: operator must replace with a real question",
+      "expected": [
+        "key-rotation"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 4: operator must replace with a real question",
+      "expected": [
+        "research-overview"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 5: operator must replace with a real question",
+      "expected": [
+        "alpha-source"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 6: operator must replace with a real question",
+      "expected": [
+        "wireguard"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 7: operator must replace with a real question",
+      "expected": [
+        "key-rotation"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 8: operator must replace with a real question",
+      "expected": [
+        "research-overview"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 9: operator must replace with a real question",
+      "expected": [
+        "alpha-source"
+      ]
+    },
+    {
+      "question": "PLACEHOLDER question 10: operator must replace with a real question",
+      "expected": [
+        "wireguard"
+      ]
+    }
+  ]
+}
