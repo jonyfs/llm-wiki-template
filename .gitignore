@@ -8,3 +8,6 @@ __pycache__/
 wiki/.index.*
 wiki/.graph.json*
 wiki/.manifest.json*
+
+# gstack local state
+.gstack/
