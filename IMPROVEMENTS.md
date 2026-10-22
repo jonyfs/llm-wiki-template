@@ -140,7 +140,7 @@ The largest recurring token cost is the always-loaded `AGENTS.md`, followed by w
 97. Add a `wiki-router` skill that maps a request to exactly one playbook, so the agent loads one skill instead of reading several.
 98. Add a test that every skill folder under `.agents/skills/` has a `SKILL.md` with `name` and `description` frontmatter, and that `.claude/skills` and `.opencode/skills` resolve to it; also check that `CLAUDE.md`, `.cursorrules`, and `.github/copilot-instructions.md` resolve to `AGENTS.md`.
 99. Add a CI workflow under `.github/workflows/` that runs the unit tests on every push and pull request. No workflow exists today.
-100. Add `scripts/review-cycle.sh` and `scripts/push-guard.sh`, or remove the references to them. The `pr-reviewer` and `pr-fixer` skills reference both, but neither exists in this repository.
+100. Add `scripts/review-cycle.sh` and `scripts/push-guard.sh`, or remove the references to them. The `pr-reviewer` and `pr-fixer` skills reference both, but neither exists in this repository. Resolved: references removed; scripts live only in external skill directories.
 
 ## Recommended first batch
 
