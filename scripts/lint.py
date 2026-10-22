@@ -45,6 +45,7 @@ from wiki_schema import (
 
 
 KEBAB_CASE_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
+HTTP_STATUS_RE = re.compile(r"[0-9]{3}")
 INDEX_ENTRY_RE = re.compile(r"^\s*-\s+\[\[([^\]]+)\]\]\s+-\s+(.+?)\s*$")
 INDEX_SECTIONS = {
     "Sources": "source",
@@ -200,7 +201,7 @@ def validate_frontmatter(page, slug_map, root: Path, errors: list[str]) -> None:
 
         http_status = page.frontmatter.get("http_status")
         if http_status is not None and not (
-            str(http_status).isdigit() and 100 <= int(str(http_status)) <= 599
+            HTTP_STATUS_RE.fullmatch(str(http_status)) and 100 <= int(str(http_status)) <= 599
         ):
             add_error(errors, page.rel_path, "`http_status` must be an integer from 100 to 599")
     else:

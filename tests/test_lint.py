@@ -311,6 +311,21 @@ class LintScriptTests(unittest.TestCase):
         self.assertIn("`fetched_at` must be a real calendar date", result.stderr)
         self.assertIn("`http_status` must be an integer from 100 to 599", result.stderr)
 
+    def test_lint_reports_superscript_http_status_without_crashing(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        self.replace_in_file(
+            path,
+            'canonical_url: "https://example.com/alpha"\n',
+            'canonical_url: "https://example.com/alpha"\nhttp_status: "\u00b200"\n',
+        )
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertNotIn("Traceback", result.stderr)
+        self.assertIn("`http_status` must be an integer from 100 to 599", result.stderr)
+
     def test_lint_accepts_valid_fetch_metadata(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         path = root / "wiki" / "sources" / "alpha-source.md"
