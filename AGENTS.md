@@ -37,6 +37,7 @@ Load the relevant skill before substantive work, or `wiki-router` if unsure.
 - `wiki-query/`: before answering wiki-grounded questions or filing a durable answer.
 - `wiki/`: before a read-only wiki answer, when no file may be written.
 - `wiki-maintenance/`: before refresh, lint, drift, or health-check work.
+- `wiki-delete/`: before removing a page, link, footnote, or index entry about a subject that should not be in the wiki.
 - `wiki-router/`: maps any request to exactly one of the skills above.
 
 ## Core principles
@@ -107,7 +108,7 @@ Create-vs-update and entity-vs-concept rules: `wiki-writing/references/page-deci
 
 - Ingest (`wiki-ingest`): the source must already be in `raw/`. If a URL, PDF, or pasted text is not in `raw/`, ask before adding it. Update the `source` page first, then touched pages, then `wiki/index.md` and `wiki/log.md`.
 - Query (`wiki-query` read-write, or `wiki` read-only): answer from the wiki first; `raw/` only for verification or gaps. Durable answers become `synthesis` pages only through `wiki-query`.
-- Refresh and lint (`wiki-maintenance`): refresh reports raw drift and never rewrites dependent pages. Dependencies come only from `sources` frontmatter; body wikilinks are never dependencies. Lint is a health check.
+- Refresh and lint (`wiki-maintenance`): refresh reports raw drift and never rewrites pages merely because a source changed. Dependencies come only from `sources` frontmatter; body wikilinks are never dependencies. Lint is a health check.
 
 ## Index and log
 

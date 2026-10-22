@@ -15,6 +15,7 @@ Use this skill to pick one playbook. It does not do the work itself, and it does
 | Add, ingest, or integrate a source already in `raw/` | `wiki-ingest` |
 | Answer a question, and possibly file the answer as a page | `wiki-query` |
 | Answer a question with no file changes allowed | `wiki` |
+| Remove a subject, page, or reference | `wiki-delete` |
 | Refresh raw drift, lint, health check, orphan or broken-link audit | `wiki-maintenance` |
 
 If no row fits, ask the user one clarifying question. Do not load several skills to cover the gap.
