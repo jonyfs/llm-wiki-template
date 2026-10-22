@@ -31,7 +31,7 @@ from wiki_schema import (
 INDEX_VERSION = 1
 SUMMARY_MAX_CHARS = 200
 # One catalog entry per line: "- [[slug]] - one-line summary" (wiki/index.md convention).
-INDEX_ENTRY_RE = re.compile(r"^- \[\[([^\]\[]+)\]\][ \t]*[-\u2013\u2014][ \t]*(.+)$", re.MULTILINE)
+INDEX_ENTRY_RE = re.compile(r"^\s*-\s*\[\[([^\]\[]+)\]\][ \t]*[-\u2013\u2014][ \t]*(.+?)\s*$", re.MULTILINE)
 INDEX_JSON_NAME = ".index.json"
 GRAPH_JSON_NAME = ".graph.json"
 INDEX_DB_NAME = ".index.sqlite"

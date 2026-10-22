@@ -126,7 +126,7 @@ VALID_BENCHMARK_MODES = ("query", "backlinks", "path", "negative", "stderr")
 def _benchmark_item_ok(item: object) -> bool:
     if not isinstance(item, dict) or not isinstance(item.get("question"), str):
         return False
-    if not isinstance(item.get("expected"), list):
+    if not isinstance(item.get("expected"), list) or not all(isinstance(x, str) for x in item["expected"]):
         return False
     mode = item.get("mode", "query")
     if mode not in VALID_BENCHMARK_MODES:
@@ -139,8 +139,9 @@ def _benchmark_item_ok(item: object) -> bool:
             return False
     if mode == "query" and "type" in item and item["type"] is not None and not isinstance(item["type"], str):
         return False
+    if mode == "negative" and "type" in item and item["type"] is not None and not isinstance(item["type"], str):
+        return False
     return True
-
 
 def run_benchmark(connection: sqlite3.Connection, edges: dict[str, list[str]], benchmark: Path, limit: int) -> int:
     payload = json.loads(benchmark.read_text(encoding="utf-8"))
@@ -199,7 +200,7 @@ def run_benchmark(connection: sqlite3.Connection, edges: dict[str, list[str]], b
             print(f"miss: {item['question']}")
     total = len(questions)
     print(f"hit@{limit}: {hits}/{total}")
-    print(f"mrr@{limit}: {reciprocal_rank_sum / total:.4f}" if total else "mrr@{limit}: 0.0000")
+    print(f"mrr@{limit}: {reciprocal_rank_sum / total:.4f}" if total else f"mrr@{limit}: 0.0000")
     print(f"output_bytes: {output_bytes}")
     return 0
 

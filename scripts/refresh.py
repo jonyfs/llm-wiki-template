@@ -242,7 +242,7 @@ def main(argv: list[str]) -> int:
     if args.json:
         print(json.dumps(limit_report(report, args.limit), separators=(",", ":")))
         return 0
-    lines = render_summary(report) if args.summary else render_text(limit_report(report, args.limit), args.verbose)
+    lines = render_summary(limit_report(report, args.limit)) if args.summary else render_text(limit_report(report, args.limit), args.verbose)
     for line in lines:
         print(line)
     return 0
