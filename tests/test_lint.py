@@ -717,6 +717,8 @@ class LintScriptTests(unittest.TestCase):
 class LintModuleTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        original_path = list(sys.path)
+        cls.addClassCleanup(lambda: sys.path.__setitem__(slice(None), original_path))
         sys.path.insert(0, str(REPO_ROOT / "scripts"))
         import lint
 

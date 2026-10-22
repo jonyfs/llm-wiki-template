@@ -224,6 +224,8 @@ class RefreshScriptTests(unittest.TestCase):
         self.assertIn("dependency cycle detected", result.stderr)
 
     def test_write_page_if_changed_is_noop_when_rendering_matches_disk(self) -> None:
+        original_path = list(sys.path)
+        self.addCleanup(lambda: sys.path.__setitem__(slice(None), original_path))
         sys.path.insert(0, str(REPO_ROOT / "scripts"))
         import refresh
 
