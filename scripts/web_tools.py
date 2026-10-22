@@ -1,15 +1,21 @@
 """Offline helpers for web material: HTML clean-up, rate-limit-aware retry, and a `.cache/` fetch cache.
 
 Nothing here performs network access. Callers inject `fetch` (a callable taking a URL and returning
-HTML text), so the retry and cache logic can be tested with fakes. Cleaned output is meant to be
+HTML text, or a `FetchResult` carrying the HTTP status the real client saw), so the retry and cache
+logic can be tested with fakes. `fetch_with_retry` and `cached_fetch` return a `FetchResult` whose
+`fetched_at` (UTC `YYYY-MM-DD`) and `http_status` are meant to be recorded in `source` page
+frontmatter when the material comes from the web (see `wiki-ingest`). Cleaned output is meant to be
 written into raw/ only when the operator explicitly asks to add that material (see AGENTS.md).
 """
 from __future__ import annotations
 
 import hashlib
+import json
 import re
 import time
 from collections.abc import Callable
+from dataclasses import dataclass, replace
+from datetime import datetime, timezone
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -33,6 +39,27 @@ class RateLimitError(Exception):
     def __init__(self, retry_after: float | None = None) -> None:
         super().__init__("rate limited")
         self.retry_after = retry_after
+
+
+@dataclass(frozen=True)
+class FetchResult:
+    """Fetched HTML plus provenance for source frontmatter: `http_status` and `fetched_at` (UTC YYYY-MM-DD)."""
+
+    html: str
+    http_status: int | None = None
+    fetched_at: str | None = None
+
+
+def utc_fetch_date() -> str:
+    """Today's date in UTC as YYYY-MM-DD, the format `fetched_at` must carry for lint."""
+    return datetime.now(timezone.utc).date().isoformat()
+
+
+def as_fetch_result(value: str | FetchResult) -> FetchResult:
+    """Normalize a fetch callable's return; stamp the current UTC date when the caller did not record one."""
+    if isinstance(value, FetchResult):
+        return value if value.fetched_at is not None else replace(value, fetched_at=utc_fetch_date())
+    return FetchResult(html=value, fetched_at=utc_fetch_date())
 
 
 class _MarkdownExtractor(HTMLParser):
@@ -89,18 +116,18 @@ def html_to_markdown(html: str) -> str:
 
 
 def fetch_with_retry(
-    fetch: Callable[[str], str],
+    fetch: Callable[[str], str | FetchResult],
     url: str,
     attempts: int = RETRY_ATTEMPTS,
     base_delay: float = RETRY_BASE_DELAY,
     sleep: Callable[[float], None] = time.sleep,
-) -> str:
+) -> FetchResult:
     """Call `fetch(url)`, retrying only on RateLimitError with exponential backoff or the server's hint."""
     if attempts < 1:
         raise ValueError("attempts must be at least 1")
     for attempt in range(attempts):
         try:
-            return fetch(url)
+            return as_fetch_result(fetch(url))
         except RateLimitError as exc:
             if attempt == attempts - 1:
                 raise
@@ -114,17 +141,37 @@ def web_cache_path(root: Path, url: str) -> Path:
     return root / ".cache" / "web" / f"{digest}.html"
 
 
+def web_cache_meta_path(root: Path, url: str) -> Path:
+    """Sidecar holding the provenance (`http_status`, `fetched_at`) for a cached fetch."""
+    return web_cache_path(root, url).with_suffix(".json")
+
+
+def read_cache_meta(path: Path) -> dict:
+    """Provenance sidecar contents; a missing or corrupt sidecar simply means unknown provenance."""
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return data if isinstance(data, dict) else {}
+
+
 def cached_fetch(
     root: Path,
     url: str,
-    fetch: Callable[[str], str],
+    fetch: Callable[[str], str | FetchResult],
     sleep: Callable[[float], None] = time.sleep,
-) -> str:
+) -> FetchResult:
     """Return cached HTML for `url`, fetching (with retry) and caching it on the first call."""
     path = web_cache_path(root, url)
     if path.is_file():
-        return path.read_text(encoding="utf-8")
-    text = fetch_with_retry(fetch, url, sleep=sleep)
+        meta = read_cache_meta(web_cache_meta_path(root, url))
+        return FetchResult(
+            html=path.read_text(encoding="utf-8"),
+            http_status=meta.get("http_status"),
+            fetched_at=meta.get("fetched_at"),
+        )
+    result = fetch_with_retry(fetch, url, sleep=sleep)
     path.parent.mkdir(parents=True, exist_ok=True)
-    atomic_write_text(path, text)
-    return text
+    atomic_write_text(path, result.html)
+    atomic_write_text(web_cache_meta_path(root, url), json.dumps({"http_status": result.http_status, "fetched_at": result.fetched_at}))
+    return result

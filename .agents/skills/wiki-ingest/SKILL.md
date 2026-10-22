@@ -55,6 +55,7 @@ Apply the rules in `../wiki-writing/references/page-decisions.md`. Do not create
 
 ## Source-page requirements
 - The frontmatter rules for `source` pages (`source_role`, `raw_sha256`, single canonical `[[raw/...]]` reference) are in `AGENTS.md` (Frontmatter schema). Choose `source_role` by research function, not prestige.
+- When the source came from a web fetch, record `fetched_at` (the UTC fetch date, `YYYY-MM-DD`) and `http_status` in its frontmatter from the `FetchResult` returned by `scripts/web_tools.py`, so staleness can be detected by lint.
 - Keep appendices, errata, and companion artifacts as separate pages.
 - State the source's limits in `## Evidence or notable details` and `## Open questions`, and do not imply more certainty or coverage than the raw material supports.
 

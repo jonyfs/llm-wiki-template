@@ -131,6 +131,69 @@ class WikiIndexTests(unittest.TestCase):
         self.assertIn("missing YAML frontmatter", result.stderr)
         self.assertFalse((root / "wiki" / ".index.json").exists())
 
+    def test_index_md_summaries_parses_catalog_entries_only(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+
+        catalog = wiki_index.index_md_summaries(root)
+
+        self.assertEqual(set(catalog), {"alpha-source", "wireguard", "key-rotation", "research-overview"})
+        self.assertEqual(
+            catalog["alpha-source"], "Source page for the alpha research artifact and its main claims."
+        )
+
+    def test_from_index_sources_summaries_from_catalog_but_keeps_record_keys(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+
+        records = {record["slug"]: record for record in wiki_index.build_index(root, from_index=True).records}
+
+        self.assertEqual(
+            records["key-rotation"]["summary"], "Concept page for key rotation as a recurring mechanism and concern."
+        )
+        self.assertEqual(records["key-rotation"]["type"], "concept")
+        self.assertEqual(sorted(records["key-rotation"]), ["path", "slug", "summary", "title", "type"])
+
+    def test_from_index_falls_back_to_page_summary_when_entry_missing(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        path = root / "wiki" / "index.md"
+        path.write_text(
+            "\n".join(line for line in path.read_text(encoding="utf-8").splitlines() if "[[key-rotation]]" not in line)
+            + "\n",
+            encoding="utf-8",
+        )
+
+        records = {record["slug"]: record for record in wiki_index.build_index(root, from_index=True).records}
+
+        self.assertEqual(records["key-rotation"]["summary"], "Key rotation summary.")
+
+    def test_cli_from_index_writes_catalog_summaries_with_compact_json(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+
+        result = subprocess.run(
+            [sys.executable, str(SCRIPT_PATH), "--root", str(root), "--from-index"],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        raw = (root / "wiki" / ".index.json").read_text(encoding="utf-8")
+        self.assertTrue(raw.startswith('{"fingerprint":'), msg=raw[:40])
+        payload = json.loads(raw)
+        by_slug = {page["slug"]: page for page in payload["pages"]}
+        self.assertEqual(
+            by_slug["wireguard"]["summary"], "Entity page for WireGuard as a stable protocol object in the corpus."
+        )
+
+    def test_index_md_edit_marks_built_index_stale(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        wiki_index.write_index(root, wiki_index.build_index(root))
+        self.assertIsNotNone(wiki_index.load_index(root))
+
+        path = root / "wiki" / "index.md"
+        path.write_text(path.read_text(encoding="utf-8").replace("main claims.", "main claims, revised."), encoding="utf-8")
+
+        self.assertIsNone(wiki_index.load_index(root))
+
 
 if __name__ == "__main__":
     unittest.main()
