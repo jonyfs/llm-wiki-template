@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import argparse
+import os
 import sys
+import tempfile
 from pathlib import Path
 
 
@@ -67,6 +69,18 @@ def is_generated(skill_file: Path) -> bool:
     return MARKER in skill_file.read_text(encoding="utf-8")
 
 
+def atomic_write_text(path: Path, text: str) -> None:
+    fd, temp_name = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(text)
+        os.replace(temp_name, path)
+    except BaseException:
+        if os.path.exists(temp_name):
+            os.unlink(temp_name)
+        raise
+
+
 def render(wiki_root: Path) -> dict[str, str]:
     wiki_skill = wiki_root / ".agents" / "skills" / "wiki" / "SKILL.md"
     ingest_skill = wiki_root / ".agents" / "skills" / "wiki-ingest" / "SKILL.md"
@@ -106,7 +120,7 @@ def run(target: Path, wiki_root: Path, dry_run: bool) -> int:
             print(f"would write {skill_file}")
             continue
         skill_file.parent.mkdir(parents=True, exist_ok=True)
-        skill_file.write_text(text, encoding="utf-8")
+        atomic_write_text(skill_file, text)
         print(f"wrote {skill_file}")
     return 0
 

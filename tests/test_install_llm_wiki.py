@@ -94,6 +94,26 @@ class InstallLlmWikiTests(unittest.TestCase):
             "---\nname: llm-wiki\n---\nhand written\n",
         )
 
+    def test_atomic_write_keeps_original_when_replace_fails(self) -> None:
+        import importlib.util
+        from unittest import mock
+
+        spec = importlib.util.spec_from_file_location("install_llm_wiki", SCRIPT_PATH)
+        module = importlib.util.module_from_spec(spec)
+        assert spec.loader is not None
+        spec.loader.exec_module(module)
+        target = self.make_target()
+        skill_file = target / "llm-wiki" / "SKILL.md"
+        skill_file.parent.mkdir()
+        skill_file.write_text("original\n", encoding="utf-8")
+
+        with mock.patch.object(module.os, "replace", side_effect=OSError("disk full")):
+            with self.assertRaises(OSError):
+                module.atomic_write_text(skill_file, "new content\n")
+
+        self.assertEqual(skill_file.read_text(encoding="utf-8"), "original\n")
+        self.assertEqual(sorted(p.name for p in skill_file.parent.iterdir()), ["SKILL.md"])
+
     def test_reinstall_over_generated_skill_is_allowed(self) -> None:
         target = self.make_target()
         self.assertEqual(
