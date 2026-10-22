@@ -277,6 +277,23 @@ class RefreshScriptTests(unittest.TestCase):
         self.assertFalse(refresh.write_page_if_changed(page))
         self.assertEqual(path.read_text(encoding="utf-8"), before)
 
+    def test_write_page_if_changed_skips_when_only_key_order_differs(self) -> None:
+        original_path = list(sys.path)
+        self.addCleanup(lambda: sys.path.__setitem__(slice(None), original_path))
+        sys.path.insert(0, str(REPO_ROOT / "scripts"))
+        import refresh
+
+        root = self.copy_fixture("refresh_valid")
+        path = root / "wiki" / "sources" / "alpha-source.md"
+        before = path.read_text(encoding="utf-8")
+        page = next(p for p in refresh.discover_pages(root) if p.slug == "alpha-source")
+        page.frontmatter = dict(reversed(list(page.frontmatter.items())))
+        page.raw_frontmatter = dict(reversed(list(page.raw_frontmatter.items())))
+
+        self.assertNotEqual(refresh.serialize_page(page), before)
+        self.assertFalse(refresh.write_page_if_changed(page))
+        self.assertEqual(path.read_text(encoding="utf-8"), before)
+
 
 if __name__ == "__main__":
     unittest.main()
