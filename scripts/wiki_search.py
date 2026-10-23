@@ -88,44 +88,120 @@ def backlinks(edges: dict[str, list[str]], slug: str) -> list[str]:
     return sorted(source for source, targets in edges.items() if slug in targets)
 
 
+def _reconstruct_path(parents: dict[str, str | None], node: str) -> list[str]:
+    path: list[str] = []
+    current: str | None = node
+    while current is not None:
+        path.append(current)
+        current = parents[current]
+    return list(reversed(path))
+
+
 def shortest_path(edges: dict[str, list[str]], start: str, goal: str) -> list[str] | None:
-    """Breadth-first search over outbound wiki links, so the first path found is a shortest one."""
+    """Breadth-first search over outbound wiki links, so the first path found is a shortest one.
+
+    BFS expands the goal at enqueue time, skipping the rest of its distance level. Adjacency
+    lists are sorted at build time, so among equal-length paths the result is deterministic;
+    item 56's heapq does not apply because the graph is unweighted and a queue is exact.
+    """
     parents: dict[str, str | None] = {start: None}
     queue: deque[str] = deque([start])
     while queue:
         node = queue.popleft()
         if node == goal:
-            path: list[str] = []
-            current: str | None = node
-            while current is not None:
-                path.append(current)
-                current = parents[current]
-            return list(reversed(path))
+            return _reconstruct_path(parents, node)
         for target in edges.get(node, []):
-            if target not in parents:
-                parents[target] = node
-                queue.append(target)
+            if target in parents:
+                continue
+            parents[target] = node
+            if target == goal:
+                return _reconstruct_path(parents, goal)
+            queue.append(target)
     return None
 
 
-def run_benchmark(connection: sqlite3.Connection, benchmark: Path, limit: int) -> int:
+VALID_BENCHMARK_MODES = ("query", "backlinks", "path", "negative", "stderr")
+
+
+def _benchmark_item_ok(item: object) -> bool:
+    if not isinstance(item, dict) or not isinstance(item.get("question"), str):
+        return False
+    if not isinstance(item.get("expected"), list) or not all(isinstance(x, str) for x in item["expected"]):
+        return False
+    mode = item.get("mode", "query")
+    if mode not in VALID_BENCHMARK_MODES:
+        return False
+    if mode == "backlinks" and not (isinstance(item.get("target"), str) and item["target"]):
+        return False
+    if mode == "path":
+        if not (isinstance(item.get("from"), str) and item["from"]
+                and isinstance(item.get("to"), str) and item["to"]):
+            return False
+    if mode == "query" and "type" in item and item["type"] is not None and not isinstance(item["type"], str):
+        return False
+    if mode == "negative" and "type" in item and item["type"] is not None and not isinstance(item["type"], str):
+        return False
+    return True
+
+def run_benchmark(connection: sqlite3.Connection, edges: dict[str, list[str]], benchmark: Path, limit: int) -> int:
     payload = json.loads(benchmark.read_text(encoding="utf-8"))
     questions = payload.get("questions") if isinstance(payload, dict) else None
-    if not isinstance(questions, list) or not all(
-        isinstance(item, dict)
-        and isinstance(item.get("question"), str)
-        and isinstance(item.get("expected"), list)
-        for item in questions
-    ):
+    if not isinstance(questions, list) or not all(_benchmark_item_ok(item) for item in questions):
         raise WikiSchemaError(f"benchmark file must hold a `questions` list of question/expected objects: {benchmark}")
     hits = 0
+    reciprocal_rank_sum = 0.0
+    output_bytes = 0
     for item in questions:
-        slugs = {slug for slug, _, _ in search(connection, item["question"], limit, None)}
-        if slugs & set(item["expected"]):
+        mode = item.get("mode", "query")
+        expected = [str(x) for x in item["expected"]]
+        if mode == "backlinks":
+            returned = backlinks(edges, item["target"])
+            hit = set(returned) == set(expected) if expected else not returned
+            rendered = "\n".join(returned)
+            reciprocal_rank_sum += 1.0 if hit else 0.0
+        elif mode == "path":
+            chain = shortest_path(edges, item["from"], item["to"])
+            returned_list = chain if chain is not None else []
+            hit = returned_list == expected
+            rendered = " -> ".join(returned_list)
+            reciprocal_rank_sum += 1.0 if hit else 0.0
+        elif mode == "negative":
+            try:
+                rows = search(connection, item["question"], limit, item.get("type"))
+            except ValueError:
+                rows = []
+            returned_slugs = [slug for slug, _, _ in rows]
+            hit = not returned_slugs
+            rendered = "\n".join(f"{slug} [{kind}] {summary}" for slug, kind, summary in rows)
+            reciprocal_rank_sum += 1.0 if hit else 0.0
+        elif mode == "stderr":
+            hit = False
+            rendered = ""
+            reciprocal_rank_sum += 0.0
+        else:  # query
+            try:
+                rows = search(connection, item["question"], limit, item.get("type"))
+            except ValueError:
+                rows = []
+            returned_slugs = [slug for slug, _, _ in rows]
+            returned_set = set(returned_slugs)
+            if expected:
+                hit = bool(returned_set & set(expected))
+                rank = next((i + 1 for i, slug in enumerate(returned_slugs) if slug in expected), None)
+                reciprocal_rank_sum += (1.0 / rank) if rank else 0.0
+            else:
+                hit = not returned_slugs
+                reciprocal_rank_sum += 1.0 if hit else 0.0
+            rendered = "\n".join(f"{slug} [{kind}] {summary}" for slug, kind, summary in rows)
+        output_bytes += len(rendered.encode("utf-8"))
+        if hit:
             hits += 1
         else:
             print(f"miss: {item['question']}")
-    print(f"hit@{limit}: {hits}/{len(questions)}")
+    total = len(questions)
+    print(f"hit@{limit}: {hits}/{total}")
+    print(f"mrr@{limit}: {reciprocal_rank_sum / total:.4f}" if total else f"mrr@{limit}: 0.0000")
+    print(f"output_bytes: {output_bytes}")
     return 0
 
 
@@ -157,7 +233,7 @@ def main(argv: list[str]) -> int:
     try:
         if args.benchmark:
             try:
-                return run_benchmark(connection, Path(args.benchmark), args.limit)
+                return run_benchmark(connection, data.edges, Path(args.benchmark), args.limit)
             except (WikiSchemaError, OSError, json.JSONDecodeError) as exc:
                 print(f"benchmark failed: {exc}", file=sys.stderr)
                 return 2

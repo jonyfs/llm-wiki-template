@@ -68,7 +68,7 @@ class RetryTests(unittest.TestCase):
 
         result = web_tools.fetch_with_retry(fake_fetch, "https://example.com/a", base_delay=1.0, sleep=delays.append)
 
-        self.assertEqual(result, "<html></html>")
+        self.assertEqual(result.html, "<html></html>")
         self.assertEqual(len(calls), 3)
         self.assertEqual(delays, [1.0, 2.0])
 
@@ -105,6 +105,32 @@ class RetryTests(unittest.TestCase):
         self.assertEqual(len(calls), 1)
 
 
+class FetchResultTests(unittest.TestCase):
+    def test_plain_string_return_is_stamped_with_utc_fetch_date(self) -> None:
+        result = web_tools.fetch_with_retry(lambda url: "<p>hi</p>", "https://example.com/a", sleep=lambda _: None)
+
+        self.assertIsInstance(result, web_tools.FetchResult)
+        self.assertEqual(result.html, "<p>hi</p>")
+        self.assertIsNone(result.http_status)
+        self.assertEqual(result.fetched_at, web_tools.utc_fetch_date())
+
+    def test_fetch_result_status_and_date_pass_through_unchanged(self) -> None:
+        sent = web_tools.FetchResult(html="ok", http_status=418, fetched_at="2026-01-02")
+
+        result = web_tools.fetch_with_retry(lambda url: sent, "https://example.com/a", sleep=lambda _: None)
+
+        self.assertEqual(result, sent)
+
+    def test_fetch_result_without_date_gets_stamped(self) -> None:
+        result = web_tools.fetch_with_retry(lambda url: web_tools.FetchResult(html="ok", http_status=200), "https://example.com/a", sleep=lambda _: None)
+
+        self.assertEqual(result.http_status, 200)
+        self.assertEqual(result.fetched_at, web_tools.utc_fetch_date())
+
+    def test_utc_fetch_date_matches_lint_fetched_at_format(self) -> None:
+        self.assertRegex(web_tools.utc_fetch_date(), r"^\d{4}-\d{2}-\d{2}$")
+
+
 class CacheTests(unittest.TestCase):
     def make_root(self) -> Path:
         root = Path(tempfile.mkdtemp(prefix="web-cache-"))
@@ -133,6 +159,34 @@ class CacheTests(unittest.TestCase):
 
         self.assertEqual(first, second)
         self.assertEqual(calls, ["https://example.com/a"])
+
+    def test_cache_hit_replays_stored_status_and_original_fetch_date(self) -> None:
+        root = self.make_root()
+        calls: list[str] = []
+
+        def fake_fetch(url: str) -> web_tools.FetchResult:
+            calls.append(url)
+            return web_tools.FetchResult(html="<p>body</p>", http_status=429, fetched_at="2026-03-04")
+
+        first = web_tools.cached_fetch(root, "https://example.com/a", fake_fetch)
+        second = web_tools.cached_fetch(root, "https://example.com/a", fake_fetch)
+
+        self.assertEqual(first.http_status, 429)
+        self.assertEqual(web_tools.web_cache_meta_path(root, "https://example.com/a").parent, root / ".cache" / "web")
+        self.assertEqual(second.http_status, 429)
+        self.assertEqual(second.fetched_at, "2026-03-04")
+        self.assertEqual(calls, ["https://example.com/a"])
+
+    def test_cache_hit_without_sidecar_yields_unknown_provenance(self) -> None:
+        root = self.make_root()
+        web_tools.web_cache_path(root, "https://example.com/a").parent.mkdir(parents=True, exist_ok=True)
+        web_tools.web_cache_path(root, "https://example.com/a").write_text("<p>legacy</p>", encoding="utf-8")
+
+        result = web_tools.cached_fetch(root, "https://example.com/a", lambda url: "unused")
+
+        self.assertEqual(result.html, "<p>legacy</p>")
+        self.assertIsNone(result.http_status)
+        self.assertIsNone(result.fetched_at)
 
     def test_raw_directory_is_left_empty_by_caching(self) -> None:
         root = self.make_root()

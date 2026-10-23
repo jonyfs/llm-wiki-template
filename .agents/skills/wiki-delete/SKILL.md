@@ -9,7 +9,7 @@ Use this skill to remove a subject from a repository derived from this template.
 
 ## Hard rules
 
-- Never modify, rename, or delete anything under `raw/`, including `raw/assets/`. Raw files are the corpus, not wiki content.
+- Never modify, rename, or delete anything under `raw/`, including `raw/assets/`. Raw files are the corpus, not wiki content (canonical rule: `AGENTS.md` "Purpose").
 - Never delete a page or change a file without explicit user confirmation of the exact plan shown in step 4.
 - Never delete a page whose removal would silently break another page's `sources` without also resolving those dependents (step 5).
 - Write all artifacts and log entries in English.

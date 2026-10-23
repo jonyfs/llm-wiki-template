@@ -1,65 +1,80 @@
 {
-  "_note": "PLACEHOLDER benchmark. The operator must supply real questions and expected slugs from their own wiki. Expected slugs here come from the lint_valid_research test fixture only and say nothing about a real wiki.",
+  "_note": "Retrieval benchmark for the llm-wiki search layer. Questions are grounded in the lint_valid_research fixture graph (alpha-source -> wireguard -> key-rotation -> research-overview). Each item carries a `mode` (query default, backlinks, path, negative) so scoring matches the capability under test. Scoring: hit@limit (any expected slug in the returned set, or empty result for negative), mrr@limit (reciprocal rank of the first expected slug), output_bytes (sum of rendered result bytes, proxy for token cost). Research basis: Karpathy llm-wiki retrieval ops; tobi/qmd fuzzy+filter; MultiHop-RAG null queries; HotpotQA bridge/comparison; muSiQue unanswerable; GaRAGe complexity taxonomy.",
   "questions": [
     {
-      "question": "PLACEHOLDER question 1: operator must replace with a real question",
-      "expected": [
-        "alpha-source"
-      ]
+      "id": "q1",
+      "question": "wireguard",
+      "mode": "query",
+      "expected": ["wireguard"],
+      "capability": "entity lookup by title token"
     },
     {
-      "question": "PLACEHOLDER question 2: operator must replace with a real question",
-      "expected": [
-        "wireguard"
-      ]
+      "id": "q2",
+      "question": "key rotation",
+      "mode": "query",
+      "expected": ["key-rotation"],
+      "capability": "concept lookup by multi-token query"
     },
     {
-      "question": "PLACEHOLDER question 3: operator must replace with a real question",
-      "expected": [
-        "key-rotation"
-      ]
+      "id": "q3",
+      "question": "research overview",
+      "mode": "query",
+      "expected": ["research-overview"],
+      "capability": "synthesis lookup"
     },
     {
-      "question": "PLACEHOLDER question 4: operator must replace with a real question",
-      "expected": [
-        "research-overview"
-      ]
+      "id": "q4",
+      "question": "alpha source",
+      "mode": "query",
+      "expected": ["alpha-source"],
+      "capability": "source lookup (claim-citation entry point)"
     },
     {
-      "question": "PLACEHOLDER question 5: operator must replace with a real question",
-      "expected": [
-        "alpha-source"
-      ]
+      "id": "q5",
+      "question": "wire",
+      "mode": "query",
+      "expected": ["wireguard"],
+      "capability": "partial-title fuzzy (prefix) match"
     },
     {
-      "question": "PLACEHOLDER question 6: operator must replace with a real question",
-      "expected": [
-        "wireguard"
-      ]
+      "id": "q6",
+      "question": "rotation",
+      "mode": "query",
+      "type": "concept",
+      "expected": ["key-rotation"],
+      "capability": "type-filtered search"
     },
     {
-      "question": "PLACEHOLDER question 7: operator must replace with a real question",
-      "expected": [
-        "key-rotation"
-      ]
+      "id": "q7",
+      "question": "teleportation",
+      "mode": "negative",
+      "expected": [],
+      "capability": "negative absence (no matching page)"
     },
     {
-      "question": "PLACEHOLDER question 8: operator must replace with a real question",
-      "expected": [
-        "research-overview"
-      ]
+      "id": "q8",
+      "question": "alpha-source",
+      "mode": "backlinks",
+      "target": "alpha-source",
+      "expected": ["research-overview", "wireguard"],
+      "capability": "backlink enumeration"
     },
     {
-      "question": "PLACEHOLDER question 9: operator must replace with a real question",
-      "expected": [
-        "alpha-source"
-      ]
+      "id": "q9",
+      "question": "wireguard",
+      "mode": "backlinks",
+      "target": "wireguard",
+      "expected": ["alpha-source", "key-rotation", "research-overview"],
+      "capability": "multi-source backlink enumeration"
     },
     {
-      "question": "PLACEHOLDER question 10: operator must replace with a real question",
-      "expected": [
-        "wireguard"
-      ]
+      "id": "q10",
+      "question": "alpha-source -> research-overview",
+      "mode": "path",
+      "from": "alpha-source",
+      "to": "research-overview",
+      "expected": ["alpha-source", "wireguard", "key-rotation", "research-overview"],
+      "capability": "multi-hop shortest path via wikilinks"
     }
   ]
 }

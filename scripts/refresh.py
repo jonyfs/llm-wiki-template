@@ -164,7 +164,9 @@ def run(root: Path, full_rebuild: bool, verbose: bool = False, use_cache: bool =
 def render_text(report: dict[str, object], verbose: bool) -> list[str]:
     rows = report["refresh_order"]
     changed = report["changed_raw_files"]
-    lines = [f"refresh {report['mode']}: {len(changed)} changed raw file(s), {len(rows)} page(s) to refresh"]
+    changed_total = report.get("changed_raw_files_total", len(changed))
+    rows_total = report.get("refresh_order_total", len(rows))
+    lines = [f"refresh {report['mode']}: {changed_total} changed raw file(s), {rows_total} page(s) to refresh"]
     for change in changed:
         lines.append(f"  changed: {change['raw_path']} -> {change['source_slug']}")
     if rows:
@@ -173,6 +175,34 @@ def render_text(report: dict[str, object], verbose: bool) -> list[str]:
         for row in rows:
             lines.append(f"  {row['slug']}: {', '.join(row['reasons'])}")
     return lines
+
+
+def render_summary(report: dict[str, object]) -> list[str]:
+    """One count line per reason kind instead of every per-page row."""
+    counts: dict[str, int] = {}
+    for row in report["refresh_roots"]:
+        for reason in row["reasons"]:
+            counts[reason] = counts.get(reason, 0) + 1
+    lines = [
+        f"refresh {report['mode']}: {len(report['changed_raw_files'])} changed raw file(s), "
+        f"{len(report['refresh_order'])} page(s) to refresh"
+    ]
+    lines.extend(f"  {reason}: {counts[reason]}" for reason in sorted(counts))
+    return lines
+
+
+LIMITED_REPORT_KEYS = ("changed_raw_files", "refresh_roots", "refresh_order")
+
+
+def limit_report(report: dict[str, object], limit: int) -> dict[str, object]:
+    """Cap each listed row set at `limit` rows; full size moves to `<key>_total`. 0 means no cap."""
+    if limit > 0:
+        for key in LIMITED_REPORT_KEYS:
+            rows = report[key]
+            if len(rows) > limit:
+                report[f"{key}_total"] = len(rows)
+                report[key] = rows[:limit]
+    return report
 
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
@@ -191,6 +221,9 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     )
     parser.add_argument("--json", action="store_true", help="Print the report as one compact JSON object.")
     parser.add_argument("--verbose", action="store_true", help="Include reasons, types, and dependencies per page.")
+    parser.add_argument("--quiet", action="store_true", help="Print nothing; set the exit status only.")
+    parser.add_argument("--summary", action="store_true", help="Print counts per reason kind instead of per-page rows.")
+    parser.add_argument("--limit", type=int, default=0, help="Cap rows per listed section (0 = no cap).")
     parser.add_argument("--no-cache", action="store_true", help="Do not read or write the .cache/ digest cache.")
     return parser.parse_args(argv)
 
@@ -204,10 +237,13 @@ def main(argv: list[str]) -> int:
         print(f"refresh failed: {exc}", file=sys.stderr)
         return 1
 
-    if args.json:
-        print(json.dumps(report, separators=(",", ":")))
+    if args.quiet:
         return 0
-    for line in render_text(report, args.verbose):
+    if args.json:
+        print(json.dumps(limit_report(report, args.limit), separators=(",", ":")))
+        return 0
+    lines = render_summary(limit_report(report, args.limit)) if args.summary else render_text(limit_report(report, args.limit), args.verbose)
+    for line in lines:
         print(line)
     return 0
 
