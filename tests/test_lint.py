@@ -83,6 +83,31 @@ class LintScriptTests(unittest.TestCase):
         self.assertEqual(report["violations"], [])
         self.assertEqual(report["warnings"], [])
 
+    def test_lint_accepts_one_level_subject_subfolder(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        subject_dir = root / "wiki" / "sources" / "topic"
+        subject_dir.mkdir()
+        source = root / "wiki" / "sources" / "alpha-source.md"
+        source.rename(subject_dir / "alpha-source.md")
+
+        result = self.run_lint(root, "--format", "json")
+
+        self.assertEqual(result.returncode, 0, msg=result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["violations"], [])
+
+    def test_lint_rejects_deeply_nested_page(self) -> None:
+        root = self.copy_fixture("lint_valid_research")
+        deep_dir = root / "wiki" / "sources" / "a" / "b"
+        deep_dir.mkdir(parents=True)
+        source = root / "wiki" / "sources" / "alpha-source.md"
+        source.rename(deep_dir / "alpha-source.md")
+
+        result = self.run_lint(root)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("nested directories deeper than one subject level", result.stderr)
+
     def test_lint_fails_when_source_role_is_missing(self) -> None:
         root = self.copy_fixture("lint_valid_research")
         path = root / "wiki" / "sources" / "alpha-source.md"
