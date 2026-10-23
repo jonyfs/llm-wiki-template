@@ -58,7 +58,7 @@ Before substantive work on an existing wiki: read this file, load the relevant s
 
 Required files: `AGENTS.md`, `wiki/index.md`, `wiki/log.md`, and `.agents/skills/`.
 
-Content pages live only in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/syntheses/`. Create no other content directories and no deeper nesting.
+Content pages live in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/syntheses/`. One optional subject subfolder is allowed beneath each type directory (for example `wiki/sources/<subject>/<slug>.md`) to keep large wikis from accumulating hundreds of files in a single flat folder. No deeper nesting is allowed. Raw files may likewise be grouped into subject subfolders under `raw/`.
 
 ## Markdown conventions
 

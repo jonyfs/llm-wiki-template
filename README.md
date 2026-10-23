@@ -54,10 +54,10 @@ The writing model is plain-language, answer-first wiki prose: teach the smallest
 ├── wiki/                     # LLM-maintained markdown pages
 │   ├── index.md              # category catalog and learning paths
 │   ├── log.md                # append-only operation log
-│   ├── sources/              # one page per raw source
-│   ├── entities/             # people, orgs, products, places
-│   ├── concepts/             # ideas, methods, theories
-│   └── syntheses/            # comparisons, maps, durable answers
+│   ├── sources/              # one page per raw source (optional one-level subject subfolder)
+│   ├── entities/             # people, orgs, products, places (optional one-level subject subfolder)
+│   ├── concepts/             # ideas, methods, theories (optional one-level subject subfolder)
+│   └── syntheses/            # comparisons, maps, durable answers (optional one-level subject subfolder)
 ├── scripts/                  # lint, refresh, search, schema helpers
 ├── tests/                    # unit tests for scripts and structure
 └── docs/                     # migration notes for derived wikis
