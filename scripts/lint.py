@@ -111,8 +111,17 @@ def validate_frontmatter(page, slug_map, root: Path, errors: list[str]) -> None:
         add_error(errors, page.rel_path, "filename must use lowercase kebab-case")
 
     expected_dir = PAGE_TYPE_DIRS[page.page_type]
-    if page.path.parent.name != expected_dir:
-        add_error(errors, page.rel_path, f"`{page.page_type}` pages must live in `wiki/{expected_dir}/`")
+    rel_parts = page.path.relative_to(root).parts
+    # Allow one optional subject subfolder: wiki/<type>/<subject>/<slug>.md
+    location_ok = (
+        len(rel_parts) >= 3
+        and rel_parts[0] == "wiki"
+        and rel_parts[1] == expected_dir
+        and rel_parts[-1].endswith(".md")
+        and len(rel_parts) <= 4
+    )
+    if not location_ok:
+        add_error(errors, page.rel_path, f"`{page.page_type}` pages must live in `wiki/{expected_dir}/` (optionally `wiki/{expected_dir}/<subject>/`)")
 
     for key in REQUIRED_FRONTMATTER_KEYS[page.page_type]:
         if key not in page.frontmatter:
@@ -631,7 +640,14 @@ def validate_wiki_layout(root: Path, errors: list[str]) -> None:
                 if child.name.startswith("."):
                     continue
                 if child.is_dir():
-                    add_error(errors, f"wiki/{entry.name}/{child.name}", "nested directories are not allowed")
+                    # One level of subject subfolders is allowed.
+                    for grand in sorted(child.iterdir(), key=lambda path: path.name):
+                        if grand.name.startswith("."):
+                            continue
+                        if grand.is_dir():
+                            add_error(errors, f"wiki/{entry.name}/{child.name}/{grand.name}", "nested directories deeper than one subject level are not allowed")
+                        elif grand.suffix != ".md":
+                            add_error(errors, f"wiki/{entry.name}/{child.name}/{grand.name}", "only `.md` pages belong here")
                 elif child.suffix != ".md":
                     add_error(errors, f"wiki/{entry.name}/{child.name}", "only `.md` pages belong here")
         elif entry.name not in REQUIRED_WIKI_FILES:

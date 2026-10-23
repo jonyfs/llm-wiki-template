@@ -295,18 +295,37 @@ def read_page(path: Path, root: Path) -> MarkdownPage:
 
 
 def iter_page_paths(root: Path) -> Iterator[Path]:
+    # Content pages may live directly under wiki/<type>/ or one level deeper
+    # under a subject folder (wiki/<type>/<subject>/), to keep large wikis
+    # from accumulating hundreds of files in a single flat directory.
     for directory in CONTENT_DIRS:
         content_dir = root / "wiki" / directory
         if not content_dir.is_dir():
             continue
         with os.scandir(content_dir) as entries:
-            names = sorted(
-                entry.name
-                for entry in entries
-                if entry.is_file() and entry.name.endswith(".md") and not entry.name.startswith(".")
-            )
-        for name in names:
+            all_entries = list(entries)
+        direct_files = sorted(
+            entry.name
+            for entry in all_entries
+            if entry.is_file() and entry.name.endswith(".md") and not entry.name.startswith(".")
+        )
+        subject_dirs = sorted(
+            entry.name
+            for entry in all_entries
+            if entry.is_dir() and not entry.name.startswith(".")
+        )
+        for name in direct_files:
             yield content_dir / name
+        for subject in subject_dirs:
+            subject_dir = content_dir / subject
+            with os.scandir(subject_dir) as entries:
+                names = sorted(
+                    entry.name
+                    for entry in entries
+                    if entry.is_file() and entry.name.endswith(".md") and not entry.name.startswith(".")
+                )
+            for name in names:
+                yield subject_dir / name
 
 
 def iter_page_slugs(root: Path) -> Iterator[str]:
