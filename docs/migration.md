@@ -8,3 +8,4 @@ If you are updating an existing wiki derived from an older version of this templ
 - Add required `source_role` to every `source` page.
 - Add optional `source_format` only when it adds real retrieval value.
 - Keep related artifacts as separate `source` pages instead of bundling multiple canonical raw files into one page.
+- Subject subfolders are optional. Existing flat wikis keep working unchanged; to adopt them, move pages under `wiki/<type>/<subject>/` (one level only) and update any hardcoded paths. Raw files may likewise be grouped under `raw/<subject>/`.
