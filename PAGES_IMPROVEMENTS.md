@@ -256,3 +256,9 @@ The landing page is a single document ordered by what a newcomer asks next. A nu
 - Part 1 paraphrases Karpathy's gist and says so. Its six inline SVG figures use the page tokens and the graph's colour per page type, carry almost no text (labels sit in HTML beside them) and each has an `aria-label`.
 - `tests/test_github_pages.py` checks that the parts are numbered 1 to 5, that every nav and chip link has a target, and that the graph comes after the operations.
 - The page builder scripts were one-off; edit `index.html` directly. Any new inline script needs its CSP hash, which the tests check.
+
+### README and starter script
+
+- The README follows the same five parts as the site and reuses its figures as self-contained SVGs in `docs/images/` (dark panel, colours baked in, so they read on any GitHub theme). The graph is a still captured from the live canvas (`graph-dark.jpg` and `graph-light.jpg`, chosen with `<picture>`), because GitHub does not run the animation. Re-capture it when the graph's look changes.
+- `scripts/new-llm-wiki.sh` creates a clean notebook from the template (local clone, or `--github` with the gh CLI), removes the template's Pages site, workflows and marketing docs, resets `wiki/log.md` and runs the checks. The README pastes it in full at the end inside a four-backtick fence, because the script itself contains triple-backtick blocks.
+- `tests/test_readme.py` checks that README images exist, that anchors resolve, and that the pasted script equals the real file. After changing the script, paste it into the README again.
