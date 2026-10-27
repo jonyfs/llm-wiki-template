@@ -54,10 +54,12 @@
   :root, :root[data-theme="dark"] {
     --bg: #0b0d12; --bg-soft: #12151d; --card: #171a24; --border: #262a38;
     --text: #e8eaf0; --muted: #9aa3b2; --accent: #7c8cff; --accent-2: #5eead4; --code: #0f1117;
+    --nav-bg: rgba(11,13,18,0.78);
   }
   :root[data-theme="light"] {
     --bg: #f7f8fc; --bg-soft: #eef0f6; --card: #ffffff; --border: #d9dde8;
     --text: #1a1d29; --muted: #5a6275; --accent: #4f5bd5; --accent-2: #0f9f8f; --code: #f1f3f9;
+    --nav-bg: rgba(247,248,252,0.88);
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -76,7 +78,7 @@
   nav {
     position: sticky; top: 0; z-index: 10;
     backdrop-filter: blur(12px);
-    background: rgba(11,13,18,0.75);
+    background: var(--nav-bg);
     border-bottom: 1px solid var(--border);
   }
   nav .inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
@@ -193,6 +195,13 @@
   }
   /* Back to top */
   #backToTop:hover { border-color: var(--accent); }
+  /* Light mode polish for hardcoded dark SVG diagrams */
+  :root[data-theme="light"] .flow-card svg rect[fill="#171a24"] { fill: #ffffff; }
+  :root[data-theme="light"] .flow-card svg rect[stroke="#262a38"] { stroke: #d9dde8; }
+  :root[data-theme="light"] .flow-card svg rect[stroke="#7c8cff"] { stroke: #4f5bd5; }
+  :root[data-theme="light"] .flow-card svg text[fill="#e8eaf0"] { fill: #1a1d29; }
+  :root[data-theme="light"] .flow-card svg text[fill="#9aa3b2"] { fill: #5a6275; }
+  :root[data-theme="light"] .hero::before { background: radial-gradient(60% 50% at 50% 0%, rgba(79,91,213,0.10), transparent 70%); }
 </style>
 <script>
   (function(){
@@ -586,19 +595,6 @@
     </div>
   </div>
 </section>
-<section id="ai-agents">
-  <div class="container">
-    <h2 class="section-title">For AI agents and LLMs</h2>
-    <p class="section-sub">Machine-readable entry points so assistants can ingest this template accurately.</p>
-    <div class="compat">
-      <a class="chip" href="llms.txt">llms.txt</a>
-      <a class="chip" href="llms-full.txt">llms-full.txt</a>
-      <a class="chip" href="README.md">README.md</a>
-      <a class="chip" href="https://github.com/jonyfs/llm-wiki-template">Repository</a>
-    </div>
-    <p style="color:var(--muted);font-size:14px;margin-top:16px;">Cite as: "LLM Wiki Template, jonyfs, MIT license, https://github.com/jonyfs/llm-wiki-template".</p>
-  </div>
-</section>
 </main>
 <footer role="contentinfo">
   <div class="container inner">
@@ -661,9 +657,7 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   canvas.style.cursor = 'grab';
   let rotX = 0, rotY = 0, dragging3d = false, lastX = 0, lastY = 0;
-  function applyRotation(){
-    canvas.style.transform = 'perspective(1100px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
-  }
+  function applyRotation(){ /* 3D projection is applied while drawing; background stays fixed */ }
   canvas.addEventListener('pointerdown', (e)=>{
     dragging3d = true; lastX = e.clientX; lastY = e.clientY;
     canvas.style.cursor = 'grabbing';
@@ -775,7 +769,40 @@
     edges.forEach(([a,b]) => { nodes[a].degree++; nodes[b].degree++; });
   }
   recomputeDegrees();
-  const colors = {source:'#5eead4', entity:'#fbbf24', concept:'#7c8cff', synthesis:'#f472b6'};
+  function isLightTheme(){ return document.documentElement.getAttribute('data-theme') === 'light'; }
+  function graphPalette(){ return isLightTheme() ? {source:'#0f766e', entity:'#b45309', concept:'#4f5bd5', synthesis:'#be185d'} : {source:'#5eead4', entity:'#fbbf24', concept:'#7c8cff', synthesis:'#f472b6'}; }
+  function graphBg(){ return isLightTheme() ? '#f7f8fc' : '#0f1117'; }
+  function graphText(){ return isLightTheme() ? '#1a1d29' : '#e8eaf0'; }
+  function graphEdge(hi){ return hi ? (isLightTheme() ? 'rgba(26,29,41,0.55)' : 'rgba(232,234,240,0.55)') : (isLightTheme() ? 'rgba(79,91,213,0.22)' : 'rgba(124,140,255,0.16)'); }
+  const FOCAL = 1000;
+  function projectNode(n){
+    const cx = W/2, cy = H/2;
+    const X = n.x - cx, Y = n.y - cy;
+    const ry = rotY * Math.PI / 180, rx = rotX * Math.PI / 180;
+    const cosY = Math.cos(ry), sinY = Math.sin(ry);
+    const cosX = Math.cos(rx), sinX = Math.sin(rx);
+    const x1 = X * cosY;
+    const y1 = Y * cosX + X * sinY * sinX;
+    const z1 = Y * sinX - X * sinY * cosX;
+    const scale = FOCAL / (FOCAL + z1);
+    return {x: cx + x1 * scale, y: cy + y1 * scale, z: z1, scale: scale};
+  }
+  function unproject(sx, sy){
+    const cx = W/2, cy = H/2;
+    const u = sx - cx, v = sy - cy;
+    const ry = rotY * Math.PI / 180, rx = rotX * Math.PI / 180;
+    const cosY = Math.cos(ry), sinY = Math.sin(ry);
+    const cosX = Math.cos(rx), sinX = Math.sin(rx);
+    const a11 = FOCAL * cosY + u * sinY * cosX;
+    const a12 = -u * sinX;
+    const a21 = FOCAL * sinY * sinX + v * sinY * cosX;
+    const a22 = FOCAL * cosX - v * sinX;
+    const det = a11 * a22 - a12 * a21;
+    if(Math.abs(det) < 1e-9) return {x: sx, y: sy};
+    const X = (u * FOCAL * a22 - a12 * v * FOCAL) / det;
+    const Y = (a11 * v * FOCAL - u * FOCAL * a21) / det;
+    return {x: X + cx, y: Y + cy};
+  }
   const anchors = {
     source: {x: W*0.22, y: H*0.30},
     entity: {x: W*0.78, y: H*0.28},
@@ -838,12 +865,14 @@
     if(alpha < ALPHA_MIN) alpha = 0;
   }
   function draw(){
-    ctx.fillStyle = '#0f1117';
+    const colors = graphPalette();
+    ctx.fillStyle = graphBg();
     ctx.fillRect(0,0,W,H);
     // subtle cluster halos
     Object.keys(anchors).forEach(type=>{
       const a = anchors[type];
-      const grad = ctx.createRadialGradient(a.x,a.y,10,a.x,a.y,150);
+      const pa = projectNode({x:a.x,y:a.y});
+      const grad = ctx.createRadialGradient(pa.x,pa.y,10,pa.x,pa.y,150);
       grad.addColorStop(0, colors[type] + '14');
       grad.addColorStop(1, 'transparent');
       ctx.fillStyle = grad;
@@ -853,28 +882,30 @@
     ctx.lineWidth = 0.9;
     edges.forEach(([i,j])=>{
       const a = nodes[i], b = nodes[j];
+      const pa = projectNode(a), pb = projectNode(b);
       const hi = (i === hovered || j === hovered);
-      ctx.strokeStyle = hi ? 'rgba(232,234,240,0.55)' : 'rgba(124,140,255,0.16)';
-      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      ctx.strokeStyle = graphEdge(hi);
+      ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y); ctx.stroke();
     });
     // nodes
     nodes.forEach((n, idx)=>{
-      const r = 4 + Math.min(9, (n.degree||0) * 0.18) + (n.pulse||0)*7;
+      const p = projectNode(n);
+      const r = (4 + Math.min(9, (n.degree||0) * 0.18) + (n.pulse||0)*7) * Math.max(0.55, p.scale);
       if((n.pulse||0) > 0){
         ctx.beginPath();
-        ctx.arc(n.x,n.y,r+7,0,Math.PI*2);
+        ctx.arc(p.x,p.y,r+7,0,Math.PI*2);
         ctx.fillStyle = 'rgba(124,140,255,' + ((n.pulse||0)*0.22) + ')';
         ctx.fill();
       }
       ctx.beginPath();
-      ctx.arc(n.x,n.y,r,0,Math.PI*2);
+      ctx.arc(p.x,p.y,r,0,Math.PI*2);
       ctx.fillStyle = colors[n.type] || '#9aa3b2';
       ctx.fill();
       if(idx === hovered || (n.degree||0) > 14){
-        ctx.fillStyle = '#e8eaf0';
+        ctx.fillStyle = graphText();
         ctx.font = '10px sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(n.label.length > 24 ? n.label.slice(0,22) + '…' : n.label, n.x, n.y - (r + 4));
+        ctx.fillText(n.label.length > 24 ? n.label.slice(0,22) + '…' : n.label, p.x, p.y - (r + 4));
       }
     });
   }
@@ -939,7 +970,7 @@
     const x = (e.clientX - r.left) * (W/r.width);
     const y = (e.clientY - r.top) * (H/r.height);
     let nearest = -1, best = 16;
-    nodes.forEach((n, idx) => { const d = Math.hypot(n.x-x, n.y-y); if(d < best){ best = d; nearest = idx; } });
+    nodes.forEach((n, idx) => { const p = projectNode(n); const d = Math.hypot(p.x-x, p.y-y); if(d < best){ best = d; nearest = idx; } });
     hovered = nearest;
     const tip = document.getElementById('gTip');
     if(tip){
@@ -961,8 +992,9 @@
     const x = (e.clientX - r.left) * (W/r.width);
     const y = (e.clientY - r.top) * (H/r.height);
     const before = nodes.length;
+    const orig = unproject(x, y);
     const n = addNode('new-page-' + before, 'concept');
-    n.pulse = 1; n.x = x; n.y = y;
+    n.pulse = 1; n.x = Math.max(10, Math.min(W-10, orig.x)); n.y = Math.max(10, Math.min(H-10, orig.y));
     const count = 2 + Math.floor(Math.random()*4);
     const used = new Set();
     for(let k = 0; k < count; k++){
