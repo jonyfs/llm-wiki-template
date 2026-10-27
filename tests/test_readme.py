@@ -32,17 +32,24 @@ class ReadmeTest(unittest.TestCase):
 
 @unittest.skipUnless(SCRIPT.is_file(), "starter script not present in this copy")
 class StarterScriptTest(unittest.TestCase):
-    def test_readme_pastes_the_real_script(self):
+    def test_readme_pastes_the_real_scripts(self):
         if "## The starter script" not in README:
-            self.skipTest("README does not paste the script")
-        block = re.search(r"## The starter script.*?````bash\n(.*?)\n````", README, re.S).group(1)
-        self.assertEqual(block.strip(), SCRIPT.read_text(encoding="utf-8").strip())
+            self.skipTest("README does not paste the scripts")
+        for heading, name in (("The starter script", "new-llm-wiki.sh"), ("The update script", "update-llm-wiki.sh")):
+            path = ROOT / "scripts" / name
+            if not path.is_file():
+                continue
+            block = re.search(r"## " + heading + r".*?````bash\n(.*?)\n````", README, re.S).group(1)
+            self.assertEqual(block.strip(), path.read_text(encoding="utf-8").strip(), name)
 
     def test_script_is_executable_and_parses(self):
-        self.assertTrue(SCRIPT.stat().st_mode & 0o111, "script must be executable")
         bash = shutil.which("bash")
-        if bash:
-            self.assertEqual(subprocess.run([bash, "-n", str(SCRIPT)]).returncode, 0)
+        for path in (SCRIPT, ROOT / "scripts" / "update-llm-wiki.sh"):
+            if not path.is_file():
+                continue
+            self.assertTrue(path.stat().st_mode & 0o111, f"{path.name} must be executable")
+            if bash:
+                self.assertEqual(subprocess.run([bash, "-n", str(path)]).returncode, 0, path.name)
 
     def test_script_refuses_unknown_options(self):
         bash = shutil.which("bash")

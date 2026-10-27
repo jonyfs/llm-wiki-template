@@ -9,7 +9,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SKILLS_DIR = REPO_ROOT / ".agents" / "skills"
 COMMANDS_DIR = REPO_ROOT / ".agents" / "commands"
-REQUIRED_SKILLS = {"wiki", "wiki-ingest", "wiki-maintenance", "wiki-query", "wiki-router", "wiki-writing"}
+REQUIRED_SKILLS = {"wiki", "wiki-ingest", "wiki-maintenance", "wiki-query", "wiki-router", "wiki-update", "wiki-writing"}
 FRONTMATTER_KEY = re.compile(r"^([A-Za-z_][A-Za-z0-9_-]*):\s*(.*)$")
 
 

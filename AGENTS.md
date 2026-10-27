@@ -38,6 +38,7 @@ Load the relevant skill before substantive work, or `wiki-router` if unsure.
 - `wiki/`: before a read-only wiki answer, when no file may be written.
 - `wiki-maintenance/`: before refresh, lint, drift, or health-check work.
 - `wiki-delete/`: before removing a page, link, footnote, or index entry about a subject that should not be in the wiki.
+- `wiki-update/`: before updating this notebook with the template's newer skills, scripts, tests and rules (a fork or a copy made from the template), including merging files you customized.
 - `wiki-router/`: maps any request to exactly one of the skills above.
 - `humanizer/`: before writing or revising any prose in this project, including wiki pages, `README.md`, `docs/`, the GitHub Pages copy in `github-pages/`, and commit or PR text. Draft first, then run the humanizer pass and keep the facts, links, code, and frontmatter unchanged. It applies on top of `wiki-writing/`, never instead of it. Pages with translations (`github-pages/assets/i18n.js`) need the same pass in every language.
 

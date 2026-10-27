@@ -17,6 +17,7 @@ Use this skill to pick one playbook. It does not do the work itself, and it does
 | Answer a question with no file changes allowed | `wiki` |
 | Remove a subject, page, or reference | `wiki-delete` |
 | Refresh raw drift, lint, health check, orphan or broken-link audit | `wiki-maintenance` |
+| Update this notebook with the template's newer skills, scripts, tests and rules | `wiki-update` |
 
 If no row fits, ask the user one clarifying question. Do not load several skills to cover the gap.
 
@@ -26,6 +27,7 @@ If no row fits, ask the user one clarifying question. Do not load several skills
 - Read-only wording such as "do not write", "read-only", or "just tell me" overrides every other row and routes to `wiki`.
 - A URL, PDF, or pasted text that is not in `raw/` is not an ingest request yet. Ask whether to add it to `raw/` first, and add it only on explicit instruction.
 - A request to fix raw drift is `wiki-maintenance`, not `wiki-ingest`.
+- Pulling in changes from the template (a fork or copy getting newer skills and scripts) is `wiki-update`, not `wiki-maintenance`.
 
 ## Rules
 

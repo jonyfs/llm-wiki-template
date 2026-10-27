@@ -38,6 +38,9 @@ command -v git >/dev/null || die "git is required"
 command -v python3 >/dev/null || die "python3 is required"
 if [ -e "$name" ] && [ -n "$(ls -A "$name" 2>/dev/null || true)" ]; then die "'$name' already exists and is not empty"; fi
 
+# The exact template commit the copy starts from, so scripts/update-llm-wiki.sh knows its base later.
+template_ref="$(git ls-remote "$TEMPLATE_URL" "refs/heads/$TEMPLATE_BRANCH" 2>/dev/null | cut -f1 | head -1 || true)"
+
 if [ "$use_github" -eq 1 ]; then
   command -v gh >/dev/null || die "--github needs the GitHub CLI (https://cli.github.com) and 'gh auth login'"
   case "$name" in */*) die "with --github the name must be a plain repo name, not a path" ;; esac
@@ -54,7 +57,11 @@ cd "$name"
 [ -f AGENTS.md ] && [ -d .agents/skills ] && [ -d wiki ] || die "this does not look like the LLM Wiki Template, stopping before any cleanup"
 
 # Template-only files: the author's citation file and the internal improvement catalog.
-rm -rf CITATION.cff IMPROVEMENTS.md docs/images
+rm -rf CITATION.cff IMPROVEMENTS.md docs/images tests/test_readme.py
+
+if [ -n "$template_ref" ]; then
+  printf 'template=%s\nref=%s\nupdated=%s\n' "$TEMPLATE_URL" "$template_ref" "$(date +%Y-%m-%d)" > .agents/template.lock
+fi
 
 if [ "$keep_pages" -eq 0 ]; then
   echo "Removing the template's GitHub Pages site and its workflows ..."
@@ -101,6 +108,7 @@ A notebook that an AI assistant writes and keeps up to date, built from the
 2. Ask your assistant: "Ingest raw/<file> into the wiki."
 3. Ask a question: "What does the wiki say about ...?"
 4. Now and then: "Run lint on the wiki."
+5. To get the template's newer skills and scripts later: ask your assistant to run `/wiki-update`, or run `bash scripts/update-llm-wiki.sh`.
 
 Checks you can run yourself:
 

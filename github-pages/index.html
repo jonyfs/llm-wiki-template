@@ -283,6 +283,7 @@
           <tr><td>Check the wiki</td><td><code>wiki-maintenance</code></td><td>Lint looks for broken links, missing fields and orphan pages. Refresh reports raw files that changed after their page was written.</td></tr>
           <tr><td>Remove everything about X</td><td><code>wiki-delete</code></td><td>Lists every mention, shows what would change and waits for your confirmation. It never touches raw files.</td></tr>
           <tr><td>Write or fix a page</td><td><code>wiki-writing</code></td><td>Sets the page type, headings, frontmatter and citation style before any wiki prose is written.</td></tr>
+          <tr><td>Update this notebook from the template</td><td><code>wiki-update</code></td><td>Shows what the template changed, applies it on a branch, merges the files you customized and records the new base. It never touches raw files or wiki pages.</td></tr>
           <tr><td>Not sure what to ask</td><td><code>wiki-router</code></td><td>Picks exactly one of the skills above, or asks you one question.</td></tr>
         </tbody>
       </table>
@@ -463,6 +464,7 @@
       <div class="card"><h3>How is this different from RAG?</h3><p>RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.</p></div>
       <div class="card"><h3>What can I add to it?</h3><p>Files you copy into <code>raw/</code>: notes, markdown, PDFs, images and data files. Links and pasted text work too, once you agree to save them there. The assistant still needs a tool that can read the format.</p></div>
       <div class="card"><h3>Do I have to use the skills?</h3><p>They are how the template works. <code>AGENTS.md</code> tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.</p></div>
+      <div class="card"><h3>How do I get the template's newer features?</h3><p>Ask your assistant to run <code>/wiki-update</code>. It shows what changed, applies it on a branch and never touches your sources or your wiki pages.</p></div>
       <div class="card"><h3>Does it work offline?</h3><p>The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.</p></div>
       <div class="card"><h3>Who maintains the wiki?</h3><p>The assistant does, following the instructions in <code>.agents/skills/</code>. You choose the sources and ask the questions.</p></div>
     </div>
