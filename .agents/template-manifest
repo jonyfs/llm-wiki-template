@@ -1,0 +1,31 @@
+# Which files the template owns, for scripts/update-llm-wiki.sh. Tab separated; the first matching line wins.
+#   never    the notebook owns it: the updater never touches it
+#   managed  template-owned: updated when you have not changed it, three-way merged when both sides changed
+#   merge    like managed, but expect customizations (AGENTS.md); conflicts are handed to the assistant
+#   once     copied only when missing, never overwritten
+#   link     keep this symlink pointing at the target (third column)
+# Patterns use shell globs; * also matches slashes.
+never	raw/*
+never	wiki/*
+never	README.md
+never	LICENSE
+never	github-pages/*
+never	docs/images/*
+never	tests/test_github_pages.py
+never	tests/test_readme.py
+never	scripts/new-llm-wiki.sh
+merge	AGENTS.md
+once	.github/workflows/test.yml
+managed	.agents/skills/*
+managed	.agents/commands/*
+managed	.agents/template-manifest
+managed	scripts/*
+managed	tests/*
+managed	docs/migration.md
+link	CLAUDE.md	AGENTS.md
+link	.cursorrules	AGENTS.md
+link	.github/copilot-instructions.md	../AGENTS.md
+link	.claude/skills	../.agents/skills
+link	.claude/commands	../.agents/commands
+link	.opencode/skills	../.agents/skills
+link	.opencode/commands	../.agents/commands
