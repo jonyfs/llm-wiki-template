@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LLM Wiki Template — a compounding knowledge base for AI agents</title>
 <meta name="description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant. Turn curated raw/ sources into a linked wiki. Template for Claude Code, Cursor, Copilot, OpenCode, Codex." />
+<meta name="abstract" content="LLM Wiki Template: clone, drop sources into raw/, ask an AI assistant to ingest them into a linked markdown wiki under wiki/. Knowledge compiles once and compounds; no vector database or API keys." />
 <link rel="canonical" href="https://jonyfs.github.io/llm-wiki-template/" />
 <meta property="og:url" content="https://jonyfs.github.io/llm-wiki-template/" />
 <meta property="og:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
@@ -14,8 +15,34 @@
 <meta name="twitter:title" content="LLM Wiki Template" />
 <meta name="twitter:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
 <meta name="twitter:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#7c8cff" media="(prefers-color-scheme: dark)" />
+<meta name="theme-color" content="#4f5bd5" media="(prefers-color-scheme: light)" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="apple-touch-icon" href="assets/icon-192.png" />
+<meta name="robots" content="index,follow,max-image-preview:large" />
+<link rel="alternate" type="text/plain" href="llms.txt" title="LLM instructions for AI agents" />
+<link rel="alternate" hreflang="en" href="https://jonyfs.github.io/llm-wiki-template/" />
+<link rel="alternate" hreflang="pt" href="https://jonyfs.github.io/llm-wiki-template/?lang=pt" />
+<link rel="alternate" hreflang="es" href="https://jonyfs.github.io/llm-wiki-template/?lang=es" />
+<link rel="alternate" hreflang="x-default" href="https://jonyfs.github.io/llm-wiki-template/" />
+<link rel="preload" as="image" href="assets/social-preview.png" />
+<meta name="keywords" content="llm wiki, karpathy, persistent knowledge base, markdown wiki, ai agent, rag alternative, obsidian graph" />
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"SoftwareApplication","name":"LLM Wiki Template","applicationCategory":"DeveloperApplication","operatingSystem":"Any","description":"A persistent, compounding markdown knowledge base maintained by an LLM assistant.","url":"https://jonyfs.github.io/llm-wiki-template/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Organization","name":"llm-wiki-template","url":"https://github.com/jonyfs/llm-wiki-template","founder":{"@type":"Person","name":"jonyfs"},"license":"https://opensource.org/licenses/MIT"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"Person","name":"jonyfs","url":"https://github.com/jonyfs"}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an API key or database?","acceptedAnswer":{"@type":"Answer","text":"No. You need an AI coding assistant that reads markdown. Everything stays in plain files in git."}},{"@type":"Question","name":"How is this different from RAG?","acceptedAnswer":{"@type":"Answer","text":"RAG rebuilds an answer from chunks every question. A wiki is compiled once and kept current, so cross-references and contradictions already exist."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. Files are local; the assistant reads them directly. No network calls required for the wiki itself."}}]}
+</script>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://jonyfs.github.io/llm-wiki-template/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://jonyfs.github.io/llm-wiki-template/README.md"}]}
 </script>
 <meta property="og:title" content="LLM Wiki Template" />
 <meta property="og:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
@@ -157,6 +184,15 @@
   /* Paragraph measure */
   p { max-width: 68ch; }
   .hero-sub { max-width: 60ch; }
+  /* Print */
+  @media print {
+    nav, #progress, #backToTop, #installBtn, .theme-toggle, #langSelect { display: none !important; }
+    body { background: #fff; color: #000; }
+    .card, .flow-card { border: 1px solid #999; background: #fff; break-inside: avoid; }
+    a { color: #000; text-decoration: underline; }
+  }
+  /* Back to top */
+  #backToTop:hover { border-color: var(--accent); }
 </style>
 <script>
   (function(){
@@ -177,8 +213,10 @@
 </script>
 </head>
 <body>
+<div id="progress" style="position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:1000;transition:width .1s linear;"></div>
 <a class="skip" href="#how">Skip to content</a>
-<nav>
+<button id="backToTop" type="button" aria-label="Back to top" style="position:fixed;right:16px;bottom:16px;display:none;padding:10px 12px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;z-index:999;">↑</button>
+<nav aria-label="Primary">
   <div class="container inner">
     <div class="brand"><span class="dot"></span>LLM Wiki</div>
     <div class="nav-links">
@@ -199,7 +237,7 @@
     <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
   </div>
 </nav>
-<main id="main">
+<main id="main" role="main">
 
 <header class="hero">
   <div class="container">
@@ -209,6 +247,7 @@
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">View on GitHub</a>
+      <button class="btn" id="installBtn" type="button" style="display:none;">Install app</button>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Read the docs</a>
     </div>
   </div>
@@ -219,7 +258,7 @@
     <h2 class="section-title">Live wiki graph</h2>
     <p class="section-sub">An Obsidian-style force graph. Nodes are pages (source, entity, concept, synthesis), edges are <code>[[wikilinks]]</code>. Seeded with ~230 pages and ~1,000 links; watch it grow as new sources are ingested.</p>
     <div class="flow-card">
-      <canvas id="g" width="860" height="400" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
+      <canvas id="g" width="900" height="900" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:12px;color:var(--muted);">
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
@@ -228,6 +267,7 @@
         <span id="gStats" style="color:var(--muted);">230 pages · 1000 links</span>
       </div>
       <p id="gTip" style="text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0;">Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.</p>
+      <p style="text-align:center;color:var(--muted);font-size:13px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
     </div>
   </div>
 </section>
@@ -325,7 +365,9 @@
   <div class="container">
     <h2 class="section-title">Quick start (60 seconds)</h2>
     <p class="section-sub">You need an AI coding assistant. No API keys, no database.</p>
-    <div class="qs">
+    <div style="position:relative;">
+      <button id="copyQs" type="button" class="btn" style="position:absolute;right:8px;top:8px;font-size:12px;padding:6px 10px;">Copy</button>
+      <div class="qs" id="quickStart">
       <span class="line"><span class="c"># 1. Create your own copy</span></span>
       <span class="line">git clone https://github.com/jonyfs/llm-wiki-template my-wiki</span>
       <span class="line">cd my-wiki</span>
@@ -338,6 +380,7 @@
       <span class="line"></span>
       <span class="line"><span class="c"># 4. Ask questions against the wiki</span></span>
       <span class="line"><span class="k">"What does the wiki say about X?"</span></span>
+    </div>
     </div>
     <p style="color: var(--muted); font-size: 14px; margin-top: 16px;">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
   </div>
@@ -381,10 +424,25 @@
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">Star on GitHub</a>
+      <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/fork">Fork</a>
+      <button class="btn" id="shareBtn" type="button">Share</button>
     </div>
   </div>
 </section>
 
+
+<section id="metrics">
+  <div class="container">
+    <h2 class="section-title">Project metrics</h2>
+    <p class="section-sub">Live numbers from the repository.</p>
+    <div class="compat">
+      <span class="chip" id="mStars">Stars: …</span>
+      <span class="chip" id="mForks">Forks: …</span>
+      <span class="chip" id="mIssues">Open issues: …</span>
+      <span class="chip" id="mUpdated">Last updated: …</span>
+    </div>
+  </div>
+</section>
 
 <section id="article">
   <div class="container">
@@ -468,6 +526,19 @@
   </div>
 </section>
 
+<section id="usecases">
+  <div class="container">
+    <h2 class="section-title">Use cases in plain language</h2>
+    <p class="section-sub">Concrete things people do with an LLM wiki.</p>
+    <div class="grid">
+      <div class="card"><h3>Research notebook</h3><p>Collect papers and articles, then ask cross-document questions with citations already in place.</p></div>
+      <div class="card"><h3>Decision log</h3><p>Track product decisions, competitors, and customer research across many sources.</p></div>
+      <div class="card"><h3>Study guide</h3><p>Turn lecture notes and readings into a linked, queryable study wiki.</p></div>
+      <div class="card"><h3>Team knowledge base</h3><p>Keep a shared, version-controlled notebook an assistant keeps current.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="differentiator">
   <div class="container">
     <h2 class="section-title">Why this is a real differentiator</h2>
@@ -514,15 +585,31 @@
     </div>
   </div>
 </section>
+<section id="ai-agents">
+  <div class="container">
+    <h2 class="section-title">For AI agents and LLMs</h2>
+    <p class="section-sub">Machine-readable entry points so assistants can ingest this template accurately.</p>
+    <div class="compat">
+      <a class="chip" href="llms.txt">llms.txt</a>
+      <a class="chip" href="llms-full.txt">llms-full.txt</a>
+      <a class="chip" href="README.md">README.md</a>
+      <a class="chip" href="https://github.com/jonyfs/llm-wiki-template">Repository</a>
+    </div>
+    <p style="color:var(--muted);font-size:14px;margin-top:16px;">Cite as: "LLM Wiki Template, jonyfs, MIT license, https://github.com/jonyfs/llm-wiki-template".</p>
+  </div>
+</section>
 </main>
-<footer>
+<footer role="contentinfo">
   <div class="container inner">
     <div>LLM Wiki Template · MIT license</div>
     <div>
       <a href="https://github.com/jonyfs/llm-wiki-template">GitHub</a> ·
       <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Docs</a> ·
       <a href="https://github.com/jonyfs/llm-wiki-template/issues">Issues</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a>
+      <a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a> ·
+      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/SECURITY.md">Security</a> ·
+      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/CITATION.cff">Cite</a> ·
+      <a href="https://github.com/sponsors/jonyfs">Sponsor</a>
     </div>
   </div>
 </footer>
@@ -565,6 +652,45 @@
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
+  let visible = true;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  canvas.style.cursor = 'grab';
+  let rotX = 0, rotY = 0, dragging3d = false, lastX = 0, lastY = 0;
+  function applyRotation(){
+    canvas.style.transform = 'perspective(1100px) rotateX(' + rotX + 'deg) rotateY(' + rotY + 'deg)';
+  }
+  canvas.addEventListener('pointerdown', (e)=>{
+    dragging3d = true; lastX = e.clientX; lastY = e.clientY;
+    canvas.style.cursor = 'grabbing';
+    canvas.setPointerCapture(e.pointerId);
+  });
+  canvas.addEventListener('pointermove', (e)=>{
+    if(!dragging3d) return;
+    rotY += (e.clientX - lastX) * 0.5;
+    rotX -= (e.clientY - lastY) * 0.5;
+    rotX = Math.max(-45, Math.min(45, rotX));
+    rotY = Math.max(-60, Math.min(60, rotY));
+    lastX = e.clientX; lastY = e.clientY;
+    applyRotation();
+  });
+  function endDrag(e){
+    if(!dragging3d) return;
+    dragging3d = false;
+    canvas.style.cursor = 'grab';
+    try { canvas.releasePointerCapture(e.pointerId); } catch(err){}
+    // ease back to flat
+    const startRx = rotX, startRy = rotY, t0 = performance.now();
+    function ease(){
+      const t = Math.min(1, (performance.now()-t0)/400);
+      const k = 1 - Math.pow(1-t,3);
+      rotX = startRx*(1-k); rotY = startRy*(1-k);
+      applyRotation();
+      if(t < 1) requestAnimationFrame(ease);
+    }
+    requestAnimationFrame(ease);
+  }
+  canvas.addEventListener('pointerup', endDrag);
+  canvas.addEventListener('pointercancel', endDrag);
   const nodes = [];
   const edges = [];
   const edgeSet = new Set();
@@ -779,15 +905,21 @@
     if(s) s.textContent = nodes.length + ' pages · ' + edges.length + ' links ' + (growing ? '(growing)' : '(stopped after 5 min)');
   }
   updateStats();
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries)=>{ visible = !!entries[0] && entries[0].isIntersecting; }, {threshold: 0.05});
+    io.observe(canvas);
+  }
+  document.addEventListener('visibilitychange', ()=>{ visible = !document.hidden; });
+  if(reduceMotion){ growing = false; updateStats(); }
   const startTime = performance.now();
   let lastIngest = startTime;
   function loop(){
+    if(!visible || document.hidden){ requestAnimationFrame(loop); return; }
     const now = performance.now();
     step();
     draw();
     tick++;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(growing && now - startTime < 300000 && now - lastIngest >= 60000){
+    if(growing && !reduceMotion && now - startTime < 300000 && now - lastIngest >= 60000){
       ingestOne();
       lastIngest = now;
     }
@@ -913,5 +1045,110 @@
 })();
 </script>
 
+<script>
+(function(){
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){
+      navigator.serviceWorker.register('./sw.js').catch(function(){});
+    });
+  }
+  let deferredPrompt = null;
+  const btn = document.getElementById('installBtn');
+  window.addEventListener('beforeinstallprompt', function(e){
+    e.preventDefault();
+    deferredPrompt = e;
+    if (btn) btn.style.display = '';
+  });
+  if (btn) {
+    btn.addEventListener('click', async function(){
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      try { await deferredPrompt.userChoice; } catch(e){}
+      deferredPrompt = null;
+      btn.style.display = 'none';
+    });
+  }
+  window.addEventListener('appinstalled', function(){
+    if (btn) btn.style.display = 'none';
+  });
+
+  // progress bar + back to top
+  const progress = document.getElementById('progress');
+  const backToTop = document.getElementById('backToTop');
+  function onScroll(){
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop || document.body.scrollTop);
+    const max = (h.scrollHeight - h.clientHeight) || 1;
+    if (progress) progress.style.width = (scrolled / max * 100) + '%';
+    if (backToTop) backToTop.style.display = scrolled > 400 ? '' : 'none';
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+  if (backToTop) backToTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // copy quick start
+  const copyQs = document.getElementById('copyQs');
+  const quickStart = document.getElementById('quickStart');
+  if (copyQs && quickStart) {
+    copyQs.addEventListener('click', async function(){
+      try { await navigator.clipboard.writeText(quickStart.innerText); copyQs.textContent = 'Copied'; setTimeout(function(){ copyQs.textContent='Copy'; }, 1200); }
+      catch(e){ copyQs.textContent = 'Failed'; setTimeout(function(){ copyQs.textContent='Copy'; }, 1200); }
+    });
+  }
+
+  // share button
+  const shareBtn = document.getElementById('shareBtn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', async function(){
+      const data = {title:'LLM Wiki Template', text:'A persistent, compounding markdown knowledge base maintained by an LLM assistant.', url:'https://github.com/jonyfs/llm-wiki-template'};
+      if (navigator.share) {
+        try { await navigator.share(data); } catch(e){}
+      } else {
+        try { await navigator.clipboard.writeText(data.url); shareBtn.textContent='Copied link'; setTimeout(function(){ shareBtn.textContent='Share'; }, 1200); }
+        catch(e){}
+      }
+    });
+  }
+
+  // metrics from GitHub API
+  (async function(){
+    try {
+      const res = await fetch('https://api.github.com/repos/jonyfs/llm-wiki-template');
+      if (!res.ok) return;
+      const d = await res.json();
+      const stars = document.getElementById('mStars');
+      const forks = document.getElementById('mForks');
+      const issues = document.getElementById('mIssues');
+      const updated = document.getElementById('mUpdated');
+      if (stars) stars.textContent = 'Stars: ' + d.stargazers_count;
+      if (forks) forks.textContent = 'Forks: ' + d.forks_count;
+      if (issues) issues.textContent = 'Open issues: ' + d.open_issues_count;
+      if (updated) updated.textContent = 'Last updated: ' + (d.updated_at || '').slice(0,10);
+    } catch(e){}
+  })();
+
+  // Core Web Vitals (basic)
+  if ('PerformanceObserver' in window) {
+    try {
+      const po = new PerformanceObserver(function(list){
+        list.getEntries().forEach(function(e){ /* LCP/CLS/INP logged for debugging */ });
+      });
+      po.observe({type:'largest-contentful-paint', buffered:true});
+    } catch(e){}
+  }
+
+  // SW update notification
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      const n = document.createElement('div');
+      n.textContent = 'New version available — reload to update.';
+      n.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);padding:10px 14px;border-radius:10px;z-index:1001;';
+      n.addEventListener('click', function(){ location.reload(); });
+      document.body.appendChild(n);
+    });
+  }
+})();
+
+</script>
 </body>
 </html>
