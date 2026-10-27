@@ -163,6 +163,9 @@
       <a href="#features">Features</a>
       <a href="#compare">vs RAG</a>
       <a href="#start">Quick start</a>
+      <a href="#article">The idea</a>
+      <a href="#concepts">Concepts</a>
+      <a href="#graph">Live graph</a>
     </div>
     <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
   </div>
@@ -320,6 +323,68 @@
   </div>
 </section>
 
+
+<section id="article">
+  <div class="container">
+    <h2 class="section-title">The idea, in Karpathy's words</h2>
+    <p class="section-sub">A short reading of <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">the LLM Wiki gist</a>, paraphrased for builders.</p>
+    <div class="card" style="max-width: 820px;">
+      <p>Most tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.</p>
+      <p>An LLM wiki works the other way. The model reads each source once and writes what it learned into a folder of linked markdown pages. It updates topic pages, revises summaries, flags where new material contradicts older claims, and keeps a running synthesis. Knowledge is compiled once and then kept current, instead of being rebuilt on every query.</p>
+      <p>The result is a persistent, compounding artifact: cross-references already exist, contradictions are already flagged, and each source you add or question you ask makes the notebook richer.</p>
+      <h3 style="margin-top:20px;">The three layers</h3>
+      <svg viewBox="0 0 760 200" style="width:100%;height:auto;display:block;margin:16px 0;" role="img" aria-label="Three layers: raw, wiki, schema">
+        <rect x="20" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
+        <text x="130" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">raw/</text>
+        <text x="130" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">immutable sources</text>
+        <text x="130" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">you curate, never edit</text>
+        <rect x="270" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#7c8cff"/>
+        <text x="380" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">wiki/</text>
+        <text x="380" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">LLM-maintained pages</text>
+        <text x="380" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">sources, entities, concepts, syntheses</text>
+        <rect x="520" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
+        <text x="630" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">schema</text>
+        <text x="630" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">AGENTS.md + skills</text>
+        <text x="630" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">rules the assistant follows</text>
+        <path d="M240 100 L270 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
+        <path d="M490 100 L520 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
+        <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
+      </svg>
+      <p>The schema is the unusual part: instead of a generic RAG pipeline, you give the assistant a small set of rules (this template's <code>AGENTS.md</code> and <code>.agents/skills/</code>) and it becomes a disciplined maintainer of the wiki.</p>
+    </div>
+  </div>
+</section>
+
+<section id="concepts">
+  <div class="container">
+    <h2 class="section-title">Concepts, explained simply</h2>
+    <p class="section-sub">The vocabulary the template uses. Plain-language definitions, no jargon.</p>
+    <div class="grid">
+      <div class="card"><h3>Source page</h3><p>One page per raw file. Records what the source says, its role, and a claims ledger you can cite as <code>[[slug]] C1</code>.</p></div>
+      <div class="card"><h3>Entity page</h3><p>A person, org, product, or place that appears across sources. Collects everything the wiki knows about it.</p></div>
+      <div class="card"><h3>Concept page</h3><p>An idea, method, or theme. Explains it and links back to the sources that support it.</p></div>
+      <div class="card"><h3>Synthesis page</h3><p>A durable answer to a question that spanned several pages. Filed so the next question starts further ahead.</p></div>
+      <div class="card"><h3>Wikilink</h3><p>A bare <code>[[slug]]</code> link between pages. These links are what make the graph navigable, like in Obsidian.</p></div>
+      <div class="card"><h3>Frontmatter</h3><p>YAML at the top of every page: title, type, sources, dates. The schema the assistant validates against.</p></div>
+      <div class="card"><h3>Ingest</h3><p>Read a raw source once, write or update wiki pages, update the index and log. Knowledge compiled once.</p></div>
+      <div class="card"><h3>Query</h3><p>Answer from the wiki first. File the answer as a synthesis when it is reusable.</p></div>
+      <div class="card"><h3>Lint</h3><p>A health check: broken links, missing fields, stale claims, orphan pages.</p></div>
+      <div class="card"><h3>Compounding</h3><p>Each source and each question makes the notebook richer. Nothing is rebuilt from scratch.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="graph">
+  <div class="container">
+    <h2 class="section-title">Live wiki graph</h2>
+    <p class="section-sub">A small Obsidian-style force graph. Nodes are pages, edges are <code>[[wikilinks]]</code>. Watch it grow as new sources are ingested.</p>
+    <div class="flow-card">
+      <canvas id="g" width="860" height="360" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>
+      <p style="text-align:center;color:var(--muted);font-size:13px;margin:12px 0 0;">Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.</p>
+    </div>
+  </div>
+</section>
+
 <footer>
   <div class="container inner">
     <div>LLM Wiki Template · MIT license</div>
@@ -331,5 +396,106 @@
     </div>
   </div>
 </footer>
+
+<script>
+(function(){
+  const canvas = document.getElementById('g');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const nodes = [];
+  const edges = [];
+  function addNode(label, type){
+    const n = {id: nodes.length, label, type: type||'concept', x: W/2 + (Math.random()-0.5)*60, y: H/2 + (Math.random()-0.5)*60, vx:0, vy:0};
+    nodes.push(n);
+    return n;
+  }
+  const seed = [
+    ['raw/article.md','source'], ['wiki/sources/article','source'], ['wiki/concepts/llm-wiki','concept'],
+    ['wiki/entities/karpathy','entity'], ['wiki/syntheses/rag-vs-wiki','synthesis'],
+    ['wiki/concepts/compounding','concept'], ['wiki/concepts/ingest','concept']
+  ];
+  seed.forEach(([l,t])=>addNode(l,t));
+  // initial edges
+  edges.push([0,1],[1,2],[2,3],[1,4],[4,5],[2,5],[5,6]);
+  const colors = {source:'#5eead4', entity:'#fbbf24', concept:'#7c8cff', synthesis:'#f472b6'};
+  let tick = 0;
+  function step(){
+    // forces
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const a=nodes[i], b=nodes[j];
+        const dx=b.x-a.x, dy=b.y-a.y;
+        const d=Math.max(1, Math.hypot(dx,dy));
+        const f=1200/(d*d);
+        a.vx -= f*dx/d; a.vy -= f*dy/d;
+        b.vx += f*dx/d; b.vy += f*dy/d;
+      }
+    }
+    edges.forEach(([i,j])=>{
+      const a=nodes[i], b=nodes[j];
+      const dx=b.x-a.x, dy=b.y-a.y;
+      const d=Math.max(1, Math.hypot(dx,dy));
+      const f=(d-90)*0.02;
+      a.vx += f*dx/d; a.vy += f*dy/d;
+      b.vx -= f*dx/d; b.vy -= f*dy/d;
+    });
+    nodes.forEach(n=>{
+      // center gravity
+      n.vx += (W/2 - n.x)*0.001;
+      n.vy += (H/2 - n.y)*0.001;
+      n.vx *= 0.85; n.vy *= 0.85;
+      n.x += n.vx; n.y += n.vy;
+      n.x = Math.max(12, Math.min(W-12, n.x));
+      n.y = Math.max(12, Math.min(H-12, n.y));
+    });
+  }
+  function draw(){
+    ctx.fillStyle = '#0f1117';
+    ctx.fillRect(0,0,W,H);
+    // edges
+    ctx.strokeStyle = 'rgba(124,140,255,0.25)';
+    ctx.lineWidth = 1.2;
+    edges.forEach(([i,j])=>{
+      const a=nodes[i], b=nodes[j];
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    });
+    // nodes
+    nodes.forEach(n=>{
+      ctx.beginPath();
+      ctx.arc(n.x,n.y,6,0,Math.PI*2);
+      ctx.fillStyle = colors[n.type]||'#9aa3b2';
+      ctx.fill();
+      ctx.fillStyle = '#e8eaf0';
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(n.label.length>22? n.label.slice(0,20)+'…': n.label, n.x, n.y-10);
+    });
+  }
+  function loop(){
+    step();
+    draw();
+    tick++;
+    // periodically ingest a new page
+    if(tick % 180 === 0){
+      const types = ['concept','entity','source','synthesis'];
+      const t = types[Math.floor(Math.random()*types.length)];
+      const n = addNode('wiki/'+t+'/'+(nodes.length), t);
+      const target = Math.floor(Math.random()* (nodes.length-1));
+      edges.push([target, n.id]);
+    }
+    requestAnimationFrame(loop);
+  }
+  canvas.addEventListener('click', (e)=>{
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) * (W/r.width);
+    const y = (e.clientY - r.top) * (H/r.height);
+    const n = addNode('new-page-'+nodes.length, 'concept');
+    n.x = x; n.y = y;
+    if(nodes.length>1) edges.push([Math.floor(Math.random()*(nodes.length-1)), n.id]);
+  });
+  loop();
+})();
+</script>
 </body>
 </html>
