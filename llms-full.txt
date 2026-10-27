@@ -1,0 +1,309 @@
+# LLM Wiki Template — full context
+
+## README.md
+
+# LLM Wiki
+
+**A living notebook that an AI assistant writes and keeps up to date for you.**
+
+You save articles, papers, notes, and data files. The assistant reads each one once, writes down what it learned, links related ideas, and keeps the notes current when new material arrives. Instead of searching through files every time you ask a question, it answers from notes it has already organized.
+
+This project is a template for that workflow. It follows the idea described in Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
+---
+
+## Why this is different
+
+Most AI tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.
+
+An LLM wiki works the other way. The model reads each source once and writes what it learned into a folder of linked markdown pages. It updates topic pages, revises summaries, flags where new material contradicts older claims, and keeps a running synthesis. Knowledge is compiled once and then kept current, instead of being rebuilt on every query.
+
+The result is a persistent, compounding artifact: cross-references already exist, contradictions are already flagged, and each source you add or question you ask makes the notebook richer.
+
+```mermaid
+flowchart LR
+    S[New source] -->|read once| N[Notebook pages]
+    Q[Question] -->|answer from notes| N
+    N -->|answer| Q
+    Q -->|valuable answer filed back| N
+```
+
+## How it works in plain terms
+
+There are three layers between you and your sources:
+
+- `raw/` holds the documents you collect: articles, papers, images, and data files. These are **read-only**. The assistant reads them but never changes them.
+- `wiki/` holds the markdown pages the assistant owns: one page per source, plus pages for people, organizations, ideas, methods, comparisons, and durable answers.
+- `AGENTS.md` is the rulebook. It tells the assistant how the notebook is structured, what the conventions are, and what to do when adding a source, answering a question, or checking the notebook for problems.
+
+```mermaid
+flowchart TD
+    YOU[You] -->|collect| RAW[raw/ - your sources, read-only]
+    RAW -->|read| AI[AI assistant]
+    RULES[AGENTS.md - rules] -->|guides| AI
+    SKILLS[.agents/skills/ - step-by-step playbooks] -->|guides| AI
+    AI -->|writes and maintains| WIKI[wiki/ - your notebook]
+    WIKI -->|you read and browse| YOU
+```
+
+You rarely write the notebook yourself. You curate sources, explore, and ask questions; the assistant does the summarizing, cross-referencing, filing, and bookkeeping. Many people keep the assistant on one side of the screen and a markdown browser such as Obsidian on the other, watching the pages update as the assistant edits.
+
+## What you do vs. what the assistant does
+
+| You | The assistant |
+|---|---|
+| Collect and save source material into `raw/` | Reads each source and writes a summary page |
+| Ask questions and explore | Answers from the notebook and links related pages |
+| Decide what matters | Updates entity, concept, and synthesis pages |
+| Review the result | Flags contradictions and keeps the index and log current |
+
+## Getting started
+
+1. **Add sources.** Put articles, papers, notes, or data files into `raw/`.
+2. **Ask the assistant to ingest them.** It creates or updates pages in `wiki/`.
+3. **Browse the notebook.** Open `wiki/index.md` to see the catalog and learning paths.
+4. **Ask questions.** The assistant answers from the notebook and can file durable answers as new pages.
+5. **Check health.** Run lint and refresh to find stale claims, broken links, and missing pages.
+
+If you are new to the template, ask the assistant to walk you through a first source end to end.
+
+## Folder map
+
+```
+.
+├── AGENTS.md                 # always-on rules for structure and workflows
+├── .agents/
+│   ├── skills/               # step-by-step playbooks for each task
+│   └── commands/             # short commands that invoke the playbooks
+├── raw/                      # your curated, read-only source documents
+├── wiki/                     # the assistant-maintained notebook
+│   ├── index.md              # catalog of pages and learning paths
+│   ├── log.md                # append-only record of operations
+│   ├── sources/              # one page per source (optional subject subfolder)
+│   ├── entities/             # people, organizations, products, places
+│   ├── concepts/             # ideas, methods, theories
+│   └── syntheses/            # comparisons, maps, durable answers
+├── scripts/                  # helpers for lint, refresh, and search
+├── tests/                    # checks that keep the template healthy
+└── docs/                     # migration notes for derived notebooks
+```
+
+Multi-agent entry points (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/`, `.opencode/`) are links to the same source of truth, so one edit reaches every assistant.
+
+## Skills and commands
+
+The assistant loads a playbook before doing substantive work. Each playbook is a folder under `.agents/skills/` with a `SKILL.md` file.
+
+| Playbook | What it does |
+|---|---|
+| `wiki-writing` | Create or revise notebook prose for any page type, with templates and citation rules. |
+| `wiki-ingest` | Integrate curated material from `raw/` into `wiki/` and update related pages, index, and log. |
+| `wiki-query` | Answer from the notebook first, then file durable answers back as synthesis pages. |
+| `wiki` | Answer from the notebook in read-only mode, without changing any file. |
+| `wiki-maintenance` | Refresh source drift and run lint and health checks. |
+| `wiki-delete` | Remove a subject, page, or reference safely, with impact review and confirmation. |
+| `wiki-router` | Map an unclear request to exactly one of the playbooks above. |
+
+Short commands in `.agents/commands/` invoke the matching playbook:
+
+| Command | Playbook | Use |
+|---|---|---|
+| `/wiki-ingest` | `wiki-ingest` | Ingest curated source material. |
+| `/wiki-query` | `wiki-query` | Answer a question and possibly file it. |
+| `/wiki` | `wiki` | Read-only answer. |
+| `/wiki-refresh` | `wiki-maintenance` | Run a refresh pass. |
+| `/wiki-lint` | `wiki-maintenance` | Run a lint and health check. |
+
+```mermaid
+flowchart TD
+    R[Request] --> ROUTER{wiki-router}
+    ROUTER -->|write prose| WW[wiki-writing]
+    ROUTER -->|add source| WI[wiki-ingest]
+    ROUTER -->|answer and file| WQ[wiki-query]
+    ROUTER -->|answer only| W[wiki]
+    ROUTER -->|refresh or lint| WM[wiki-maintenance]
+    ROUTER -->|remove subject| WD[wiki-delete]
+```
+
+## Everyday workflow
+
+1. Add curated source material to `raw/`.
+2. Follow `AGENTS.md` for the always-on contract and load the relevant playbooks from `.agents/skills/`.
+3. Create or update pages in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/syntheses/`.
+4. Use synthesis pages for reusable questions, comparisons, and topic maps.
+5. Keep `wiki/index.md`, learning paths, and `wiki/log.md` up to date.
+
+```mermaid
+flowchart LR
+    INGEST[ingest] --> PAGES[wiki pages]
+    QUERY[query] --> PAGES
+    REFRESH[refresh] --> PAGES
+    LINT[lint] --> PAGES
+    PAGES --> INDEX[wiki/index.md]
+    PAGES --> LOG[wiki/log.md]
+```
+
+## Keeping the notebook healthy
+
+- **refresh** detects when a source has changed and reports which pages should be revisited. Run with `python3 scripts/refresh.py`.
+- **lint** checks structure, link integrity, stale claims, and integration gaps. Run with `python3 scripts/lint.py`.
+- **search** finds pages by term. Run with `python3 scripts/wiki_search.py "<terms>"`.
+
+## Validation
+
+- Run the test suite: `python3 -m unittest discover -s tests -t .`
+- Run lint on a notebook: `python3 scripts/lint.py`
+- Run refresh on a notebook: `python3 scripts/refresh.py`
+- Search a notebook: `python3 scripts/wiki_search.py "<terms>"`
+
+## Advanced notes
+
+- Subject subfolders: each content directory may contain one optional level of subject subfolders, such as `wiki/sources/physics/`. This keeps large notebooks from accumulating hundreds of files in one folder.
+- Claims ledger: source pages may include an optional `## Claims ledger` section for claims that other pages cite precisely.
+- Multi-agent support: all agent entry points are links to the same source of truth, so changes propagate consistently.
+
+## Credits
+
+This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on. The underlying idea comes from Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
+## AGENTS.md
+
+# AGENTS.md
+
+This repository follows an LLM wiki pattern inspired by Andrej Karpathy's `llm-wiki` gist. It keeps a persistent, compounding markdown wiki between the human and curated sources. This always-loaded file holds structure, schema, and routing. Playbooks live in `.agents/skills/`; long references are listed under "On-demand references".
+
+Source of truth: [jonyfs/llm-wiki-template](https://github.com/jonyfs/llm-wiki-template). This file tracks that template plus the multi-agent configuration below.
+
+## Purpose
+
+1. `raw/` is curated source material. Read and cite it. Never add, modify, rename, rewrite, or reorganize files in `raw/` (including `raw/assets/`) unless the user explicitly asks.
+2. `wiki/` is the persistent markdown wiki, maintained by the LLM.
+3. `AGENTS.md` plus `.agents/skills/` define how the LLM operates on the wiki.
+
+## Multi-agent configuration
+
+Every agent reads this file through a symlink. Edit `AGENTS.md` only.
+
+| File | Agent | Points to |
+|------|-------|-----------|
+| `CLAUDE.md` | Claude Code | `AGENTS.md` |
+| `.cursorrules` | Cursor / OpenCode | `AGENTS.md` |
+| `.github/copilot-instructions.md` | Copilot / Codex | `../AGENTS.md` |
+
+`.agents/skills/` (and `.agents/commands/`) is the single source of truth. Each skill is a folder with a `SKILL.md` whose frontmatter has `name` and `description`.
+
+| Path | Agent | Type |
+|------|-------|------|
+| `.claude/skills`, `.claude/commands` | Claude Code | symlink to `.agents/` |
+| `.opencode/skills`, `.opencode/commands` | OpenCode | symlink to `.agents/` |
+| `.agents/skills`, `.agents/commands` | Codex, Cursor, Copilot | native |
+
+## Required repo-local skills
+
+Load the relevant skill before substantive work, or `wiki-router` if unsure.
+
+- `wiki-writing/`: before creating or materially revising wiki prose.
+- `wiki-ingest/`: before ingesting new source material.
+- `wiki-query/`: before answering wiki-grounded questions or filing a durable answer.
+- `wiki/`: before a read-only wiki answer, when no file may be written.
+- `wiki-maintenance/`: before refresh, lint, drift, or health-check work.
+- `wiki-delete/`: before removing a page, link, footnote, or index entry about a subject that should not be in the wiki.
+- `wiki-router/`: maps any request to exactly one of the skills above.
+
+## Core principles
+
+- Prefer updating existing pages over creating near-duplicates.
+- Treat `wiki/index.md` as the first navigation surface.
+- Record meaningful operations in `wiki/log.md`.
+- Write in plain language with a professional tone. Define non-obvious terms.
+- Teach the smallest useful model first, then add evidence, distinctions, examples, limits, and open questions.
+- Preserve contradictions and open questions instead of forcing premature reconciliation.
+- Keep the structure narrow. Do not add content directories, required metadata, or page types unless the user asks.
+
+## Session orientation
+
+Before substantive work on an existing wiki: read this file, load the relevant skill, read `wiki/index.md`, scan recent `wiki/log.md` entries, read the most relevant pages, and search `wiki/` for existing slugs before creating anything. Use `python3 scripts/wiki_search.py "<terms>"` when the wiki is large.
+
+## Repository layout
+
+Required files: `AGENTS.md`, `wiki/index.md`, `wiki/log.md`, and `.agents/skills/`.
+
+Content pages live in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/syntheses/`. One optional subject subfolder is allowed beneath each type directory (for example `wiki/sources/<subject>/<slug>.md`) to keep large wikis from accumulating hundreds of files in a single flat folder. No deeper nesting is allowed. Raw files may likewise be grouped into subject subfolders under `raw/`.
+
+## Markdown conventions
+
+- Write each prose paragraph as one logical line. No hard wraps, trailing spaces, or backslash breaks.
+- Preserve structural layout: frontmatter, headings, lists, tables, and fenced code.
+
+## Frontmatter schema
+
+Every content page begins with YAML frontmatter:
+
+```yaml
+---
+title: "Page Title"
+type: "source|entity|concept|synthesis"
+sources:
+  - "[[raw/source-file.md]]"
+created_at: "YYYY-MM-DD"
+updated_at: "YYYY-MM-DD"
+---
+```
+
+Rules:
+
+- `title` is the canonical human title. `type` is `source`, `entity`, `concept`, or `synthesis`.
+- `sources` lists wiki-link strings: `[[raw/...]]` for raw files (including `[[raw/assets/...]]`), bare `[[slug]]` for supporting wiki pages. A `source` page cites exactly one canonical `[[raw/...]]` file.
+- `created_at` (creation date) and `updated_at` (last material edit) are `YYYY-MM-DD`. All types require all five fields.
+- `source` pages require `source_role`: `primary` (main evidence or specification), `secondary` (interprets primary material), `reference` (definitions, background), `operational` (live procedures, runbooks), or `informal` (notes, threads, chats). Classify by research use, not prestige.
+- `source` pages may add `source_format` (`paper`, `article`, `book`, `report`, `spec`, `documentation`, `dataset`, `benchmark`, `transcript`, `notes`, `other`), `authors` (non-empty strings), `published_at` (`YYYY-MM-DD`), and `canonical_url` (absolute `http` or `https`).
+- `source` pages require `raw_sha256`: the SHA-256 of the single canonical raw file, set by the creator at creation. `refresh` reconciles or bootstraps it.
+- Keep the single-file source model. Appendices, dataset cards, and changelogs become separate `source` pages.
+- `raw_sha256`, `source_role`, `source_format`, `authors`, `published_at`, and `canonical_url` must not appear on `entity`, `concept`, or `synthesis` pages.
+
+Filenames are lowercase `kebab-case`, `<slug>.md`. Slugs are unique across all four content directories. On collision, append a short stable qualifier, and prefer updating an existing slug over an alternate spelling.
+
+Create-vs-update and entity-vs-concept rules: `wiki-writing/references/page-decisions.md`.
+
+## Writing and citations
+
+- Every content page starts with a short unheaded lead, then the required sections for its type (`wiki-writing/references/body-templates.md`).
+- Cite wiki pages inline with bare `[[slug]]` links. Cite direct raw support with a Markdown footnote whose first item is the `[[raw/...]]` link, then a short locator.
+- Source pages may keep an optional `## Claims ledger` as their last section; cite a claim from other pages as `[[slug]] C<n>` (mechanics: `wiki-writing/references/citations.md`).
+- Embed raw images only with `![[raw/assets/...]]`, never a website URL or relative path.
+- Frontmatter `sources`, `Related pages`, and index entries use normal wiki links, not footnotes.
+- Link new or materially updated pages to their most relevant related pages. Avoid isolated pages.
+- Footnote mechanics: `wiki-writing/references/citations.md`.
+
+## Operations
+
+- Ingest (`wiki-ingest`): the source must already be in `raw/`. If a URL, PDF, or pasted text is not in `raw/`, ask before adding it. Update the `source` page first, then touched pages, then `wiki/index.md` and `wiki/log.md`.
+- Query (`wiki-query` read-write, or `wiki` read-only): answer from the wiki first; `raw/` only for verification or gaps. Durable answers become `synthesis` pages only through `wiki-query`.
+- Refresh and lint (`wiki-maintenance`): refresh reports raw drift and never rewrites pages merely because a source changed. Dependencies come only from `sources` frontmatter; body wikilinks are never dependencies. Lint is a health check.
+
+## Index and log
+
+- `wiki/index.md` is the category catalog with `Sources`, `Entities`, `Concepts`, and `Syntheses` sections. Each content page has one entry: a link and a one-line summary.
+- Add a `## Learning paths` section before the catalogs once there are enough pages. Keep each path to three to seven pages, in learning order.
+- `wiki/log.md` is chronological and append-only. Each entry starts with `## [YYYY-MM-DD] operation | title`.
+
+## On-demand references
+
+- Body templates, section headings, example frontmatter: `.agents/skills/wiki-writing/references/body-templates.md`
+- Citation mechanics: `.agents/skills/wiki-writing/references/citations.md`
+- Create-vs-update and entity-vs-concept: `.agents/skills/wiki-writing/references/page-decisions.md`
+- Lint checklist, pitfalls, completion checklist (run before finishing any wiki-changing task): `.agents/skills/wiki-maintenance/references/checklists.md`
+- Migration for derived wikis: `docs/migration.md`
+
+## scripts (filenames)
+__pycache__
+benchmark.py
+extract_outline.py
+install_llm_wiki.py
+lint.py
+raw_manifest.py
+refresh.py
+web_tools.py
+wiki_index.py
+wiki_schema.py
+wiki_search.py

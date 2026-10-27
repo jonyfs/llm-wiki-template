@@ -1,0 +1,39 @@
+# LLM Wiki Template
+
+> A template for a persistent, compounding markdown knowledge base maintained by an LLM assistant. You curate sources in `raw/`; the assistant reads each one once, writes linked pages in `wiki/`, and keeps them current. No vector database, no re-retrieval on every question.
+
+## Core documentation
+
+- [README](https://github.com/jonyfs/llm-wiki-template/blob/main/README.md): What it is, why it differs from RAG, getting started, folder map, skills, and everyday workflow.
+- [AGENTS.md](https://github.com/jonyfs/llm-wiki-template/blob/main/AGENTS.md): Always-on rules for structure, frontmatter schema, citations, and operations. Under 8 KB so any agent can load it cheaply.
+- [Migration notes](https://github.com/jonyfs/llm-wiki-template/blob/main/docs/migration.md): Guidance for derived notebooks.
+- [Improvement catalog](https://github.com/jonyfs/llm-wiki-template/blob/main/IMPROVEMENTS.md): 100 internal correctness/performance candidates, many resolved.
+- [Discoverability catalog](https://github.com/jonyfs/llm-wiki-template/blob/main/DISCOVERABILITY.md): SEO and distribution candidates.
+
+## Scripts
+
+- [lint.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/lint.py): Structure, link integrity, stale claims, and integration gaps.
+- [refresh.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/refresh.py): Detect changed sources and report pages to revisit.
+- [wiki_search.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/wiki_search.py): Bounded-token search over the notebook.
+- [wiki_index.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/wiki_index.py): Build the compact machine-readable index.
+- [raw_manifest.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/raw_manifest.py): Manifest of `raw/` files with hashes.
+- [extract_outline.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/extract_outline.py): Heading outline and chunk plan for a raw file.
+- [web_tools.py](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/web_tools.py): HTML-to-markdown conversion and rate-limited fetch helpers.
+
+## Playbooks (skills)
+
+- [wiki-writing](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-writing): Create or revise notebook prose with templates and citation rules.
+- [wiki-ingest](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-ingest): Integrate curated material into the wiki.
+- [wiki-query](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-query): Answer from the notebook and file durable answers.
+- [wiki](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki): Read-only answers.
+- [wiki-maintenance](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-maintenance): Refresh and lint.
+- [wiki-delete](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-delete): Remove a subject safely.
+- [wiki-router](https://github.com/jonyfs/llm-wiki-template/tree/main/.agents/skills/wiki-router): Map a request to one playbook.
+
+## Compatibility
+
+Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex via symlinks to the same `AGENTS.md` and `.agents/` source of truth. Python 3.9+; stdlib only; no dependencies.
+
+## Optional
+
+- [Full context](https://github.com/jonyfs/llm-wiki-template/blob/main/llms-full.txt): README, AGENTS.md, and skill summaries concatenated for single-fetch agents.

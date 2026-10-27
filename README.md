@@ -1,6 +1,6 @@
 # LLM Wiki
 
-**A living notebook that an AI assistant writes and keeps up to date for you.**
+**A living notebook that an AI assistant writes and keeps up to date for you — a persistent, compounding alternative to RAG for developers using Claude Code, Cursor, GitHub Copilot, OpenCode, or Codex.**
 
 You save articles, papers, notes, and data files. The assistant reads each one once, writes down what it learned, links related ideas, and keeps the notes current when new material arrives. Instead of searching through files every time you ask a question, it answers from notes it has already organized.
 
@@ -52,6 +52,17 @@ You rarely write the notebook yourself. You curate sources, explore, and ask que
 | Ask questions and explore | Answers from the notebook and links related pages |
 | Decide what matters | Updates entity, concept, and synthesis pages |
 | Review the result | Flags contradictions and keeps the index and log current |
+
+## Quick start (60 seconds)
+
+```bash
+git clone https://github.com/jonyfs/llm-wiki-template.git my-notebook
+cd my-notebook
+python3 -m unittest discover -s tests -t .   # sanity check
+python3 scripts/lint.py                        # empty notebook, should pass
+```
+
+Then ask your assistant: "Ingest the file I just added to `raw/`." Watch `wiki/` populate.
 
 ## Getting started
 
@@ -151,6 +162,45 @@ flowchart LR
 - Run lint on a notebook: `python3 scripts/lint.py`
 - Run refresh on a notebook: `python3 scripts/refresh.py`
 - Search a notebook: `python3 scripts/wiki_search.py "<terms>"`
+
+## LLM wiki vs. RAG vs. plain notes
+
+| Approach | How it answers | What accumulates | Best for |
+|---|---|---|---|
+| **LLM wiki (this template)** | From already-organized notes | Cross-references, contradictions, synthesis | Personal/team knowledge that compounds |
+| RAG / vector search | Reassembles fragments per question | Nothing; starts over each time | Large, fast-changing corpora |
+| Plain notes | You search and read | Whatever you manually write | Small, ad-hoc collections |
+
+## Compatibility
+
+| Harness | Entry point | Status |
+|---|---|---|
+| Claude Code | `CLAUDE.md` -> `AGENTS.md` | Supported |
+| Cursor / OpenCode | `.cursorrules` -> `AGENTS.md` | Supported |
+| GitHub Copilot | `.github/copilot-instructions.md` -> `AGENTS.md` | Supported |
+| Codex | `.agents/skills/` | Supported |
+
+Python 3.9+ on macOS, Linux, and Windows. Standard library only.
+
+## Frequently asked questions
+
+- **Why not RAG?** RAG reassembles fragments on every question; nothing accumulates. This template compiles knowledge once and keeps it current.
+- **Does it cost a lot of tokens?** `AGENTS.md` is under 8 KB and scripts print one-line summaries by default.
+- **Is my data sent anywhere?** No. Scripts are stdlib-only with no network calls; raw/ stays local.
+- **Does it work offline?** Yes, for everything except optional web ingestion.
+- **Am I locked to one model?** No. The contract is plain markdown plus Python; any agent that reads files works.
+
+## Showcase
+
+Built something with this template? Open a Discussion ("Show and tell") and it may be linked here.
+
+## Status
+
+Actively maintained. Last reviewed: 2026-10-26. CI runs on every push and pull request.
+
+## Get started
+
+Click **"Use this template"** on GitHub, then follow the [Quick start](#quick-start-60-seconds) above.
 
 ## Advanced notes
 

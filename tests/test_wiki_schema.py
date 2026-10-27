@@ -220,7 +220,7 @@ class PageLoadingTests(unittest.TestCase):
         self.assertTrue(inspect.isgenerator(paths))
         rel_paths = [path.relative_to(temp_dir).as_posix() for path in paths]
 
-        self.assertEqual(rel_paths, ["wiki/sources/a.md", "wiki/sources/b.md"])
+        self.assertEqual(rel_paths, ["wiki/sources/a.md", "wiki/sources/b.md", "wiki/sources/nested/c.md"])
 
     def test_heading_is_slotted_dataclass(self) -> None:
         heading = wiki_schema.Heading(level=2, title="Summary", line_no=1)

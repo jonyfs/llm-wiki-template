@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "LLM Wiki Template"
+abstract: "A template for a persistent, compounding markdown knowledge base maintained by an LLM assistant."
+authors:
+  - family-names: "Silva"
+    given-names: "Jony"
+    github: "jonyfs"
+repository-code: "https://github.com/jonyfs/llm-wiki-template"
+url: "https://github.com/jonyfs/llm-wiki-template"
+license: MIT
+keywords:
+  - llm
+  - wiki
+  - knowledge-base
+  - second-brain
+  - karpathy
+preferred-citation:
+  type: software
+  title: "LLM Wiki Template"
+  authors:
+    - family-names: "Silva"
+      given-names: "Jony"
+  url: "https://github.com/jonyfs/llm-wiki-template"
