@@ -385,6 +385,69 @@
   </div>
 </section>
 
+
+<section id="skills">
+  <div class="container">
+    <h2 class="section-title">The skills pipeline</h2>
+    <p class="section-sub">Each operation is a skill the assistant follows. No improvisation, no skipped steps.</p>
+    <div class="flow-card">
+      <svg viewBox="0 0 860 180" style="width:100%;height:auto;display:block;" role="img" aria-label="Skills pipeline">
+        <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
+        <g font-family="sans-serif" font-size="13" fill="#e8eaf0">
+          <rect x="20" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#5eead4"/><text x="95" y="85" text-anchor="middle" font-weight="700">Ingest</text><text x="95" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">read once, write pages</text>
+          <rect x="200" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#7c8cff"/><text x="275" y="85" text-anchor="middle" font-weight="700">Query</text><text x="275" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">answer from wiki</text>
+          <rect x="380" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#fbbf24"/><text x="455" y="85" text-anchor="middle" font-weight="700">Lint</text><text x="455" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">health checks</text>
+          <rect x="560" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#f472b6"/><text x="635" y="85" text-anchor="middle" font-weight="700">Refresh</text><text x="635" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">detect drift</text>
+          <rect x="720" y="55" width="120" height="70" rx="10" fill="#171a24" stroke="#262a38"/><text x="780" y="85" text-anchor="middle" font-weight="700">Synthesize</text><text x="780" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">file durable answers</text>
+        </g>
+        <path d="M170 90 L200 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
+        <path d="M350 90 L380 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
+        <path d="M530 90 L560 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
+        <path d="M710 90 L720 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
+      </svg>
+    </div>
+    <div class="grid" style="margin-top:24px;">
+      <div class="card"><h3>Ingest</h3><p>Reads a raw source once, writes or updates source/entity/concept pages, updates index and log. Knowledge compiled once.</p></div>
+      <div class="card"><h3>Query</h3><p>Answers from the wiki first, cites pages inline. Files the answer as a synthesis when reusable.</p></div>
+      <div class="card"><h3>Lint</h3><p>Checks broken links, missing fields, stale claims, orphans. Keeps the notebook honest.</p></div>
+      <div class="card"><h3>Refresh</h3><p>Detects drift between raw files and source pages. Reports, never silently rewrites.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="differentiator">
+  <div class="container">
+    <h2 class="section-title">Why this is a real differentiator</h2>
+    <p class="section-sub">Not a wrapper. A different shape of tool.</p>
+    <div class="grid">
+      <div class="card"><h3>Compounds with use</h3><p>Every source and question makes the notebook richer. Nothing is rebuilt from scratch.</p></div>
+      <div class="card"><h3>Persistent artifact</h3><p>The wiki is a folder of markdown you own, in git. Not a vendor's database.</p></div>
+      <div class="card"><h3>No re-retrieval</h3><p>Answers come from notes already organized, not from re-chunking on every question.</p></div>
+      <div class="card"><h3>Cross-refs pre-built</h3><p>Links exist before you ask. Subtle multi-document questions just work.</p></div>
+      <div class="card"><h3>Contradictions flagged</h3><p>New material that conflicts with older claims is surfaced, not hidden.</p></div>
+      <div class="card"><h3>Zero infra</h3><p>No embeddings, no vector DB, no API keys. Clone and go.</p></div>
+      <div class="card"><h3>Agent-agnostic</h3><p>Works with Claude Code, Cursor, Copilot, OpenCode, Codex, and others.</p></div>
+      <div class="card"><h3>Local-first</h3><p>Files stay on your machine. You decide what to share.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="walkthrough">
+  <div class="container">
+    <h2 class="section-title">An ingest, step by step</h2>
+    <p class="section-sub">What actually happens when you say "ingest raw/article.md".</p>
+    <div class="flow-card">
+      <ol style="margin:0;padding-left:20px;color:var(--muted);">
+        <li style="margin-bottom:10px;color:var(--text);"><strong>Read the source once.</strong> <span style="color:var(--muted);">The assistant reads <code>raw/article.md</code> end to end.</span></li>
+        <li style="margin-bottom:10px;color:var(--text);"><strong>Create a source page.</strong> <span style="color:var(--muted);">Writes <code>wiki/sources/article.md</code> with frontmatter, summary, and a claims ledger.</span></li>
+        <li style="margin-bottom:10px;color:var(--text);"><strong>Touch related pages.</strong> <span style="color:var(--muted);">Updates or creates entity and concept pages that the source mentions, adding wikilinks.</span></li>
+        <li style="margin-bottom:10px;color:var(--text);"><strong>Update the index.</strong> <span style="color:var(--muted);">Adds entries to <code>wiki/index.md</code> under the right category.</span></li>
+        <li style="margin-bottom:10px;color:var(--text);"><strong>Append to the log.</strong> <span style="color:var(--muted);">Records the operation in <code>wiki/log.md</code> with date and title.</span></li>
+        <li style="color:var(--text);"><strong>Done.</strong> <span style="color:var(--muted);">The source is now part of the compiled knowledge base. Next question starts further ahead.</span></li>
+      </ol>
+    </div>
+  </div>
+</section>
 <footer>
   <div class="container inner">
     <div>LLM Wiki Template · MIT license</div>
