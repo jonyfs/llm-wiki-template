@@ -2,7 +2,7 @@
 
 **Let your AI assistant write the wiki you never had time for.**
 
-Add files, links or pasted text. Your assistant reads them with its wiki skills, writes linked markdown pages, and answers your questions from those pages, citing them. The wiki is plain files in git: no database, no API keys. It works with Claude Code, Cursor, GitHub Copilot, OpenCode and Codex.
+**A template for starting your own LLM wiki.** Add files, links or pasted text. Your assistant reads them with its wiki skills, writes linked markdown pages, and answers your questions from those pages, citing them. The wiki is plain files in git: no database, no API keys. It works with Claude Code, Cursor, GitHub Copilot, OpenCode and Codex.
 
 [Live site](https://jonyfs.github.io/llm-wiki-template/) · [Use this template](https://github.com/jonyfs/llm-wiki-template/generate) · [Start in five minutes](#5-start) · [The original gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
 
@@ -17,7 +17,7 @@ Add files, links or pasted text. Your assistant reads them with its wiki skills,
 
 ## In short
 
-LLM Wiki Template turns the material you collect into linked markdown pages, so you ask the wiki instead of digging through files.
+LLM Wiki Template is a starting point for your own LLM wiki. Clone it, add your sources, and your assistant turns them into linked markdown pages, so you ask the wiki instead of digging through files.
 
 - **What it can do.** It reads the files, links and pasted text you give it. It writes a page for each source, plus pages for the people, ideas and comparisons inside them, and answers your questions from those pages with citations.
 - **What it solves.** Tools that answer from documents rebuild the answer from fragments on every question, so nothing builds up. Here the summarizing, linking and spotting of contradictions happens once and stays on the page.
