@@ -115,16 +115,8 @@
     }).catch(function () {});
   })();
 
-  /* Service worker + update prompt (not shown on the very first install) */
+  /* Service worker. Updates install silently: pages load network first and assets refresh in the background, so no prompt. */
   if ('serviceWorker' in navigator) {
-    var hadController = !!navigator.serviceWorker.controller;
     addEventListener('load', function () { navigator.serviceWorker.register('./sw.js').catch(function () {}); });
-    navigator.serviceWorker.addEventListener('controllerchange', function () {
-      if (!hadController) { hadController = true; return; }
-      var n = d.createElement('button');
-      n.type = 'button'; n.className = 'toast'; n.setAttribute('role', 'status'); n.textContent = T('app.update');
-      n.addEventListener('click', function () { location.reload(); });
-      d.body.appendChild(n);
-    });
   }
 })();

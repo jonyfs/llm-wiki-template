@@ -224,7 +224,6 @@ footer a { display: inline-flex; align-items: center; min-height: 36px; color: v
 footer a:hover { color: var(--accent); }
 
 /* ---------- Misc ---------- */
-.toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 70; max-width: calc(100% - 32px); padding: 12px 18px; background: var(--card); border: 1px solid var(--accent); border-radius: var(--radius); box-shadow: var(--shadow-lg); cursor: pointer; font: inherit; color: var(--text); }
 #searchEmpty { padding: 48px var(--gutter); text-align: center; color: var(--muted); }
 
 /* Reveal: progressive enhancement, never hides content without JS */
