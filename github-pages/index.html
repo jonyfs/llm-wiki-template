@@ -1,17 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' https://api.github.com; font-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' 'sha256-nMfR7b+R/AkaCapsHZGtJGq+5zz6tccKyujDwcuLJCQ='; connect-src 'self' https://api.github.com; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'" />
 <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
 <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" />
 <meta name="format-detection" content="telephone=no" />
 <link rel="preconnect" href="https://api.github.com" crossorigin />
 <link rel="dns-prefetch" href="https://api.github.com" />
-<title>LLM Wiki Template — a compounding knowledge base for AI agents</title>
-<meta name="description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant. Turn curated raw/ sources into a linked wiki. Template for Claude Code, Cursor, Copilot, OpenCode, Codex." />
-<meta name="abstract" content="LLM Wiki Template: clone, drop sources into raw/, ask an AI assistant to ingest them into a linked markdown wiki under wiki/. Knowledge compiles once and compounds; no vector database or API keys." />
+<title>LLM Wiki Template: a markdown wiki your AI assistant maintains</title>
+<meta name="description" content="Add files, links or notes and your AI assistant turns them into a linked markdown wiki through its wiki skills. Ask questions later and get answers that cite their pages. Works with Claude Code, Cursor, Copilot, OpenCode and Codex." />
+<meta name="abstract" content="LLM Wiki Template: clone the repo, drop sources into raw/, and ask an AI assistant to turn them into linked markdown pages under wiki/. No vector database, no API keys." />
 <link rel="canonical" href="https://jonyfs.github.io/llm-wiki-template/" />
 <link rel="sitemap" type="application/xml" href="sitemap.xml" /><meta property="og:url" content="https://jonyfs.github.io/llm-wiki-template/" />
 <meta property="og:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
@@ -19,7 +19,7 @@
 <meta property="og:image:height" content="640" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="LLM Wiki Template" />
-<meta name="twitter:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
+<meta name="twitter:description" content="A markdown wiki that your AI assistant writes and maintains." />
 <meta name="twitter:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
 <meta name="twitter:image:alt" content="LLM Wiki Template social preview" />
 <meta property="og:image:alt" content="LLM Wiki Template social preview" />
@@ -35,10 +35,9 @@
 <link rel="alternate" hreflang="pt" href="https://jonyfs.github.io/llm-wiki-template/?lang=pt" />
 <link rel="alternate" hreflang="es" href="https://jonyfs.github.io/llm-wiki-template/?lang=es" />
 <link rel="alternate" hreflang="x-default" href="https://jonyfs.github.io/llm-wiki-template/" />
-<link rel="preload" as="image" href="assets/social-preview.png" />
-<meta name="keywords" content="llm wiki, karpathy, persistent knowledge base, markdown wiki, ai agent, rag alternative, obsidian graph" />
+<meta name="keywords" content="llm wiki, karpathy, markdown wiki, ai agent, rag alternative, obsidian graph" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"SoftwareApplication","name":"LLM Wiki Template","applicationCategory":"DeveloperApplication","operatingSystem":"Any","description":"A persistent, compounding markdown knowledge base maintained by an LLM assistant.","url":"https://jonyfs.github.io/llm-wiki-template/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT"}
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"LLM Wiki Template","applicationCategory":"DeveloperApplication","operatingSystem":"Any","description":"A markdown wiki that your AI assistant writes and maintains.","url":"https://jonyfs.github.io/llm-wiki-template/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT"}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Organization","name":"llm-wiki-template","url":"https://github.com/jonyfs/llm-wiki-template","founder":{"@type":"Person","name":"jonyfs"},"license":"https://opensource.org/licenses/MIT"}
@@ -47,1000 +46,63 @@
 {"@context":"https://schema.org","@type":"Person","name":"jonyfs","url":"https://github.com/jonyfs"}
 </script>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an API key or database?","acceptedAnswer":{"@type":"Answer","text":"No. You need an AI coding assistant that reads markdown. Everything stays in plain files in git."}},{"@type":"Question","name":"How is this different from RAG?","acceptedAnswer":{"@type":"Answer","text":"RAG rebuilds an answer from chunks every question. A wiki is compiled once and kept current, so cross-references and contradictions already exist."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"Yes. Files are local; the assistant reads them directly. No network calls required for the wiki itself."}}]}
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Do I need an API key or database?","acceptedAnswer":{"@type":"Answer","text":"No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them."}},{"@type":"Question","name":"How is this different from RAG?","acceptedAnswer":{"@type":"Answer","text":"RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask."}},{"@type":"Question","name":"Does it work offline?","acceptedAnswer":{"@type":"Answer","text":"The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use."}}]}
 </script>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://jonyfs.github.io/llm-wiki-template/"},{"@type":"ListItem","position":2,"name":"Docs","item":"https://jonyfs.github.io/llm-wiki-template/README.md"}]}
 </script>
 <meta property="og:title" content="LLM Wiki Template" />
-<meta property="og:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
+<meta property="og:description" content="A markdown wiki that your AI assistant writes and maintains." />
 <meta property="og:type" content="website" />
-<meta property="og:image" content="assets/social-preview.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
-<style>
-  /* Theme tokens */
-  :root, :root[data-theme="dark"] {
-    --bg: #0b0d12; --bg-soft: #12151d; --card: #171a24; --border: #262a38;
-    --text: #e8eaf0; --muted: #9aa3b2; --accent: #7c8cff; --accent-2: #5eead4; --code: #0f1117;
-    --nav-bg: rgba(11,13,18,0.78);
-  }
-  :root[data-theme="light"] {
-    --bg: #f7f8fc; --bg-soft: #eef0f6; --card: #ffffff; --border: #d9dde8;
-    --text: #1a1d29; --muted: #5a6275; --accent: #4f5bd5; --accent-2: #0f9f8f; --code: #f1f3f9;
-    --nav-bg: rgba(247,248,252,0.88);
-  }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
-    font-size: 18px;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.65;
-    -webkit-font-smoothing: antialiased;
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-  }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
-
-  /* Nav */
-  nav {
-    position: sticky; top: 0; z-index: 10;
-    background: var(--nav-bg);
-    border-bottom: 1px solid var(--border);
-  }
-  @supports (backdrop-filter: blur(12px)) {
-    nav { backdrop-filter: blur(12px); }
-  }  nav .inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
-  .brand { font-weight: 700; font-size: 18px; color: var(--text); display: flex; align-items: center; gap: 10px; }
-  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-  .nav-links { display: flex; gap: 24px; font-size: 16px; color: var(--muted); }
-  .nav-links a { color: var(--muted); }
-  .nav-links a:hover { color: var(--text); text-decoration: none; }
-  .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    min-height: 44px; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 16px;
-    border: 1px solid var(--border); color: var(--text); background: var(--card);
-    transition: transform .15s ease, border-color .15s ease;
-    touch-action: manipulation;
-  }
-  .nav-links a { min-height: 44px; display: inline-flex; align-items: center; touch-action: manipulation; }  .btn:hover { transform: translateY(-1px); border-color: var(--accent); text-decoration: none; }
-  .btn.primary { background: linear-gradient(135deg, var(--accent), #5b6cff); border: none; color: #fff; animation: ctaPulse 3s ease-in-out infinite; }
-  @keyframes ctaPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(124,140,255,0.45); } 50% { box-shadow: 0 0 0 8px rgba(124,140,255,0); } }
-  .theme-toggle { padding: 8px 12px; font-size: 16px; line-height: 1; }
-  /* Fade-in on scroll */
-  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
-  .reveal.in { opacity: 1; transform: none; }
-
-  /* Hero */
-  .hero { padding: 112px 0 72px; text-align: center; position: relative; overflow: hidden; }
-  .hero::before {
-    content: ""; position: absolute; inset: 0;
-    background: radial-gradient(60% 50% at 50% 0%, rgba(124,140,255,0.18), transparent 70%);
-    pointer-events: none;
-  }
-  .badge {
-    display: inline-block; padding: 6px 14px; border-radius: 999px;
-    background: rgba(124,140,255,0.12); border: 1px solid rgba(124,140,255,0.3);
-    color: var(--accent); font-size: 15px; font-weight: 600; margin-bottom: 24px;
-  }
-  h1.hero-title { font-size: clamp(40px, 5.5vw, 72px); line-height: 1.05; margin: 0 0 20px; letter-spacing: -0.02em; }
-  .hero-title .grad { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero-sub { font-size: 22px; color: var(--muted); max-width: 760px; margin: 0 auto 36px; }
-  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-
-  /* Flow diagram */
-  .flow { padding: 32px 0 80px; }
-  .flow-card {
-    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
-    padding: 32px; max-width: 900px; margin: 0 auto;
-  }
-  .flow svg { width: 100%; height: auto; display: block; }
-
-  /* Sections */
-  section { padding: 96px 0; content-visibility: auto; contain-intrinsic-size: 1px 900px; }  .section-title { font-size: clamp(28px, 3.2vw, 40px); margin: 0 0 12px; letter-spacing: -0.01em; }
-  .section-sub { color: var(--muted); font-size: 20px; max-width: 760px; margin: 0 0 48px; }
-
-  /* Feature grid */
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: border-color .2s ease, transform .2s ease; }
-  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
-  .card .icon { font-size: 24px; margin-bottom: 12px; }
-  .card h3 { margin: 0 0 8px; font-size: 20px; }
-  .card p { margin: 0; color: var(--muted); font-size: 16px; }
-
-  /* Compare table */
-  .compare { width: 100%; border-collapse: collapse; font-size: 16px; }
-  .compare th, .compare td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
-  .compare th { color: var(--muted); font-weight: 600; }
-  .compare td:first-child { font-weight: 600; }
-  .compare .yes { color: var(--accent-2); }
-  .compare .no { color: #f87171; }
-
-  /* Quick start */
-  .qs { background: var(--code); border: 1px solid var(--border); border-radius: 14px; padding: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; overflow-x: auto; }
-  .qs .line { display: block; white-space: pre; }
-  .qs .c { color: #6b7280; }
-  .qs .k { color: #93c5fd; }
-  .qs .s { color: #fca5a5; }
-
-  /* Compat */
-  .compat { display: flex; flex-wrap: wrap; gap: 12px; }
-  .chip { padding: 8px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); font-size: 16px; }
-
-  /* Footer */
-  footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 16px; }
-  footer .inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-
-  @media (max-width: 640px) {
-    .container { padding: 0 16px; }
-    body { font-size: 17px; }
-    nav .inner { flex-wrap: wrap; height: auto; gap: 8px; padding: 10px 0; }
-    .brand { width: 100%; }
-    #siteSearch, #langSelect { max-width: none; }
-    .nav-links { display: none; }
-    .hero { padding: 64px 0 32px; }
-    h1.hero-title { font-size: clamp(32px, 9vw, 44px); }
-    .section-title { font-size: clamp(24px, 7vw, 32px); }
-    .hero-sub { font-size: 18px; }
-    .section-sub { font-size: 17px; }
-    .card h3 { font-size: 18px; }
-    .card p { font-size: 16px; }
-  }
-
-  @media (min-width: 1440px) {
-    .container { max-width: 1360px; padding: 0 40px; }
-    body { font-size: 19px; }
-    h1.hero-title { font-size: clamp(48px, 4vw, 76px); }
-    .section-title { font-size: clamp(34px, 2.8vw, 44px); }
-  }
-
-  /* Skip link */
-  .skip { position: absolute; left: -9999px; top: 0; background: var(--accent); color: #fff; padding: 8px 12px; border-radius: 0 0 8px 0; z-index: 100; }
-  .skip:focus { left: 0; }
-  /* Focus */
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
-  a:focus-visible { text-decoration: underline; }  /* Section dividers */
-  section + section { border-top: 1px solid var(--border); }
-  /* Smooth scroll + anchor offset */
-  html { scroll-behavior: smooth; scroll-padding-top: 80px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  body { font-synthesis: none; text-decoration-skip-ink: auto; hyphens: auto; }  section, header { scroll-margin-top: 80px; }
-  p { text-wrap: pretty; overflow-wrap: anywhere; }
-  code, pre { overflow-wrap: anywhere; }  .hero-sub { text-wrap: balance; }  h1, h2, h3 { text-wrap: balance; }
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-  }
-  /* Paragraph measure */
-  p { max-width: 72ch; }
-  .hero-sub { max-width: 64ch; }
-  /* Print */
-  @media print {
-    nav, #progress, #backToTop, .theme-toggle, #langSelect { display: none !important; }
-    body { background: #fff; color: #000; }
-    .card, .flow-card { border: 1px solid #999; background: #fff; break-inside: avoid; }
-    a { color: #000; text-decoration: underline; }
-  }
-  /* Back to top */
-  #backToTop:hover { border-color: var(--accent); }
-  #g:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }  /* High contrast */
-  @media (prefers-contrast: high) {
-    :root { --border: #ffffff; }
-    .card, .flow-card { border-width: 2px; }
-    a { text-decoration: underline; }
-  }
-  /* Light mode polish for hardcoded dark SVG diagrams */  :root[data-theme="light"] .flow-card svg rect[fill="#171a24"] { fill: #ffffff; }
-  :root[data-theme="light"] .flow-card svg rect[stroke="#262a38"] { stroke: #d9dde8; }
-  :root[data-theme="light"] .flow-card svg rect[stroke="#7c8cff"] { stroke: #4f5bd5; }
-  :root[data-theme="light"] .flow-card svg text[fill="#e8eaf0"] { fill: #1a1d29; }
-  :root[data-theme="light"] .flow-card svg text[fill="#9aa3b2"] { fill: #5a6275; }
-  :root[data-theme="light"] .hero::before { background: radial-gradient(60% 50% at 50% 0%, rgba(79,91,213,0.10), transparent 70%); }
-
-  /* Modern design pass (2026) — organic, glass, kinetic, fluid */
-  @layer base, components, utilities;
-  :root {
-    --radius: 14px; --radius-lg: 24px;
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.18);
-    --shadow-md: 0 8px 24px rgba(0,0,0,.28);
-    --shadow-lg: 0 24px 64px rgba(0,0,0,.42);
-    --glass: rgba(255,255,255,0.06);
-    --glass-border: rgba(255,255,255,0.14);
-    --grad-brand: linear-gradient(135deg, var(--accent), var(--accent-2));
-  }
-  :root[data-theme="light"] {
-    --glass: rgba(255,255,255,0.62);
-    --glass-border: rgba(0,0,0,0.08);
-    --shadow-md: 0 8px 24px rgba(0,0,0,.08);
-    --shadow-lg: 0 24px 64px rgba(0,0,0,.12);
-  }
-  html { scrollbar-gutter: stable; }
-  body { overscroll-behavior-y: contain; }
-  ::selection { background: var(--accent); color: #fff; }
-  ::-webkit-scrollbar { width: 10px; height: 10px; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  * { scrollbar-color: var(--border) transparent; scrollbar-width: thin; }
-  a, button, input, select { touch-action: manipulation; }
-  input, textarea, select { field-sizing: content; accent-color: var(--accent); caret-color: var(--accent); }
-  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; box-shadow: 0 0 0 4px rgba(124,140,255,.18); }
-  nav { background: var(--glass); backdrop-filter: blur(16px) saturate(140%); -webkit-backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid var(--glass-border); }
-  .card, .flow-card { border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease; }
-  .card:hover { transform: translateY(-4px) scale(1.01); box-shadow: var(--shadow-md); border-color: var(--accent); }
-  .btn { border-radius: var(--radius); box-shadow: var(--shadow-sm); transition: transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease, border-color .18s ease; }
-  .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .btn.primary { background: var(--grad-brand); box-shadow: 0 6px 20px rgba(124,140,255,.35); }
-  .btn.primary:hover { box-shadow: 0 10px 28px rgba(124,140,255,.5); }
-  .hero-title { text-wrap: balance; letter-spacing: -0.03em; }
-  .hero-title .grad { background: var(--grad-brand); -webkit-background-clip: text; background-clip: text; color: transparent; animation: gradShift 8s ease-in-out infinite; }
-  @keyframes gradShift { 0%,100% { filter: hue-rotate(0deg); } 50% { filter: hue-rotate(20deg); } }
-  .badge { background: var(--glass); border: 1px solid var(--glass-border); backdrop-filter: blur(8px); }
-  .container { container-type: inline-size; }
-  @container (min-width: 720px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  @container (min-width: 1080px) { .grid { grid-template-columns: repeat(3, 1fr); } }
-  section { scroll-snap-align: start; }
-  html { scroll-snap-type: y proximity; }
-  .reveal { transition: opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1); }
-  .reveal.in { opacity: 1; transform: none; }
-  .flow-card { position: relative; overflow: hidden; }
-  .flow-card::before { content: ''; position: absolute; inset: -40%; background: radial-gradient(circle at 30% 20%, rgba(124,140,255,.12), transparent 60%); pointer-events: none; z-index: 0; }
-  .flow-card > * { position: relative; z-index: 1; }
-  /* kinetic typography */
-  .kinetic { display: inline-block; animation: kinetic 6s ease-in-out infinite; }
-  @keyframes kinetic { 0%,100% { transform: translateY(0) rotate(0deg); } 25% { transform: translateY(-4px) rotate(-.5deg); } 75% { transform: translateY(4px) rotate(.5deg); } }
-  /* organic blob */
-  .blob { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; animation: blob 12s ease-in-out infinite; }
-  @keyframes blob { 0%,100% { border-radius: 42% 58% 70% 30% / 45% 45% 55% 55%; } 50% { border-radius: 58% 42% 30% 70% / 55% 45% 45% 55%; } }
-  /* neumorphic (sparingly) */
-  .neo { background: var(--card); box-shadow: 6px 6px 12px rgba(0,0,0,.25), -6px -6px 12px rgba(255,255,255,.04); border: none; }
-  :root[data-theme="light"] .neo { box-shadow: 6px 6px 12px rgba(0,0,0,.08), -6px -6px 12px rgba(255,255,255,.9); }
-  /* scroll-driven (progressive enhancement) */
-  @supports (animation-timeline: scroll()) {
-    .scroll-fade { animation: scrollFade linear both; animation-timeline: view(); animation-range: entry 0% cover 40%; }
-    @keyframes scrollFade { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
-  }
-  /* view transitions */
-  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .35s; }
-  /* details disclosure */
-  details { interpolate-size: allow-keywords; transition: height .3s ease, opacity .3s ease; }
-  details::details-content { transition: height .3s ease, content-visibility .3s ease allow-discrete; }
-  /* reduced motion respects all */
-  @media (prefers-reduced-motion: reduce) {
-    .hero-title .grad, .kinetic, .blob { animation: none !important; }
-  }
-  /* high contrast boost */
-  @media (prefers-contrast: more) {
-    .card, .flow-card { border-width: 2px; }
-    a { text-decoration: underline; }
-  }
-  /* print polish */
-  @media print { .flow-card::before { display: none; } }
-  /* container query card density */
-  @container (max-width: 360px) { .card h3 { font-size: 17px; } .card p { font-size: 15px; } }
-  /* fluid type scale */
-  :root { --step-0: clamp(1rem, .9rem + .4vw, 1.125rem); --step-1: clamp(1.25rem, 1.1rem + .6vw, 1.5rem); --step-2: clamp(1.5rem, 1.2rem + 1vw, 2rem); --step-3: clamp(2rem, 1.5rem + 2vw, 3rem); --step-4: clamp(2.5rem, 1.8rem + 3vw, 4rem); }
-  body { font-size: var(--step-0); }
-  h1.hero-title { font-size: var(--step-4); }
-  .section-title { font-size: var(--step-3); }
-  .hero-sub { font-size: var(--step-1); }
-  .section-sub { font-size: var(--step-1); }
-  /* text-box trim for headings */
-  h1, h2, h3 { text-box-trim: trim-both; text-box-edge: cap alphabetic; }
-  /* aspect ratio media */
-  img, svg, canvas { max-width: 100%; height: auto; }
-  /* focus-within cards */
-  .card:focus-within { border-color: var(--accent); box-shadow: var(--shadow-md); }
-  /* gradient border utility */
-  .grad-border { position: relative; }
-  .grad-border::after { content: ''; position: absolute; inset: 0; border-radius: inherit; padding: 1px; background: var(--grad-brand); -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; pointer-events: none; }
-  /* sparkle cursor accent on primary CTA */
-  .btn.primary { position: relative; overflow: hidden; }
-  .btn.primary::before { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.25) 50%, transparent 70%); transform: translateX(-100%); animation: shine 4s ease-in-out infinite; }
-  @keyframes shine { 0% { transform: translateX(-100%); } 60%,100% { transform: translateX(100%); } }
-  /* dark mode deeper contrast */
-  :root[data-theme="dark"] body { background: radial-gradient(120% 80% at 50% -10%, #141826, var(--bg)); }
-  /* light mode soft gradient */
-  :root[data-theme="light"] body { background: radial-gradient(120% 80% at 50% -10%, #ffffff, var(--bg)); }
-  /* card icon float */
-  .card .icon { display: inline-block; transition: transform .3s ease; }
-  .card:hover .icon { transform: translateY(-3px) scale(1.1); }
-  /* link underline animation */
-  a { text-decoration: none; background-image: linear-gradient(var(--accent), var(--accent)); background-size: 0 1px; background-position: 0 100%; background-repeat: no-repeat; transition: background-size .25s ease; }
-  a:hover { background-size: 100% 1px; }
-  /* skip link modern */
-  .skip { border-radius: 0 0 8px 8px; }
-  /* progress bar glow */
-  #progress { box-shadow: 0 0 8px var(--accent); }
-  /* back to top glass */
-  #backToTop { backdrop-filter: blur(10px); background: var(--glass); border: 1px solid var(--glass-border); }
-  /* graph canvas rounded + shadow */
-  #g { box-shadow: var(--shadow-lg); border: 1px solid var(--glass-border); }
-  /* stats tabular */
-  #gStats { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
-  /* section divider gradient */
-  section + section { border-top: none; position: relative; }
-  section + section::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 60%; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); }
-  /* footer glass */
-  footer { background: var(--glass); backdrop-filter: blur(12px); }
-  /* compat chips pill */
-  .chip { border-radius: 999px; transition: transform .2s ease, background .2s ease; }
-  .chip:hover { transform: translateY(-2px); background: var(--bg-soft); }
-  /* compare table zebra */
-  .compare tbody tr:nth-child(even) { background: rgba(124,140,255,.03); }
-  .compare th, .compare td { transition: background .2s ease; }
-  /* quick start terminal look */
-  .qs { border-left: 3px solid var(--accent); box-shadow: inset 0 0 40px rgba(0,0,0,.2); }
-  /* metric chip pulse */
-  .compat .chip { animation: chipIn .4s ease both; }
-  @keyframes chipIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  /* hero badge float */
-  .badge { animation: badgeFloat 5s ease-in-out infinite; }
-  @keyframes badgeFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-  /* section title underline */
-  .section-title { position: relative; display: inline-block; }
-  .section-title::after { content: ''; position: absolute; left: 0; bottom: -6px; width: 48px; height: 3px; background: var(--grad-brand); border-radius: 2px; }
-  /* card stagger */
-  .grid .card { animation: cardIn .5s ease both; }
-  .grid .card:nth-child(2) { animation-delay: .06s; }
-  .grid .card:nth-child(3) { animation-delay: .12s; }
-  .grid .card:nth-child(4) { animation-delay: .18s; }
-  @keyframes cardIn { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-  /* dark/light transition smooth */
-  html { transition: background-color .3s ease, color .3s ease; }
-  /* reduced motion already handled */
-  /* container scroll padding */
-  main { scroll-padding-top: 90px; }
-  /* hero glow orb */
-  .hero::after { content: ''; position: absolute; top: -20%; right: -10%; width: 40vw; height: 40vw; background: radial-gradient(circle, rgba(94,234,212,.18), transparent 70%); filter: blur(60px); pointer-events: none; z-index: 0; }
-  .hero .container { position: relative; z-index: 1; }
-  /* glassmorphic search */
-  #siteSearch { backdrop-filter: blur(8px); background: var(--glass); border: 1px solid var(--glass-border); }
-  #langSelect { backdrop-filter: blur(8px); background: var(--glass); border: 1px solid var(--glass-border); }
-  /* theme toggle spin */
-  .theme-toggle { transition: transform .3s ease; }
-  .theme-toggle:hover { transform: rotate(20deg); }
-  /* gradient text for brand dot */
-  .brand .dot { animation: dotPulse 2.4s ease-in-out infinite; }
-  @keyframes dotPulse { 0%,100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(124,140,255,.5); } 50% { transform: scale(1.2); box-shadow: 0 0 0 8px rgba(124,140,255,0); } }
-  /* floating action feel for primary CTA */
-  .hero-cta .btn.primary { animation: ctaFloat 3s ease-in-out infinite; }
-  @keyframes ctaFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
-  /* canvas interaction hint */
-  #g { cursor: grab; transition: box-shadow .3s ease; }
-  #g:active { cursor: grabbing; box-shadow: var(--shadow-lg); }
-  /* tooltip glass */
-  #gTip { backdrop-filter: blur(6px); padding: 6px 12px; border-radius: 8px; background: var(--glass); border: 1px solid var(--glass-border); }
-  /* link card hover lift already */
-  /* footer link hover */
-  footer a { transition: color .2s ease, transform .2s ease; display: inline-block; }
-  footer a:hover { color: var(--accent); transform: translateY(-1px); }
-  /* responsive type already */
-  /* code inline polish */
-  code { background: var(--code); padding: 2px 6px; border-radius: 6px; font-size: .9em; }
-  /* pre block */
-  pre, .qs { position: relative; }
-  .qs::before { content: 'Terminal'; position: absolute; top: 8px; left: 12px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
-  /* empty state */
-  .empty { opacity: .6; font-style: italic; }
-  /* skeleton */
-  .skeleton { background: linear-gradient(90deg, var(--card), var(--bg-soft), var(--card)); background-size: 200% 100%; animation: skel 1.4s ease infinite; }
-  @keyframes skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-  /* toast */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--card); border: 1px solid var(--glass-border); backdrop-filter: blur(12px); padding: 10px 16px; border-radius: 10px; box-shadow: var(--shadow-lg); z-index: 1002; animation: toastIn .3s ease; }
-  @keyframes toastIn { from { opacity: 0; transform: translateX(-50%) translateY(12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
-  /* spinner */
-  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  /* progress ring */
-  .ring { --p: 0; background: conic-gradient(var(--accent) calc(var(--p)*1%), var(--border) 0); border-radius: 50%; }
-  /* divider */
-  hr { border: none; height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 24px 0; }
-  /* kbd */
-  kbd { background: var(--code); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; font-size: .85em; box-shadow: 0 1px 0 var(--border); }
-  /* mark */
-  mark { background: rgba(124,140,255,.25); color: inherit; padding: 0 2px; border-radius: 3px; }
-  /* abbr dotted */
-  abbr { text-decoration: underline dotted var(--muted); cursor: help; }
-  /* details */
-  details { border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; background: var(--card); }
-  details[open] { box-shadow: var(--shadow-sm); }
-  summary { cursor: pointer; font-weight: 600; }
-  /* figure */
-  figure { margin: 0; }
-  figcaption { color: var(--muted); font-size: 14px; margin-top: 8px; }
-  /* blockquote */
-  blockquote { border-left: 3px solid var(--accent); padding-left: 16px; color: var(--muted); font-style: italic; }
-  /* table responsive */
-  table { width: 100%; border-collapse: collapse; }
-  /* mobile safe area */
-  @media (max-width: 640px) {
-    .container { padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
-    nav .inner { padding-top: env(safe-area-inset-top); }
-    footer { padding-bottom: max(40px, env(safe-area-inset-bottom)); }
-  }
-  /* dark mode canvas graph tweak */
-  :root[data-theme="dark"] #g { background: #0f1117; }
-  /* color-mix hover states */
-  .btn:hover { background: color-mix(in oklab, var(--card) 80%, var(--accent) 20%); }
-  .card:hover { background: color-mix(in oklab, var(--card) 92%, var(--accent) 8%); }
-  /* oklch accent glow */
-  @supports (color: oklch(0.5 0.2 260)) {
-    :root { --accent-glow: oklch(0.65 0.2 265 / .4); }
-  }
-  /* anchor positioning for tooltips (progressive) */
-  @supports (anchor-name: --a) {
-    .tooltip { position: absolute; position-anchor: --a; top: anchor(bottom); left: anchor(center); translate: -50% 8px; }
-  }
-  /* prefers-reduced-data */
-  @media (prefers-reduced-data: reduce) {
-    .hero::before, .hero::after, .flow-card::before { display: none; }
-  }
-  /* print color adjust */
-  @media print { * { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-  /* high dpi images */
-  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) { img { image-rendering: -webkit-optimize-contrast; } }
-  /* forced colors */
-  @media (forced-colors: active) {
-    .btn, .card { border: 2px solid CanvasText; }
-    .btn.primary { background: Highlight; color: HighlightText; }
-  }
-  /* dark mode image dimming */
-  @media (prefers-color-scheme: dark) { img:not([src*=".svg"]) { opacity: .92; } }
-  /* lightbox-ready */
-  dialog { border: none; border-radius: var(--radius-lg); padding: 0; background: var(--card); color: var(--text); box-shadow: var(--shadow-lg); }
-  dialog::backdrop { background: rgba(0,0,0,.5); backdrop-filter: blur(4px); }
-  /* popover API */
-  [popover] { border: none; border-radius: var(--radius); background: var(--card); color: var(--text); box-shadow: var(--shadow-md); padding: 12px 16px; }
-  /* view transitions named */
-  .hero-title { view-transition-name: hero-title; }
-  #g { view-transition-name: graph; }
-  /* caret blink */
-  @keyframes caret { 50% { opacity: 0; } }
-  /* text gradient on section titles already */
-  /* sticky footer */
-  body { display: flex; flex-direction: column; min-height: 100dvh; }
-  main, main[role="main"] { flex: 1 0 auto; }
-  footer { flex-shrink: 0; }
-  /* dvh for hero */
-  .hero { min-height: 60dvh; }
-  /* safe area insets already */
-  /* grid auto-fit min */
-  .grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); }
-  /* flex gap wrap */
-  .compat { gap: 10px; }
-  /* overflow clip */
-  .flow-card { overflow: clip; }
-  /* contain layout */
-  section { contain: layout paint style; }
-  /* isolation */
-  .hero { isolation: isolate; }
-  /* will-change on canvas */
-  #g { will-change: transform; }
-  /* transform 3d */
-  .hero::before { transform: translateZ(0); }
-  /* backface visibility */
-  .card { backface-visibility: hidden; }
-  /* perspective */
-  .hero-cta { perspective: 800px; }
-  /* transform-style */
-  .hero-cta .btn { transform-style: preserve-3d; }
-  /* font feature settings */
-  body { font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "ss01" 1; font-variation-settings: "wght" 400; }
-  /* numeric tabular */
-  .tabular { font-variant-numeric: tabular-nums; }
-  /* small caps */
-  .smallcaps { font-variant: small-caps; letter-spacing: .06em; }
-  /* hanging punctuation */
-  p { hanging-punctuation: first last; }
-  /* hyphenation language */
-  html[lang="pt-BR"] p { hyphens: auto; }
-  /* text-wrap balance headings already */
-  /* line height fluid */
-  body { line-height: 1.6; }
-  /* letter spacing headings */
-  h1, h2, h3 { letter-spacing: -0.015em; }
-  /* font smoothing */
-  body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
-  /* image object fit */
-  img { object-fit: cover; }
-  /* video */
-  video { width: 100%; height: auto; }
-  /* iframe */
-  iframe { border: 0; }
-  /* svg inline */
-  svg { overflow: visible; }
-  /* canvas */
-  canvas { display: block; }
-  /* list style */
-  ul, ol { padding-left: 1.25em; }
-  /* table fixed layout option */
-  .table-fixed { table-layout: fixed; }
-  /* truncate */
-  .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  /* line clamp */
-  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  /* aspect ratio */
-  .aspect-video { aspect-ratio: 16/9; }
-  .aspect-square { aspect-ratio: 1; }
-  /* object position */
-  .object-center { object-position: center; }
-  /* z-index scale */
-  :root { --z-base: 0; --z-raised: 10; --z-sticky: 100; --z-modal: 1000; --z-toast: 1002; }
-  /* gap scale */
-  :root { --gap-xs: 4px; --gap-sm: 8px; --gap-md: 16px; --gap-lg: 24px; --gap-xl: 40px; }
-  /* spacing scale */
-  :root { --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px; --space-9: 96px; }
-  /* color tokens oklch-ish (fallback hex) */
-  :root { --bg-elev: color-mix(in oklab, var(--bg) 90%, var(--accent) 10%); }
-  /* transition presets */
-  :root { --ease-out: cubic-bezier(.2,.8,.2,1); --ease-in: cubic-bezier(.4,0,1,1); --ease-in-out: cubic-bezier(.4,0,.2,1); }
-  /* motion duration */
-  :root { --dur-fast: 120ms; --dur-base: 240ms; --dur-slow: 400ms; }
-  /* focus ring color */
-  :root { --focus: var(--accent); }
-  /* cursor */
-  [disabled] { cursor: not-allowed; opacity: .6; }
-  /* selection color already */
-  /* placeholder */
-  ::placeholder { color: var(--muted); opacity: .7; }
-  /* autofill */
-  input:-webkit-autofill { -webkit-box-shadow: 0 0 0 1000px var(--card) inset; -webkit-text-fill-color: var(--text); }
-  /* number input spinners */
-  input[type="number"]::-webkit-inner-spin-button { opacity: .6; }
-  /* search cancel */
-  input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
-  /* progress */
-  progress { accent-color: var(--accent); }
-  /* meter */
-  meter { accent-color: var(--accent); }
-  /* range */
-  input[type="range"] { accent-color: var(--accent); }
-  /* checkbox/radio */
-  input[type="checkbox"], input[type="radio"] { accent-color: var(--accent); }
-  /* details marker */
-  summary::-webkit-details-marker { color: var(--accent); }
-  /* dialog centering */
-  dialog { margin: auto; }
-  /* popover centering */
-  [popover] { margin: auto; }
-  /* backdrop */
-  ::backdrop { background: rgba(0,0,0,.4); backdrop-filter: blur(2px); }
-  /* scroll behavior smooth already */
-  /* anchor scroll offset already */
-  /* print page break */
-  .break-before { break-before: page; }
-  .break-after { break-after: page; }
-  .avoid-break { break-inside: avoid; }
-  /* sticky */
-  .sticky { position: sticky; top: 0; }
-  /* fixed */
-  .fixed { position: fixed; }
-  /* relative/absolute */
-  .relative { position: relative; }
-  .absolute { position: absolute; }
-  /* inset */
-  .inset-0 { inset: 0; }
-  /* z */
-  .z-10 { z-index: 10; }
-  .z-50 { z-index: 50; }
-  /* overflow */
-  .overflow-hidden { overflow: hidden; }
-  .overflow-auto { overflow: auto; }
-  /* flex */
-  .flex { display: flex; }
-  .inline-flex { display: inline-flex; }
-  .grid { display: grid; }
-  .block { display: block; }
-  .inline-block { display: inline-block; }
-  .hidden { display: none; }
-  /* justify/align */
-  .justify-center { justify-content: center; }
-  .items-center { align-items: center; }
-  /* text align */
-  .text-center { text-align: center; }
-  .text-left { text-align: left; }
-  /* font weight */
-  .font-bold { font-weight: 700; }
-  .font-semibold { font-weight: 600; }
-  /* opacity */
-  .opacity-0 { opacity: 0; }
-  .opacity-100 { opacity: 1; }
-  /* cursor */
-  .cursor-pointer { cursor: pointer; }
-  /* user select */
-  .select-none { user-select: none; }
-  /* pointer events */
-  .pointer-events-none { pointer-events: none; }
-  /* transition */
-  .transition { transition: all var(--dur-base) var(--ease-out); }
-  /* transform */
-  .hover-lift:hover { transform: translateY(-2px); }
-  /* shadow */
-  .shadow { box-shadow: var(--shadow-md); }
-  /* border */
-  .border { border: 1px solid var(--border); }
-  /* rounded */
-  .rounded { border-radius: var(--radius); }
-  .rounded-full { border-radius: 999px; }
-  /* bg */
-  .bg-card { background: var(--card); }
-  .bg-soft { background: var(--bg-soft); }
-  /* text color */
-  .text-muted { color: var(--muted); }
-  .text-accent { color: var(--accent); }
-  /* margin/padding utils */
-  .m-0 { margin: 0; }
-  .p-0 { padding: 0; }
-  /* gap */
-  .gap-2 { gap: 8px; }
-  .gap-4 { gap: 16px; }
-  /* flex wrap */
-  .flex-wrap { flex-wrap: wrap; }
-  /* width */
-  .w-full { width: 100%; }
-  .max-w-prose { max-width: 65ch; }
-  /* height */
-  .h-full { height: 100%; }
-  /* min height */
-  .min-h-screen { min-height: 100dvh; }
-  /* object */
-  .object-cover { object-fit: cover; }
-  /* position */
-  .sticky-top { position: sticky; top: 0; }
-  /* display none at print */
-  @media print { .no-print { display: none !important; } }
-  /* dark mode only */
-  .dark-only { display: none; }
-  :root[data-theme="dark"] .dark-only { display: block; }
-  .light-only { display: block; }
-  :root[data-theme="dark"] .light-only { display: none; }
-  /* reduced motion disable animations already */
-  /* focus visible ring color ok */
-  /* visited link color */
-  a:visited { color: color-mix(in oklab, var(--accent) 80%, purple 20%); }
-  /* active link */
-  a:active { transform: scale(.98); }
-  /* hover scale */
-  .hover-scale:hover { transform: scale(1.03); }
-  /* disabled button */
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  /* input focus */
-  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,140,255,.18); }
-  /* scrollbar hide */
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { scrollbar-width: none; }
-  /* text balance */
-  .text-balance { text-wrap: balance; }
-  .text-pretty { text-wrap: pretty; }
-  /* break words */
-  .break-words { overflow-wrap: anywhere; word-break: break-word; }
-  /* whitespace */
-  .whitespace-nowrap { white-space: nowrap; }
-  /* pointer */
-  .pointer-events-auto { pointer-events: auto; }
-  /* transform origin */
-  .origin-center { transform-origin: center; }
-  /* will change */
-  .will-change-transform { will-change: transform; }
-  /* backface */
-  .backface-hidden { backface-visibility: hidden; }
-  /* perspective */
-  .perspective { perspective: 1000px; }
-  /* preserve 3d */
-  .preserve-3d { transform-style: preserve-3d; }
-  /* translate z */
-  .translate-z-0 { transform: translateZ(0); }
-  /* filter blur */
-  .blur-sm { filter: blur(4px); }
-  .blur-md { filter: blur(8px); }
-  .blur-lg { filter: blur(16px); }
-  /* backdrop */
-  .backdrop-blur { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-  .backdrop-blur-lg { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-  /* mix blend */
-  .mix-blend-screen { mix-blend-mode: screen; }
-  .mix-blend-overlay { mix-blend-mode: overlay; }
-  /* opacity util */
-  .opacity-50 { opacity: .5; }
-  .opacity-75 { opacity: .75; }
-  /* scale */
-  .scale-95 { transform: scale(.95); }
-  .scale-100 { transform: scale(1); }
-  .scale-105 { transform: scale(1.05); }
-  /* rotate */
-  .rotate-45 { transform: rotate(45deg); }
-  /* translate */
-  .translate-y-1 { transform: translateY(4px); }
-  .-translate-y-1 { transform: translateY(-4px); }
-  /* shadow utils */
-  .shadow-sm { box-shadow: var(--shadow-sm); }
-  .shadow-md { box-shadow: var(--shadow-md); }
-  .shadow-lg { box-shadow: var(--shadow-lg); }
-  .shadow-none { box-shadow: none; }
-  /* ring */
-  .ring-accent { box-shadow: 0 0 0 2px var(--accent); }
-  /* border color */
-  .border-accent { border-color: var(--accent); }
-  /* text size */
-  .text-xs { font-size: .75rem; }
-  .text-sm { font-size: .875rem; }
-  .text-base { font-size: 1rem; }
-  .text-lg { font-size: 1.125rem; }
-  .text-xl { font-size: 1.25rem; }
-  .text-2xl { font-size: 1.5rem; }
-  .text-3xl { font-size: 1.875rem; }
-  .text-4xl { font-size: 2.25rem; }
-  /* leading */
-  .leading-tight { line-height: 1.1; }
-  .leading-snug { line-height: 1.3; }
-  .leading-relaxed { line-height: 1.7; }
-  /* tracking */
-  .tracking-tight { letter-spacing: -0.02em; }
-  .tracking-wide { letter-spacing: .05em; }
-  /* uppercase */
-  .uppercase { text-transform: uppercase; }
-  .capitalize { text-transform: capitalize; }
-  /* italic */
-  .italic { font-style: italic; }
-  /* underline */
-  .underline { text-decoration: underline; }
-  /* no underline */
-  .no-underline { text-decoration: none; }
-  /* list none */
-  .list-none { list-style: none; }
-  /* grid cols */
-  .grid-cols-2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
-  .grid-cols-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
-  /* auto flow */
-  .grid-flow-col { grid-auto-flow: column; }
-  /* place items */
-  .place-items-center { place-items: center; }
-  /* align self */
-  .self-center { align-self: center; }
-  /* justify self */
-  .justify-self-end { justify-self: end; }
-  /* flex 1 */
-  .flex-1 { flex: 1 1 0%; }
-  /* shrink */
-  .shrink-0 { flex-shrink: 0; }
-  /* grow */
-  .grow { flex-grow: 1; }
-  /* space between */
-  .space-between { justify-content: space-between; }
-  /* wrap reverse */
-  .flex-wrap-reverse { flex-wrap: wrap-reverse; }
-  /* col */
-  .flex-col { flex-direction: column; }
-  /* row */
-  .flex-row { flex-direction: row; }
-  /* inline */
-  .inline { display: inline; }
-  /* contents */
-  .contents { display: contents; }
-  /* table */
-  .table { display: table; }
-  /* grid auto */
-  .grid-auto { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
-  /* max width */
-  .max-w-xs { max-width: 20rem; }
-  .max-w-sm { max-width: 24rem; }
-  .max-w-md { max-width: 28rem; }
-  .max-w-lg { max-width: 32rem; }
-  .max-w-xl { max-width: 36rem; }
-  .max-w-2xl { max-width: 42rem; }
-  .max-w-3xl { max-width: 48rem; }
-  .max-w-4xl { max-width: 56rem; }
-  .max-w-5xl { max-width: 64rem; }
-  .max-w-6xl { max-width: 72rem; }
-  .max-w-7xl { max-width: 80rem; }
-  .max-w-full { max-width: 100%; }
-  /* min width */
-  .min-w-0 { min-width: 0; }
-  /* height auto */
-  .h-auto { height: auto; }
-  /* top/bottom/left/right */
-  .top-0 { top: 0; }
-  .bottom-0 { bottom: 0; }
-  .left-0 { left: 0; }
-  .right-0 { right: 0; }
-  /* inset x/y */
-  .inset-x-0 { left: 0; right: 0; }
-  .inset-y-0 { top: 0; bottom: 0; }
-  /* margin auto */
-  .mx-auto { margin-left: auto; margin-right: auto; }
-  .my-auto { margin-top: auto; margin-bottom: auto; }
-  /* padding */
-  .px-2 { padding-left: 8px; padding-right: 8px; }
-  .px-4 { padding-left: 16px; padding-right: 16px; }
-  .px-6 { padding-left: 24px; padding-right: 24px; }
-  .py-2 { padding-top: 8px; padding-bottom: 8px; }
-  .py-4 { padding-top: 16px; padding-bottom: 16px; }
-  .py-6 { padding-top: 24px; padding-bottom: 24px; }
-  /* margin */
-  .mt-2 { margin-top: 8px; }
-  .mt-4 { margin-top: 16px; }
-  .mt-6 { margin-top: 24px; }
-  .mb-2 { margin-bottom: 8px; }
-  .mb-4 { margin-bottom: 16px; }
-  .mb-6 { margin-bottom: 24px; }
-  /* rounded corners */
-  .rounded-sm { border-radius: 4px; }
-  .rounded-md { border-radius: 8px; }
-  .rounded-lg { border-radius: 12px; }
-  .rounded-xl { border-radius: 16px; }
-  .rounded-2xl { border-radius: 24px; }
-  .rounded-3xl { border-radius: 32px; }
-  /* border width */
-  .border-0 { border-width: 0; }
-  .border-2 { border-width: 2px; }
-  /* divide */
-  .divide-y > * + * { border-top: 1px solid var(--border); }
-  /* bg opacity */
-  .bg-opacity-50 { background-color: rgba(0,0,0,.5); }
-  /* text opacity */
-  .text-opacity-75 { color: rgba(232,234,240,.75); }
-  /* transition duration */
-  .duration-150 { transition-duration: 150ms; }
-  .duration-300 { transition-duration: 300ms; }
-  .duration-500 { transition-duration: 500ms; }
-  /* ease */
-  .ease-out { transition-timing-function: var(--ease-out); }
-  .ease-in { transition-timing-function: var(--ease-in); }
-  .ease-in-out { transition-timing-function: var(--ease-in-out); }
-  /* scale on hover already */
-  /* group hover */
-  .group:hover .group-hover\:scale-105 { transform: scale(1.05); }
-  /* focus ring */
-  .focus\:ring-2:focus { box-shadow: 0 0 0 2px var(--accent); }
-  /* active */
-  .active\:scale-95:active { transform: scale(.95); }
-  /* disabled */
-  .disabled\:opacity-50:disabled { opacity: .5; }
-  /* dark variant */
-  .dark\:bg-card:root[data-theme="dark"] & { background: var(--card); }
-  /* responsive display */
-  @media (max-width: 640px) { .sm\:hidden { display: none; } .sm\:block { display: block; } .sm\:flex { display: flex; } .sm\:grid { display: grid; } .sm\:text-center { text-align: center; } .sm\:w-full { width: 100%; } }
-  @media (min-width: 768px) { .md\:flex { display: flex; } .md\:grid { display: grid; } .md\:hidden { display: none; } .md\:block { display: block; } .md\:text-left { text-align: left; } }
-  @media (min-width: 1024px) { .lg\:flex { display: flex; } .lg\:grid { display: grid; } .lg\:hidden { display: none; } .lg\:block { display: block; } }
-  /* container query component */
-  @container (min-width: 400px) { .cq\:flex { display: flex; } }
-  /* print */
-  @media print { .print\:hidden { display: none !important; } .print\:block { display: block !important; } }
-  /* motion reduce */
-  @media (prefers-reduced-motion: reduce) { .motion-reduce\:animate-none { animation: none !important; } }
-  /* color scheme */
-  :root { color-scheme: dark light; }
-  /* accent color already */
-  /* field sizing already */
-  /* text wrap pretty already */
-  /* hanging punctuation already */
-  /* font synthesis none already */
-  /* text decoration skip ink already */
-  /* scroll padding already */
-  /* scroll margin already */
-  /* touch action already */
-  /* overscroll already */
-  /* scrollbar gutter already */
-  /* content visibility already */
-  /* contain already */
-  /* isolation already */
-  /* will-change already */
-  /* backface already */
-  /* perspective already */
-  /* transform style already */
-  /* translate z already */
-  /* filter already */
-  /* backdrop already */
-  /* mix blend already */
-  /* opacity util already */
-  /* scale already */
-  /* rotate already */
-  /* translate already */
-  /* shadow already */
-  /* border already */
-  /* rounded already */
-  /* bg already */
-  /* text color already */
-  /* margin/padding already */
-  /* gap already */
-  /* flex wrap already */
-  /* width already */
-  /* height already */
-  /* min height already */
-  /* object already */
-  /* position already */
-  /* inset already */
-  /* z already */
-  /* overflow already */
-  /* flex already */
-  /* justify/align already */
-  /* text align already */
-  /* font weight already */
-  /* opacity already */
-  /* cursor already */
-  /* user select already */
-  /* pointer events already */
-  /* transition already */
-  /* transform already */
-  /* shadow already */
-  /* border already */
-  /* rounded already */
-  /* bg already */
-  /* text color already */
-  /* margin/padding already */
-  /* gap already */
-  /* flex wrap already */
-  /* width already */
-  /* height already */
-  /* min height already */
-  /* object already */
-  /* position already */
-  /* inset already */
-  /* z already */
-  /* overflow already */
-  /* flex already */
-  /* justify/align already */
-  /* text align already */
-  /* font weight already */
-  /* opacity already */
-  /* cursor already */
-  /* user select already */
-  /* pointer events already */
-  /* transition already */
-  /* transform already */
-</style>
-<script>
-  (function(){
-    try {
-      var t = localStorage.getItem('theme');
-      if(!t){ t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; }
-      document.documentElement.setAttribute('data-theme', t);
-      var mq = window.matchMedia('(prefers-color-scheme: light)');
-      if(mq.addEventListener){
-        mq.addEventListener('change', function(e){
-          if(!localStorage.getItem('theme')){
-            document.documentElement.setAttribute('data-theme', e.matches ? 'light' : 'dark');
-          }
-        });
-      }
-    } catch(e){}
-  })();
-</script>
+<link rel="apple-touch-icon" href="assets/icon-192.png" />
+<link rel="manifest" href="manifest.webmanifest" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="LLM Wiki" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<link rel="stylesheet" href="assets/site.css" />
 </head>
 <body>
-<div id="progress" style="position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:1000;transition:width .1s linear;"></div>
-<a class="skip" href="#content">Skip to content</a><button id="backToTop" type="button" aria-label="Back to top" style="position:fixed;right:16px;bottom:16px;display:none;padding:10px 12px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;z-index:999;">↑</button>
-<nav aria-label="Primary">
-  <div class="container inner">
-    <div class="brand"><span class="dot"></span>LLM Wiki</div>
-    <div class="nav-links">
-      <a href="#how">How it works</a>
-      <a href="#features">Features</a>
-      <a href="#compare">vs RAG</a>
-      <a href="#start">Quick start</a>
-      <a href="#article">The idea</a>
-      <a href="#concepts">Concepts</a>
-      <a href="#graph">Live graph</a>
+<script>(function(){var d=document.documentElement,t='dark';try{t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');}catch(e){}d.setAttribute('data-theme',t);if('IntersectionObserver' in window)d.classList.add('js');})();</script>
+<div id="progress" aria-hidden="true"></div>
+<a class="skip" href="#content">Skip to content</a>
+<button id="backToTop" class="ctl" type="button" hidden aria-label="Back to top" data-i18n-aria="Back to top" data-i18n-title title="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+<header class="site-nav" id="top">
+  <div class="container nav-row">
+    <a class="brand" href="#top"><span class="dot" aria-hidden="true"></span>LLM Wiki</a>
+    <div class="nav-actions">
+      <button class="ctl theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme" data-i18n-aria="Toggle color theme" data-i18n-title title="Toggle color theme"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="sun"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" class="moon"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button>
+      <a class="btn primary nav-cta" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
+      <button class="ctl menu-btn" id="menuBtn" type="button" aria-expanded="false" aria-controls="navPanel" aria-label="Menu" data-i18n-aria="Menu"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path class="bars" d="M4 7h16M4 12h16M4 17h16"/><path class="x" d="M6 6l12 12M18 6L6 18"/></svg></button>
     </div>
-    <input id="siteSearch" type="search" placeholder="Search" aria-label="Search page" autocomplete="off" spellcheck="false" inputmode="search" enterkeyhint="search" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;width:100%;max-width:160px;" />    <select id="langSelect" aria-label="Language" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;width:100%;max-width:160px;">
-      <option value="en">EN</option>
-      <option value="pt">PT</option>
-      <option value="es">ES</option>
-    </select>
-    <button class="btn theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">🌙</button>
-    <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
+    <nav class="nav-panel" id="navPanel" aria-label="Primary" data-i18n-aria="Primary">
+      <div class="nav-links">
+        <a href="#how">How it works</a>
+        <a href="#skills">Skills</a>
+        <a href="#examples">Examples</a>
+        <a href="#compare">vs RAG</a>
+        <a href="#start">Quick start</a>
+        <a href="#graph">Live graph</a>
+      </div>
+      <div class="nav-tools">
+        <input class="field" id="siteSearch" type="search" placeholder="Search" data-i18n-ph="Search" aria-label="Search page" data-i18n-aria="Search page" autocomplete="off" spellcheck="false" enterkeyhint="search" />
+        <select class="field" id="langSelect" aria-label="Language" data-i18n-aria="Language">
+          <option value="en">EN</option>
+          <option value="pt">PT</option>
+          <option value="es">ES</option>
+        </select>
+      </div>
+    </nav>
   </div>
-</nav>
-<main id="content"><main id="main" role="main">
+</header>
+<main id="content" tabindex="-1">
 
 <header class="hero">
   <div class="container">
-    <span class="badge">Persistent · Compounding · No vector DB</span>
-    <h1 class="hero-title">A living notebook your <span class="grad">AI assistant</span><br/>writes and keeps current</h1>
-    <p class="hero-sub">Drop in articles, papers, notes, and data. The assistant reads each source once, writes linked pages into a <code>wiki/</code> folder, and keeps them current when new material arrives. Knowledge is compiled once, then kept current — not rebuilt on every question.</p>
+    <span class="badge">Plain markdown · Lives in git · No database</span>
+    <h1 class="hero-title">Let your <span class="grad">AI assistant</span> write the wiki you never had time for</h1>
+    <p class="hero-sub">Add files, links or pasted text. Your assistant reads them with its wiki skills and writes linked markdown pages in <code>wiki/</code>, then answers your questions from those pages and cites them.</p>
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">View on GitHub</a>
@@ -1049,78 +111,119 @@
   </div>
 </header>
 
-<section id="graph" style="padding:48px 0 32px;">
+<section id="graph">
   <div class="container">
-    <h2 class="section-title">Live wiki graph</h2>
-    <p class="section-sub">A visual example of how a wiki grows. Each dot is a page in <code>wiki/</code> (source, entity, concept or synthesis), each line is a <code>[[wikilink]]</code> between two pages. The shape is a brain, not your real wiki: about 230 pages and 100 links, simulated, and it keeps growing as new sources are ingested.</p>
-    <div class="flow-card">
-      <canvas id="g" width="900" height="900" tabindex="0" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks" aria-describedby="gTip" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>      <div style="display:flex;gap:8px;justify-content:center;margin:8px 0 0;">
-        <button id="gZoomIn" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom in</button>
-        <button id="gZoomOut" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom out</button>
-        <button id="gZoomReset" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Reset</button>
+    <h2 class="section-title">What a grown wiki looks like</h2>
+    <p class="section-sub">This is made-up data in the shape of a brain, not a real vault. Each cell is a page in <code>wiki/</code>, and each connection is a <code>[[wikilink]]</code> between two pages. Pages that get more links grow bigger, same as in Obsidian.</p>
+    <div class="graph-wrap" id="graphWrap">
+    <div class="graph">
+      <canvas id="g" tabindex="0" role="group" aria-roledescription="interactive graph" aria-label="Interactive 3D graph of wiki pages and wikilinks. Drag to rotate, arrow keys to orbit, plus and minus to zoom." data-i18n-aria="Interactive 3D graph of wiki pages and wikilinks. Drag to rotate, arrow keys to orbit, plus and minus to zoom." aria-describedby="gTip"></canvas>
+      <div class="graph-bar tl" role="group" aria-label="Filter page types" data-i18n-aria="Filter page types">
+        <button class="ctl type" type="button" data-type="source" aria-pressed="true"><i aria-hidden="true"></i><span>source</span><span class="n"></span></button>
+        <button class="ctl type" type="button" data-type="entity" aria-pressed="true"><i aria-hidden="true"></i><span>entity</span><span class="n"></span></button>
+        <button class="ctl type" type="button" data-type="concept" aria-pressed="true"><i aria-hidden="true"></i><span>concept</span><span class="n"></span></button>
+        <button class="ctl type" type="button" data-type="synthesis" aria-pressed="true"><i aria-hidden="true"></i><span>synthesis</span><span class="n"></span></button>
       </div>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:16px;color:var(--muted);">
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c8cff;margin-right:4px;"></span>concept</span>
-        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
-        <span id="gStats" aria-live="polite" style="color:var(--muted);font-variant-numeric:tabular-nums;">230 pages · 100 links</span>      </div>
-      <p id="gTip" aria-live="polite" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.</p>      <p style="text-align:center;color:var(--muted);font-size:15px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
+      <div class="graph-bar br" role="group" aria-label="Graph controls" data-i18n-aria="Graph controls">
+        <button class="ctl" id="gZoomIn" type="button" aria-label="Zoom in" data-i18n-aria="Zoom in" data-i18n-title title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></button>
+        <button class="ctl" id="gZoomOut" type="button" aria-label="Zoom out" data-i18n-aria="Zoom out" data-i18n-title title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></button>
+        <button class="ctl" id="gZoomReset" type="button" aria-label="Reset view" data-i18n-aria="Reset view" data-i18n-title title="Reset view"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
+        <button class="ctl" id="gRotate" type="button" aria-pressed="true" aria-label="Auto-rotate" data-i18n-aria="Auto-rotate" data-i18n-title title="Auto-rotate"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
+        <button class="ctl" id="gOrbit" type="button" aria-pressed="false" aria-label="Orbit mode (drag in any direction)" data-i18n-aria="Orbit mode (drag in any direction)" data-i18n-title title="Orbit mode (drag in any direction)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-25 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg></button>
+        <button class="ctl" id="gFull" type="button" aria-pressed="false" aria-label="Full screen" data-i18n-aria="Full screen" data-i18n-title title="Full screen"><svg class="fs-in" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="fs-out" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
+      </div>
+      <div class="graph-info" id="gInfo" hidden aria-hidden="true"></div>
     </div>
+    <div class="graph-actions" role="group" aria-label="Wiki actions" data-i18n-aria="Wiki actions">
+      <button class="btn" id="gAdd" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></svg>Add a page</button>
+      <button class="btn" id="gAsk" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Ask the wiki</button>
+      <button class="btn" id="gLint" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M3.5 6l1.5 1.5L7 5M3.5 12l1.5 1.5L7 11M3.5 18l1.5 1.5L7 17"/></svg>Run lint</button>
+    </div>
+    <div class="graph-meta"><p id="gTip"></p><p id="gStats"></p></div>
+    <p class="sr-only" id="gStatus" role="status"></p>
+    </div>
+    <details class="graph-list"><summary>Most connected pages</summary><ul id="gList"></ul></details>
   </div>
 </section>
 
 <section class="flow" id="how">
   <div class="container">
     <h2 class="section-title">How it works</h2>
-    <p class="section-sub">Three folders. One loop. The assistant does the bookkeeping; you curate and ask.</p>
+    <p class="section-sub">You add sources. The assistant files them. You ask questions, and a wiki skill handles each step.</p>
     <div class="flow-card">
-      <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow from raw sources to wiki to answers">
-        <defs>
-          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#7c8cff"/><stop offset="1" stop-color="#5eead4"/>
-          </linearGradient>
-        </defs>
-        <!-- raw box -->
-        <rect x="20" y="70" width="180" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
-        <text x="110" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">raw/</text>
-        <text x="110" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">articles, papers,</text>
-        <text x="110" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">notes, data files</text>
-        <text x="110" y="175" text-anchor="middle" fill="#5eead4" font-size="12">you curate</text>
-        <!-- arrow -->
-        <path d="M210 130 L290 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
-        <!-- llm box -->
-        <rect x="300" y="70" width="200" height="120" rx="14" fill="#171a24" stroke="#7c8cff"/>
-        <text x="400" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">LLM assistant</text>
-        <text x="400" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">reads once · writes pages</text>
-        <text x="400" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">links · revises · flags</text>
-        <text x="400" y="175" text-anchor="middle" fill="#7c8cff" font-size="12">via skills in .agents/</text>
-        <!-- arrow -->
-        <path d="M510 130 L590 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
-        <!-- wiki box -->
-        <rect x="600" y="70" width="240" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
-        <text x="720" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">wiki/</text>
-        <text x="720" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">sources · entities · concepts</text>
-        <text x="720" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">syntheses · index · log</text>
-        <text x="720" y="175" text-anchor="middle" fill="#5eead4" font-size="12">compounds over time</text>
-      </svg>
-      <p style="text-align:center; color: var(--muted); font-size: 15px; margin: 16px 0 0;">You ask questions against <code>wiki/</code>, not against the raw files. Each new source makes the notebook richer.</p>
+      <ol class="diagram" aria-label="Flow from raw sources to wiki to answers" data-i18n-aria="Flow from raw sources to wiki to answers">
+        <li><div class="node"><b>raw/</b><span>files, links and pasted text</span><span>saved here, never edited</span><span class="tag">you choose them</span></div><span class="arrow" aria-hidden="true"></span></li>
+        <li><div class="node hl"><b>LLM assistant</b><span>loads a wiki skill first</span><span>then reads, writes or answers</span><span class="tag">skills in .agents/skills/</span></div><span class="arrow" aria-hidden="true"></span></li>
+        <li><div class="node"><b>wiki/</b><span>sources · entities · concepts</span><span>syntheses · index · log</span><span class="tag">grows as you add</span></div></li>
+      </ol>
+      <p class="flow-note">Questions go to <code>wiki/</code> first. The assistant opens the raw files only to check a detail.</p>
     </div>
+  </div>
+</section>
+
+<section id="inputs">
+  <div class="container">
+    <h2 class="section-title">Give it almost anything</h2>
+    <p class="section-sub">Start with what you already have. You choose the sources, and the assistant never edits them.</p>
+    <div class="grid">
+      <div class="card"><h3>Files on your computer</h3><p>Notes, markdown, text, PDFs, images and data files such as CSV. Copy them into <code>raw/</code> and ask the assistant to ingest them.</p></div>
+      <div class="card"><h3>Links from the web</h3><p>Paste a link and the assistant asks whether to save the page into <code>raw/</code> first. If you say yes, it keeps a clean copy and notes the date it was fetched.</p></div>
+      <div class="card"><h3>Text you paste</h3><p>Paste an email, a chat thread or a transcript. The assistant asks before saving it as a file in <code>raw/</code>, then ingests it like any other source.</p></div>
+      <div class="card"><h3>Screenshots and scans</h3><p>Images count as sources too. The assistant separates what it can read in the image from what it is guessing, and says so when it can't read one reliably.</p></div>
+    </div>
+    <p class="hint">Whatever the format, the assistant needs a tool that can read it. If it can't, it tells you instead of guessing.</p>
+  </div>
+</section>
+
+<section id="skills">
+  <div class="container">
+    <h2 class="section-title">Every request goes through a skill</h2>
+    <p class="section-sub">When you ask the assistant to ingest, answer or remove something, <code>AGENTS.md</code> tells it to load the matching skill first. That is why every answer is built the same way: it starts from the index, uses your pages, cites them and logs any change it makes.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Which skill runs when" data-i18n-aria="Which skill runs when">
+      <table class="compare">
+        <thead><tr><th>You say</th><th>Skill</th><th>What happens</th></tr></thead>
+        <tbody>
+          <tr><td>Ingest this file or link</td><td><code>wiki-ingest</code></td><td>Reads the source, writes or updates the pages it affects, then updates the index and log. A link or pasted text is saved to raw/ first, and only after you say yes.</td></tr>
+          <tr><td>What does the wiki say about X?</td><td><code>wiki-query</code></td><td>Starts from the index, reads the relevant pages, opens raw files only to verify, and cites what it used. It can save a useful answer as a synthesis page.</td></tr>
+          <tr><td>Just tell me, don't change anything</td><td><code>wiki</code></td><td>The same lookup, but it cannot write, create or delete a file.</td></tr>
+          <tr><td>Check the wiki</td><td><code>wiki-maintenance</code></td><td>Lint looks for broken links, missing fields and orphan pages. Refresh reports raw files that changed after their page was written.</td></tr>
+          <tr><td>Remove everything about X</td><td><code>wiki-delete</code></td><td>Lists every mention, shows what would change and waits for your confirmation. It never touches raw files.</td></tr>
+          <tr><td>Write or fix a page</td><td><code>wiki-writing</code></td><td>Sets the page type, headings, frontmatter and citation style before any wiki prose is written.</td></tr>
+          <tr><td>Not sure what to ask</td><td><code>wiki-router</code></td><td>Picks exactly one of the skills above, or asks you one question.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="hint">These are instructions the assistant follows, not a lock. The lint script checks the result.</p>
+    <p class="hint">Shortcut commands, where your assistant supports them:</p>
+    <div class="compat"><span class="chip"><code>/wiki-ingest</code></span><span class="chip"><code>/wiki-query</code></span><span class="chip"><code>/wiki</code></span><span class="chip"><code>/wiki-lint</code></span><span class="chip"><code>/wiki-refresh</code></span></div>
+  </div>
+</section>
+
+<section id="examples">
+  <div class="container">
+    <h2 class="section-title">Examples from an ordinary week</h2>
+    <p class="section-sub">Made-up situations, but the steps are the real ones.</p>
+    <div class="grid two">
+      <div class="card"><h3>Studying for an exam</h3><p>You keep lecture PDFs, your class notes and two articles you found online. You tell the assistant to ingest them, and the links are saved to raw/ after you approve it.</p><p>Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.</p></div>
+      <div class="card"><h3>Running a small business</h3><p>You drop in proposals, signed contracts, meeting notes and emails exported as text. Each one is ingested the same way.</p><p>Months later: "What did I promise this client about delivery, and did the scope change?" The assistant points to the proposal and to the later email, and says where they differ.</p></div>
+      <div class="card"><h3>Planning a trip</h3><p>You save a few blog posts as links, the booking confirmation as a PDF and screenshots of the map.</p><p>You ask: "We land on Sunday night and the museum closes on Mondays. Which day works?" The answer comes from your saved sources, and each claim links to the page it came from.</p></div>
+      <div class="card"><h3>Keeping a team's decisions</h3><p>You add meeting notes, design docs and issue threads over a few months.</p><p>A new teammate asks: "Why did we pick Postgres?" The assistant answers from the decision pages and can save the answer as a synthesis page, so the next person finds it already written.</p></div>
+    </div>
+    <p class="hint">In each case, <code>wiki-query</code> handles the questions and <code>wiki-ingest</code> handles every source you add.</p>
   </div>
 </section>
 
 <section id="features">
   <div class="container">
-    <h2 class="section-title">What you get</h2>
-    <p class="section-sub">A template you clone once. The assistant maintains the structure; you never hand-edit wiki pages.</p>
+    <h2 class="section-title">What it does for you</h2>
+    <p class="section-sub">Plain files, a few scripts and instructions your assistant follows. Nothing runs in the background.</p>
     <div class="grid">
-      <div class="card"><div class="icon">📁</div><h3>Three-folder layout</h3><p><code>raw/</code> for sources, <code>wiki/</code> for pages, <code>.agents/skills/</code> for the rules. Narrow, predictable, git-friendly.</p></div>
-      <div class="card"><div class="icon">🔗</div><h3>Wikilinks &amp; citations</h3><p>Bare <code>[[slug]]</code> links plus numbered footnotes to raw files. Cross-references already exist when you ask.</p></div>
-      <div class="card"><div class="icon">📋</div><h3>Typed pages</h3><p>Source, entity, concept, synthesis — each with a required section shape and frontmatter schema.</p></div>
-      <div class="card"><div class="icon">🧠</div><h3>Agent skills</h3><p>Ingest, query, lint, refresh. The assistant follows them instead of improvising.</p></div>
-      <div class="card"><div class="icon">🔍</div><h3>Searchable index</h3><p><code>wiki/index.md</code> is the catalog; <code>wiki/log.md</code> is the append-only history of every operation.</p></div>
-      <div class="card"><div class="icon">✅</div><h3>Validation &amp; tests</h3><p>Structural checks and a test suite keep the notebook honest as it grows.</p></div>
+      <div class="card"><h3>Answers you can check</h3><p>Claims in wiki pages carry a footnote that points at the raw file. When the assistant answers, it names the pages it used, so you can open them.</p></div>
+      <div class="card"><h3>Your sources stay untouched</h3><p>The assistant reads <code>raw/</code> but never edits it. Everything it writes goes into <code>wiki/</code>, and git keeps the history.</p></div>
+      <div class="card"><h3>A record of every change</h3><p><code>wiki/index.md</code> lists every page. <code>wiki/log.md</code> records what the assistant did and when.</p></div>
+      <div class="card"><h3>Good answers get reused</h3><p>A useful answer can be saved as a synthesis page. The next similar question starts from that page instead of the raw files.</p></div>
+      <div class="card"><h3>Problems show up early</h3><p>Lint catches broken links and missing fields. Refresh tells you when a raw file changed after its page was written.</p></div>
+      <div class="card"><h3>Removing things is safe</h3><p>Removing a subject lists every mention first and waits for your yes. The raw files stay where they are.</p></div>
     </div>
   </div>
 </section>
@@ -1128,31 +231,31 @@
 <section id="audience">
   <div class="container">
     <h2 class="section-title">Who this is for</h2>
-    <p class="section-sub">Honest fit check. If two or more of these sound like you, try it.</p>
+    <p class="section-sub">If one of these sounds like you, it's worth an afternoon.</p>
     <div class="grid">
-      <div class="card"><h3>Researchers &amp; readers</h3><p>You collect articles, papers, and notes and want them to compound into a queryable notebook.</p></div>
-      <div class="card"><h3>Builders &amp; founders</h3><p>You track decisions, competitors, and customer research across many sources.</p></div>
-      <div class="card"><h3>Students &amp; writers</h3><p>You need cross-references and citations that already exist when you start writing.</p></div>
-      <div class="card"><h3>Teams</h3><p>You want a shared, version-controlled knowledge base that an assistant keeps current.</p></div>
+      <div class="card"><h3>Readers and researchers</h3><p>You save more papers and articles than you can keep in your head, and want to ask questions across them.</p></div>
+      <div class="card"><h3>Builders and founders</h3><p>You keep notes on competitors, customer calls and past decisions, and can never find the one you need.</p></div>
+      <div class="card"><h3>Students and writers</h3><p>You want to start writing with the citations and cross-references already lined up.</p></div>
+      <div class="card"><h3>Teams</h3><p>You want one shared notebook in git that stays up to date without someone owning it full time.</p></div>
     </div>
-    <p style="color:var(--muted);font-size:16px;margin-top:24px;">Not for you if you need real-time retrieval over millions of documents or a hosted SaaS. This is a local, compounding notebook.</p>
+    <p class="hint">Skip it if you need search over millions of documents or a hosted service. This is a folder of markdown on your own machine.</p>
   </div>
 </section>
 
 <section id="compare">
   <div class="container">
     <h2 class="section-title">LLM wiki vs. RAG vs. note apps</h2>
-    <p class="section-sub">Different tools answer the same question differently. Pick the shape that fits your work.</p>
-    <div style="overflow-x:auto;">
+    <p class="section-sub">The same question, answered three ways. Read the rows as rough generalizations.</p>
+    <div class="table-wrap" tabindex="0" role="region" aria-label="Comparison table" data-i18n-aria="Comparison table">
       <table class="compare">
         <thead><tr><th>Capability</th><th>LLM Wiki</th><th>RAG</th><th>Note apps</th></tr></thead>
         <tbody>
-          <tr><td>Knowledge persists across questions</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Yes</td></tr>
-          <tr><td>Cross-references pre-built</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Manual</td></tr>
-          <tr><td>Contradictions flagged</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
-          <tr><td>Setup cost</td><td class="yes">Clone template</td><td class="no">Infra + embeddings</td><td class="yes">Install app</td></tr>
-          <tr><td>Works offline / local files</td><td class="yes">Yes</td><td class="no">Often no</td><td class="yes">Yes</td></tr>
-          <tr><td>AI maintains the notes</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Answers get written down</td><td class="yes">Yes</td><td class="no">No, rebuilt each time</td><td class="mid">Only if you write them</td></tr>
+          <tr><td>Links between ideas exist before you ask</td><td class="yes">Yes</td><td class="no">No</td><td class="mid">Manual</td></tr>
+          <tr><td>Conflicting claims get flagged</td><td class="yes">On ingest and lint</td><td class="no">Rarely</td><td class="no">No</td></tr>
+          <tr><td>Setup</td><td class="yes">Clone the repo</td><td class="no">Embeddings and a vector store</td><td class="mid">Install an app</td></tr>
+          <tr><td>Where the data lives</td><td class="yes">Local files</td><td class="mid">Usually a hosted index</td><td class="mid">Local or the app's cloud</td></tr>
+          <tr><td>Who writes the notes</td><td class="yes">The assistant</td><td class="mid">Nobody, it indexes raw text</td><td class="mid">You</td></tr>
         </tbody>
       </table>
     </div>
@@ -1161,33 +264,34 @@
 
 <section id="start">
   <div class="container">
-    <h2 class="section-title">Quick start (60 seconds)</h2>
-    <p class="section-sub">You need an AI coding assistant. No API keys, no database.</p>
-    <div style="position:relative;">
-      <button id="copyQs" type="button" class="btn" style="position:absolute;right:8px;top:8px;font-size:14px;padding:6px 10px;">Copy</button>
+    <h2 class="section-title">Quick start</h2>
+    <p class="section-sub">You need an AI coding assistant that can read your files. No API keys, no database.</p>
+    <div class="code-box">
+      <button id="copyQs" type="button" class="btn">Copy</button>
       <div class="qs" id="quickStart">
       <span class="line"><span class="c"># 1. Create your own copy</span></span>
       <span class="line">git clone https://github.com/jonyfs/llm-wiki-template my-wiki</span>
       <span class="line">cd my-wiki</span>
       <span class="line"></span>
-      <span class="line"><span class="c"># 2. Drop a source into raw/</span></span>
-      <span class="line">cp ~/Downloads/article.md raw/</span>
+      <span class="line"><span class="c"># 2. Add sources: copy files into raw/</span></span>
+      <span class="line">cp ~/Downloads/lecture.pdf raw/</span>
       <span class="line"></span>
-      <span class="line"><span class="c"># 3. Ask your assistant to ingest it</span></span>
-      <span class="line"><span class="k">"Ingest raw/article.md into the wiki."</span></span>
+      <span class="line"><span class="c"># 3. Ask your assistant to ingest them (it loads wiki-ingest)</span></span>
+      <span class="line"><span class="k">"Ingest raw/lecture.pdf into the wiki."</span></span>
+      <span class="line"><span class="k">"Save https://example.com/article into raw/ and ingest it."</span></span>
       <span class="line"></span>
-      <span class="line"><span class="c"># 4. Ask questions against the wiki</span></span>
+      <span class="line"><span class="c"># 4. Ask questions (it loads wiki-query)</span></span>
       <span class="line"><span class="k">"What does the wiki say about X?"</span></span>
     </div>
     </div>
-    <p style="color: var(--muted); font-size: 16px; margin-top: 16px;">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
+    <p class="hint">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
   </div>
 </section>
 
 <section>
   <div class="container">
     <h2 class="section-title">Compatible agents</h2>
-    <p class="section-sub">The rules live in <code>AGENTS.md</code> and <code>.agents/skills/</code>, so any agent that reads markdown can use them.</p>
+    <p class="section-sub">The instructions live in <code>AGENTS.md</code> and <code>.agents/skills/</code>. Any agent that reads markdown can follow them.</p>
     <div class="compat">
       <span class="chip">Claude Code</span>
       <span class="chip">Cursor</span>
@@ -1200,25 +304,24 @@
   </div>
 </section>
 
-
 <section id="faq">
   <div class="container">
-    <h2 class="section-title">Frequently asked questions</h2>
-    <p class="section-sub">Short answers to the questions people ask first.</p>
+    <h2 class="section-title">Common questions</h2>
     <div class="grid">
-      <div class="card"><h3>Do I need an API key or database?</h3><p>No. You need an AI coding assistant that reads markdown. Everything stays in plain files in git.</p></div>
-      <div class="card"><h3>How is this different from RAG?</h3><p>RAG rebuilds an answer from chunks every question. A wiki is compiled once and kept current, so cross-references and contradictions already exist.</p></div>
-      <div class="card"><h3>Can I use my own sources?</h3><p>Yes. Drop articles, papers, notes, or data into <code>raw/</code> and ask the assistant to ingest them.</p></div>
-      <div class="card"><h3>Does it work offline?</h3><p>Yes. Files are local; the assistant reads them directly. No network calls required for the wiki itself.</p></div>
-      <div class="card"><h3>Who maintains the wiki?</h3><p>The assistant does, following the skills in <code>.agents/skills/</code>. You curate sources and ask questions.</p></div>
+      <div class="card"><h3>Do I need an API key or database?</h3><p>No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them.</p></div>
+      <div class="card"><h3>How is this different from RAG?</h3><p>RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.</p></div>
+      <div class="card"><h3>What can I add to it?</h3><p>Files you copy into <code>raw/</code>: notes, markdown, PDFs, images and data files. Links and pasted text work too, once you agree to save them there. The assistant still needs a tool that can read the format.</p></div>
+      <div class="card"><h3>Do I have to use the skills?</h3><p>They are how the template works. <code>AGENTS.md</code> tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.</p></div>
+      <div class="card"><h3>Does it work offline?</h3><p>The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.</p></div>
+      <div class="card"><h3>Who maintains the wiki?</h3><p>The assistant does, following the instructions in <code>.agents/skills/</code>. You choose the sources and ask the questions.</p></div>
     </div>
   </div>
 </section>
 
-<section style="text-align:center;">
+<section class="center">
   <div class="container">
-    <h2 class="section-title">Start your own wiki today</h2>
-    <p class="section-sub" style="margin:0 auto 32px;">Clone the template, drop in one source, and ask your assistant to ingest it. Sixty seconds to a compounding notebook.</p>
+    <h2 class="section-title">Start with one source</h2>
+    <p class="section-sub mx">Clone the template, put one article in <code>raw/</code> and ask your assistant to ingest it. You'll quickly see whether it fits how you work.</p>
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">Star on GitHub</a>
@@ -1227,7 +330,6 @@
     </div>
   </div>
 </section>
-
 
 <section id="metrics">
   <div class="container">
@@ -1244,125 +346,50 @@
 
 <section id="article">
   <div class="container">
-    <h2 class="section-title">The idea, in Karpathy's words</h2>
-    <p class="section-sub">A short reading of <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">the LLM Wiki gist</a>, paraphrased for builders.</p>
-    <div class="card" style="max-width: 820px;">
-      <p>Most tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.</p>
-      <p>An LLM wiki works the other way. The model reads each source once and writes what it learned into a folder of linked markdown pages. It updates topic pages, revises summaries, flags where new material contradicts older claims, and keeps a running synthesis. Knowledge is compiled once and then kept current, instead of being rebuilt on every query.</p>
-      <p>The result is a persistent, compounding artifact: cross-references already exist, contradictions are already flagged, and each source you add or question you ask makes the notebook richer.</p>
-      <h3 style="margin-top:20px;">The three layers</h3>
-      <svg viewBox="0 0 760 200" style="width:100%;height:auto;display:block;margin:16px 0;" role="img" aria-label="Three layers: raw, wiki, schema">
-        <rect x="20" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
-        <text x="130" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">raw/</text>
-        <text x="130" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">immutable sources</text>
-        <text x="130" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">you curate, never edit</text>
-        <rect x="270" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#7c8cff"/>
-        <text x="380" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">wiki/</text>
-        <text x="380" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">LLM-maintained pages</text>
-        <text x="380" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">sources, entities, concepts, syntheses</text>
-        <rect x="520" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
-        <text x="630" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">schema</text>
-        <text x="630" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">AGENTS.md + skills</text>
-        <text x="630" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">rules the assistant follows</text>
-        <path d="M240 100 L270 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
-        <path d="M490 100 L520 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
-        <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
-      </svg>
-      <p>The schema is the unusual part: instead of a generic RAG pipeline, you give the assistant a small set of rules (this template's <code>AGENTS.md</code> and <code>.agents/skills/</code>) and it becomes a disciplined maintainer of the wiki.</p>
+    <h2 class="section-title">Where the idea comes from</h2>
+    <p class="section-sub">Andrej Karpathy described the pattern in <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">a gist</a>. This is a short paraphrase, not a quote.</p>
+    <div class="card prose">
+      <p>Most document tools use retrieval. You upload files, and when you ask something the model pulls out the relevant pieces and writes an answer. It works, but every question starts from zero. Nothing builds up, and a question that spans several documents makes the model piece the same fragments together again.</p>
+      <p>In an LLM wiki, the model reads each source once and writes what it learned into a folder of linked markdown pages. When new material arrives it updates the topic pages, revises summaries, and points out where something contradicts an older claim.</p>
+      <p>What you end up with is a set of pages you can open, read and correct yourself. The links between ideas are already there, and each source you add gives the next question more to draw on.</p>
+      <h3 class="mt">Three layers</h3>
+      <ol class="diagram" aria-label="Three layers: raw, wiki, schema" data-i18n-aria="Three layers: raw, wiki, schema">
+        <li><div class="node"><b>raw/</b><span>read-only sources</span><span>the assistant never edits these</span></div><span class="arrow" aria-hidden="true"></span></li>
+        <li><div class="node hl"><b>wiki/</b><span>pages the assistant writes</span><span>sources, entities, concepts, syntheses</span></div><span class="arrow" aria-hidden="true"></span></li>
+        <li><div class="node"><b>schema</b><span>AGENTS.md + skills</span><span>the instructions it follows</span></div></li>
+      </ol>
+      <p>Instead of a generic pipeline, the assistant gets a short set of instructions (<code>AGENTS.md</code> and <code>.agents/skills/</code>) in this template, and it follows them.</p>
     </div>
   </div>
 </section>
 
 <section id="concepts">
   <div class="container">
-    <h2 class="section-title">Concepts, explained simply</h2>
-    <p class="section-sub">The vocabulary the template uses. Plain-language definitions, no jargon.</p>
+    <h2 class="section-title">The vocabulary</h2>
     <div class="grid">
-      <div class="card"><h3>Source page</h3><p>One page per raw file. Records what the source says, its role, and a claims ledger you can cite as <code>[[slug]] C1</code>.</p></div>
-      <div class="card"><h3>Entity page</h3><p>A person, org, product, or place that appears across sources. Collects everything the wiki knows about it.</p></div>
-      <div class="card"><h3>Concept page</h3><p>An idea, method, or theme. Explains it and links back to the sources that support it.</p></div>
-      <div class="card"><h3>Synthesis page</h3><p>A durable answer to a question that spanned several pages. Filed so the next question starts further ahead.</p></div>
-      <div class="card"><h3>Wikilink</h3><p>A bare <code>[[slug]]</code> link between pages. These links are what make the graph navigable, like in Obsidian.</p></div>
-      <div class="card"><h3>Frontmatter</h3><p>YAML at the top of every page: title, type, sources, dates. The schema the assistant validates against.</p></div>
-      <div class="card"><h3>Ingest</h3><p>Read a raw source once, write or update wiki pages, update the index and log. Knowledge compiled once.</p></div>
-      <div class="card"><h3>Query</h3><p>Answer from the wiki first. File the answer as a synthesis when it is reusable.</p></div>
-      <div class="card"><h3>Lint</h3><p>A health check: broken links, missing fields, stale claims, orphan pages.</p></div>
-      <div class="card"><h3>Compounding</h3><p>Each source and each question makes the notebook richer. Nothing is rebuilt from scratch.</p></div>
-    </div>
-  </div>
-</section>
-
-
-
-
-<section id="skills">
-  <div class="container">
-    <h2 class="section-title">The skills pipeline</h2>
-    <p class="section-sub">Each operation is a skill the assistant follows. No improvisation, no skipped steps.</p>
-    <div class="flow-card">
-      <svg viewBox="0 0 860 180" style="width:100%;height:auto;display:block;" role="img" aria-label="Skills pipeline">
-        <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
-        <g font-family="sans-serif" font-size="13" fill="#e8eaf0">
-          <rect x="20" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#5eead4"/><text x="95" y="85" text-anchor="middle" font-weight="700">Ingest</text><text x="95" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">read once, write pages</text>
-          <rect x="200" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#7c8cff"/><text x="275" y="85" text-anchor="middle" font-weight="700">Query</text><text x="275" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">answer from wiki</text>
-          <rect x="380" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#fbbf24"/><text x="455" y="85" text-anchor="middle" font-weight="700">Lint</text><text x="455" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">health checks</text>
-          <rect x="560" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#f472b6"/><text x="635" y="85" text-anchor="middle" font-weight="700">Refresh</text><text x="635" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">detect drift</text>
-          <rect x="720" y="55" width="120" height="70" rx="10" fill="#171a24" stroke="#262a38"/><text x="780" y="85" text-anchor="middle" font-weight="700">Synthesize</text><text x="780" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">file durable answers</text>
-        </g>
-        <path d="M170 90 L200 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
-        <path d="M350 90 L380 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
-        <path d="M530 90 L560 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
-        <path d="M710 90 L720 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
-      </svg>
-    </div>
-    <div class="grid" style="margin-top:24px;">
-      <div class="card"><h3>Ingest</h3><p>Reads a raw source once, writes or updates source/entity/concept pages, updates index and log. Knowledge compiled once.</p></div>
-      <div class="card"><h3>Query</h3><p>Answers from the wiki first, cites pages inline. Files the answer as a synthesis when reusable.</p></div>
-      <div class="card"><h3>Lint</h3><p>Checks broken links, missing fields, stale claims, orphans. Keeps the notebook honest.</p></div>
-      <div class="card"><h3>Refresh</h3><p>Detects drift between raw files and source pages. Reports, never silently rewrites.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="usecases">
-  <div class="container">
-    <h2 class="section-title">Use cases in plain language</h2>
-    <p class="section-sub">Concrete things people do with an LLM wiki.</p>
-    <div class="grid">
-      <div class="card"><h3>Research notebook</h3><p>Collect papers and articles, then ask cross-document questions with citations already in place.</p></div>
-      <div class="card"><h3>Decision log</h3><p>Track product decisions, competitors, and customer research across many sources.</p></div>
-      <div class="card"><h3>Study guide</h3><p>Turn lecture notes and readings into a linked, queryable study wiki.</p></div>
-      <div class="card"><h3>Team knowledge base</h3><p>Keep a shared, version-controlled notebook an assistant keeps current.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="differentiator">
-  <div class="container">
-    <h2 class="section-title">Why this is a real differentiator</h2>
-    <p class="section-sub">Not a wrapper. A different shape of tool.</p>
-    <div class="grid">
-      <div class="card"><h3>Compounds with use</h3><p>Every source and question makes the notebook richer. Nothing is rebuilt from scratch.</p></div>
-      <div class="card"><h3>Persistent artifact</h3><p>The wiki is a folder of markdown you own, in git. Not a vendor's database.</p></div>
-      <div class="card"><h3>No re-retrieval</h3><p>Answers come from notes already organized, not from re-chunking on every question.</p></div>
-      <div class="card"><h3>Cross-refs pre-built</h3><p>Links exist before you ask. Subtle multi-document questions just work.</p></div>
-      <div class="card"><h3>Contradictions flagged</h3><p>New material that conflicts with older claims is surfaced, not hidden.</p></div>
-      <div class="card"><h3>Zero infra</h3><p>No embeddings, no vector DB, no API keys. Clone and go.</p></div>
-      <div class="card"><h3>Agent-agnostic</h3><p>Works with Claude Code, Cursor, Copilot, OpenCode, Codex, and others.</p></div>
-      <div class="card"><h3>Local-first</h3><p>Files stay on your machine. You decide what to share.</p></div>
+      <div class="card"><h3>Source page</h3><p>One page per raw file. It summarizes what the source says and numbers its claims so other pages can cite them, like <code>[[slug]] C1</code>.</p></div>
+      <div class="card"><h3>Entity page</h3><p>A person, company, product or place that shows up in more than one source. Gathers what the wiki knows about it in one spot.</p></div>
+      <div class="card"><h3>Concept page</h3><p>An idea, method or theme. It explains the thing and links to the sources behind it.</p></div>
+      <div class="card"><h3>Synthesis page</h3><p>The saved answer to a question that needed several pages. Next time, you start from it.</p></div>
+      <div class="card"><h3>Wikilink</h3><p>Links like <code>[[slug]]</code> take you from one page to another. They are what the graph above draws, and Obsidian reads them too.</p></div>
+      <div class="card"><h3>Frontmatter</h3><p>A small block of YAML at the top of each page with title, type, sources and dates. The lint script checks it.</p></div>
+      <div class="card"><h3>Ingest</h3><p>The assistant reads a raw source, writes or updates the wiki pages it touches, and records it in the index and log.</p></div>
+      <div class="card"><h3>Query</h3><p>Ask a question. The assistant answers from the wiki first and can save a useful answer as a synthesis page.</p></div>
+      <div class="card"><h3>Lint</h3><p>A health check for broken links, missing fields, stale claims and pages nothing links to.</p></div>
+      <div class="card"><h3>Skill</h3><p>A markdown file in <code>.agents/skills/</code> that tells the assistant how to do one job, such as ingest, query or lint.</p></div>
     </div>
   </div>
 </section>
 
 <section id="troubleshoot">
   <div class="container">
-    <h2 class="section-title">Common pitfalls</h2>
-    <p class="section-sub">Things that trip people up the first time.</p>
+    <h2 class="section-title">When something looks wrong</h2>
     <div class="grid">
-      <div class="card"><h3>Empty wiki after ingest</h3><p>Make sure the source is in <code>raw/</code> and you asked the assistant to ingest it. The wiki is not auto-populated.</p></div>
-      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It reports missing targets so you can fix or remove them.</p></div>
-      <div class="card"><h3>Stale claims</h3><p>Use refresh to detect drift between raw files and source pages.</p></div>
-      <div class="card"><h3>Too many pages</h3><p>That is fine. The index and search keep it navigable; compounding is the point.</p></div>
+      <div class="card"><h3>Empty wiki after ingest</h3><p>Check that the file is in <code>raw/</code> and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.</p></div>
+      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It lists links that point nowhere so you can fix or remove them.</p></div>
+      <div class="card"><h3>Stale claims</h3><p>Run refresh. It shows which raw files changed since their source pages were written.</p></div>
+      <div class="card"><h3>Too many pages</h3><p>That's normal. Use <code>wiki/index.md</code> and the search script to find your way around.</p></div>
+      <div class="card"><h3>The answer ignored the wiki</h3><p>Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.</p></div>
     </div>
   </div>
 </section>
@@ -1370,625 +397,44 @@
 <section id="walkthrough">
   <div class="container">
     <h2 class="section-title">An ingest, step by step</h2>
-    <p class="section-sub">What actually happens when you say "ingest raw/article.md".</p>
+    <p class="section-sub">What happens when you tell the assistant to ingest <code>raw/article.md</code>.</p>
     <div class="flow-card">
-      <ol style="margin:0;padding-left:20px;color:var(--muted);">
-        <li style="margin-bottom:10px;color:var(--text);"><strong>Read the source once.</strong> <span style="color:var(--muted);">The assistant reads <code>raw/article.md</code> end to end.</span></li>
-        <li style="margin-bottom:10px;color:var(--text);"><strong>Create a source page.</strong> <span style="color:var(--muted);">Writes <code>wiki/sources/article.md</code> with frontmatter, summary, and a claims ledger.</span></li>
-        <li style="margin-bottom:10px;color:var(--text);"><strong>Touch related pages.</strong> <span style="color:var(--muted);">Updates or creates entity and concept pages that the source mentions, adding wikilinks.</span></li>
-        <li style="margin-bottom:10px;color:var(--text);"><strong>Update the index.</strong> <span style="color:var(--muted);">Adds entries to <code>wiki/index.md</code> under the right category.</span></li>
-        <li style="margin-bottom:10px;color:var(--text);"><strong>Append to the log.</strong> <span style="color:var(--muted);">Records the operation in <code>wiki/log.md</code> with date and title.</span></li>
-        <li style="color:var(--text);"><strong>Done.</strong> <span style="color:var(--muted);">The source is now part of the compiled knowledge base. Next question starts further ahead.</span></li>
+      <ol class="steps-list">
+        <li>It loads the skill <code>wiki-ingest</code> and reads <code>wiki/index.md</code>.</li>
+        <li>The assistant reads <code>raw/article.md</code> from start to finish.</li>
+        <li>It creates <code>wiki/sources/article.md</code> with frontmatter, a summary and a numbered list of claims.</li>
+        <li>It edits or creates the entity and concept pages the source mentions, and links them.</li>
+        <li>It adds the new pages to <code>wiki/index.md</code>, under the right heading.</li>
+        <li>It adds an entry to <code>wiki/log.md</code> with the date and a title.</li>
+        <li>The source is now part of the wiki, so your next question can use it.</li>
       </ol>
     </div>
   </div>
 </section>
 </main>
-</main>
-<footer role="contentinfo">  <div class="container inner">
+<p id="searchEmpty" role="status" hidden></p>
+
+<footer>
+  <div class="container inner">
     <div>LLM Wiki Template · MIT license</div>
-    <div>
-      <a href="https://github.com/jonyfs/llm-wiki-template">GitHub</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Docs</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/issues">Issues</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/SECURITY.md">Security</a> ·
-      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/CITATION.cff">Cite</a> ·
-      <a href="changelog.html">Changelog</a> ·
-      <a href="roadmap.html">Roadmap</a> ·
-      <a href="press-kit.html">Press kit</a> ·
-      <a href="media.html">Media</a> ·
-      <a href="https://github.com/sponsors/jonyfs">Sponsor</a>
-    </div>
+    <ul>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template">GitHub</a></li>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Docs</a></li>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template/issues">Issues</a></li>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a></li>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template/blob/main/SECURITY.md">Security</a></li>
+      <li><a href="https://github.com/jonyfs/llm-wiki-template/blob/main/CITATION.cff">Cite</a></li>
+      <li><a href="changelog.html">Changelog</a></li>
+      <li><a href="roadmap.html">Roadmap</a></li>
+      <li><a href="press-kit.html">Press kit</a></li>
+      <li><a href="media.html">Media</a></li>
+      <li><a href="https://github.com/sponsors/jonyfs">Sponsor</a></li>
+    </ul>
   </div>
 </footer>
 
-<script>
-(function(){
-  // theme toggle
-  const toggle = document.getElementById('themeToggle');
-  if(toggle){
-    const sync = () => { toggle.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙'; };
-    sync();
-    toggle.addEventListener('click', () => {
-      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
-      const apply = () => { document.documentElement.setAttribute('data-theme', next); try { localStorage.setItem('theme', next); } catch(e){} sync(); };
-      if (document.startViewTransition) { document.startViewTransition(apply); } else { apply(); }
-    });
-    try {
-      const mq = window.matchMedia('(prefers-color-scheme: light)');
-      const handler = () => {
-        if (!localStorage.getItem('theme')) {
-          document.documentElement.setAttribute('data-theme', mq.matches ? 'light' : 'dark');
-          sync();
-        }
-      };
-      if (mq.addEventListener) mq.addEventListener('change', handler);
-      else if (mq.addListener) mq.addListener(handler);
-    } catch(e){}
-  }
-  if('IntersectionObserver' in window){
-    document.querySelectorAll('section, .card').forEach(el => el.classList.add('reveal'));
-    const io = new IntersectionObserver((entries)=>{
-      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
-    }, {threshold: 0.12});
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  }
-  const canvas = document.getElementById('g');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  let visible = true;
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  canvas.style.cursor = 'grab';
-  let rotX = 0, rotY = 0, dragging3d = false, lastX = 0, lastY = 0;
-  function applyRotation(){ /* 3D projection is applied while drawing */ }
-  canvas.addEventListener('pointerdown', (e)=>{
-    dragging3d = true; lastX = e.clientX; lastY = e.clientY;
-    canvas.style.cursor = 'grabbing';
-    canvas.setPointerCapture(e.pointerId);
-  });
-  canvas.addEventListener('pointermove', (e)=>{
-    if(!dragging3d) return;
-    rotY += (e.clientX - lastX) * 0.5;
-    rotX -= (e.clientY - lastY) * 0.5;
-    rotX = Math.max(-45, Math.min(45, rotX));
-    rotY = Math.max(-60, Math.min(60, rotY));
-    lastX = e.clientX; lastY = e.clientY;
-    applyRotation();
-  });
-  function endDrag(e){
-    if(!dragging3d) return;
-    dragging3d = false;
-    canvas.style.cursor = 'grab';
-    try { canvas.releasePointerCapture(e.pointerId); } catch(err){}
-    const startRx = rotX, startRy = rotY, t0 = performance.now();
-    function ease(){
-      const t = Math.min(1, (performance.now()-t0)/400);
-      const k = 1 - Math.pow(1-t,3);
-      rotX = startRx*(1-k); rotY = startRy*(1-k);
-      applyRotation();
-      if(t < 1) requestAnimationFrame(ease);
-    }
-    requestAnimationFrame(ease);
-  }
-  canvas.addEventListener('pointerup', endDrag);
-  canvas.addEventListener('pointercancel', endDrag);
-  function applyZoom(z){ zoom = Math.max(0.5, Math.min(3, z)); }
-  canvas.addEventListener('wheel', (e)=>{
-    e.preventDefault();
-    applyZoom(zoom * (e.deltaY < 0 ? 1.12 : 0.89));
-  }, {passive:false});
-  const btnIn = document.getElementById('gZoomIn');
-  const btnOut = document.getElementById('gZoomOut');
-  const btnReset = document.getElementById('gZoomReset');
-  if(btnIn) btnIn.addEventListener('click', ()=>applyZoom(zoom*1.2));
-  if(btnOut) btnOut.addEventListener('click', ()=>applyZoom(zoom/1.2));
-  if(btnReset) btnReset.addEventListener('click', ()=>applyZoom(1));
-
-  // Procedural brain: overlapping ellipsoids (lobes). Nodes scatter on surfaces.
-  const LOBES = [
-    {cx:W*0.38, cy:H*0.42, cz:0,    rx:150, ry:120, rz:110, w:1.6}, // left hemisphere
-    {cx:W*0.62, cy:H*0.42, cz:0,    rx:150, ry:120, rz:110, w:1.6}, // right hemisphere
-    {cx:W*0.30, cy:H*0.62, cz:0,    rx:70,  ry:60,  rz:70,  w:0.7}, // left temporal
-    {cx:W*0.70, cy:H*0.62, cz:0,    rx:70,  ry:60,  rz:70,  w:0.7}, // right temporal
-    {cx:W*0.50, cy:H*0.22, cz:0,    rx:120, ry:90,  rz:90,  w:1.0}, // frontal/parietal crown
-    {cx:W*0.50, cy:H*0.78, cz:-40,  rx:85,  ry:60,  rz:70,  w:0.9}, // cerebellum
-    {cx:W*0.50, cy:H*0.92, cz:0,    rx:28,  ry:55,  rz:28,  w:0.4}  // brainstem
-  ];
-  const LOBE_WEIGHT = LOBES.reduce((s,l)=>s+l.w,0);
-  function pickLobe(){
-    let r = Math.random()*LOBE_WEIGHT;
-    for(const l of LOBES){ r -= l.w; if(r <= 0) return l; }
-    return LOBES[LOBES.length-1];
-  }
-  function randomPointOnEllipsoid(l){
-    const u = Math.random()*Math.PI*2;
-    const v = Math.random()*2 - 1;
-    const phi = Math.acos(v);
-    const sp = Math.sin(phi);
-    return {
-      x: l.cx + l.rx * sp * Math.cos(u),
-      y: l.cy + l.ry * sp * Math.sin(u),
-      z: l.cz + l.rz * Math.cos(phi)
-    };
-  }
-
-  const nodes = [];
-  const edges = [];
-  const edgeSet = new Set();
-  function edgeKey(a,b){ return a < b ? a + ',' + b : b + ',' + a; }
-  function addEdge(a,b){
-    if(a === b) return false;
-    const key = edgeKey(a,b);
-    if(edgeSet.has(key)) return false;
-    edgeSet.add(key);
-    edges.push([a,b]);
-    return true;
-  }
-  function addNode(label,type){
-    const lobe = pickLobe();
-    const pos = randomPointOnEllipsoid(lobe);
-    const n = {id:nodes.length, label, type:type||'concept',
-      x:pos.x, y:pos.y, z:pos.z,
-      vx:0, vy:0, vz:0,
-      pulse:0, degree:0,
-      anchor:{x:lobe.cx, y:lobe.cy, z:lobe.cz}
-    };
-    nodes.push(n);
-    return n;
-  }
-  const NAMES = {
-    source: ['raw/article.md','raw/paper-karpathy.md','raw/notes.md','raw/transcript.md','raw/dataset.csv','raw/changelog.md'],
-    entity: ['wiki/entities/karpathy','wiki/entities/obsidian','wiki/entities/claude','wiki/entities/rag','wiki/entities/wikilink','wiki/entities/mcp'],
-    concept: ['wiki/concepts/llm-wiki','wiki/concepts/compounding','wiki/concepts/ingest','wiki/concepts/query','wiki/concepts/lint','wiki/concepts/refresh','wiki/concepts/frontmatter','wiki/concepts/synthesis'],
-    synthesis: ['wiki/syntheses/rag-vs-wiki','wiki/syntheses/compounding-notes','wiki/syntheses/agent-fit']
-  };
-  function pickType(){
-    const r = Math.random();
-    if(r < 0.30) return 'source';
-    if(r < 0.54) return 'entity';
-    if(r < 0.86) return 'concept';
-    return 'synthesis';
-  }
-  function labelFor(type, i){
-    const pool = NAMES[type];
-    if(pool && i < pool.length) return pool[i];
-    return 'wiki/' + type + '/' + (i + 1);
-  }
-  const TARGET_NODES = 230;
-  for(let i = 0; i < TARGET_NODES; i++){
-    const t = pickType();
-    addNode(labelFor(t, i % 20), t);
-  }
-  for(let i = 1; i < nodes.length && edges.length < 100; i++) addEdge(i-1, i);
-  const affinity = {
-    source: ['source','entity','concept'],
-    entity: ['concept','entity','synthesis'],
-    concept: ['concept','entity','source'],
-    synthesis: ['concept','entity','source']
-  };
-  for(let i = 0; i < nodes.length && edges.length < 100; i++){
-    const n = nodes[i];
-    const wanted = affinity[n.type] || ['concept'];
-    const k = 3 + Math.floor(Math.random() * 4);
-    for(let j = 0; j < k && edges.length < 100; j++){
-      const desired = wanted[Math.floor(Math.random() * wanted.length)];
-      let target = Math.floor(Math.random() * nodes.length);
-      for(let t = 0; t < 4 && nodes[target].type !== desired; t++){
-        target = Math.floor(Math.random() * nodes.length);
-      }
-      addEdge(i, target);
-    }
-  }
-  while(edges.length < 100){
-    const a = Math.floor(Math.random() * nodes.length);
-    const b = Math.floor(Math.random() * nodes.length);
-    addEdge(a,b);
-  }
-  function recomputeDegrees(){
-    nodes.forEach(n => n.degree = 0);
-    edges.forEach(([a,b]) => { nodes[a].degree++; nodes[b].degree++; });
-  }
-  recomputeDegrees();
-  function isLightTheme(){ return document.documentElement.getAttribute('data-theme') === 'light'; }
-  function graphPalette(){ return isLightTheme() ? {source:'#0f766e', entity:'#b45309', concept:'#4f5bd5', synthesis:'#be185d'} : {source:'#5eead4', entity:'#fbbf24', concept:'#7c8cff', synthesis:'#f472b6'}; }
-  function graphBg(){ return isLightTheme() ? '#f7f8fc' : '#0f1117'; }
-  function graphText(){ return isLightTheme() ? '#1a1d29' : '#e8eaf0'; }
-  function graphEdge(hi){ return hi ? (isLightTheme() ? 'rgba(26,29,41,0.55)' : 'rgba(232,234,240,0.55)') : (isLightTheme() ? 'rgba(79,91,213,0.22)' : 'rgba(124,140,255,0.16)'); }
-  const FOCAL = 1000;
-  let zoom = 1;
-  function projectNode(n){
-    const cx = W/2, cy = H/2;
-    const X = (n.x - cx) * zoom, Y = (n.y - cy) * zoom, Z = n.z * zoom;
-    const ry = rotY * Math.PI / 180, rx = rotX * Math.PI / 180;
-    const cosY = Math.cos(ry), sinY = Math.sin(ry);
-    const cosX = Math.cos(rx), sinX = Math.sin(rx);
-    const x1 = X * cosY + Z * sinY;
-    const y1 = Y * cosX + X * sinY * sinX - Z * cosY * sinX;
-    const z1 = Y * sinX - X * sinY * cosX + Z * cosY * cosX;
-    const scale = FOCAL / (FOCAL + z1);
-    return {x: cx + x1 * scale, y: cy + y1 * scale, z: z1, scale: scale};
-  }
-
-  let tick = 0;
-  let hovered = -1;
-  let growing = true;
-  let alpha = 1;
-  const ALPHA_DECAY = 0.02;
-  const ALPHA_MIN = 0.001;
-  function reheat(a){ alpha = Math.max(alpha, a || 0.7); }
-  function step(){
-    if(alpha <= ALPHA_MIN){ alpha = 0; return; }
-    const k = alpha;
-    // repulsion in 3D
-    for(let i = 0; i < nodes.length; i++){
-      for(let j = i+1; j < nodes.length; j++){
-        const a = nodes[i], b = nodes[j];
-        const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
-        const d = Math.max(1, Math.hypot(dx,dy,dz));
-        const f = (1200 * k) / (d*d);
-        a.vx -= f*dx/d; a.vy -= f*dy/d; a.vz -= f*dz/d;
-        b.vx += f*dx/d; b.vy += f*dy/d; b.vz += f*dz/d;
-        const minD = 16;
-        if(d < minD){
-          const push = (minD - d) * 0.55 * k;
-          const ux = dx / d, uy = dy / d, uz = dz / d;
-          a.x -= ux * push; a.y -= uy * push; a.z -= uz * push;
-          b.x += ux * push; b.y += uy * push; b.z += uz * push;
-        }
-      }
-    }
-    // springs along edges in 3D
-    edges.forEach(([i,j])=>{
-      const a = nodes[i], b = nodes[j];
-      const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z;
-      const d = Math.max(1, Math.hypot(dx,dy,dz));
-      const f = (d - 80) * 0.018 * k;
-      a.vx += f*dx/d; a.vy += f*dy/d; a.vz += f*dz/d;
-      b.vx -= f*dx/d; b.vy -= f*dy/d; b.vz -= f*dz/d;
-    });
-    nodes.forEach(n=>{
-      const a = n.anchor || {x:W/2,y:H/2,z:0};
-      n.vx += (a.x - n.x) * 0.0012 * k;
-      n.vy += (a.y - n.y) * 0.0012 * k;
-      n.vz += (a.z - n.z) * 0.0012 * k;
-      n.vx += (W/2 - n.x) * 0.0003 * k;
-      n.vy += (H/2 - n.y) * 0.0003 * k;
-      n.vz += (0 - n.z) * 0.0003 * k;
-      n.vx *= 0.86; n.vy *= 0.86; n.vz *= 0.86;
-      n.x += n.vx; n.y += n.vy; n.z += n.vz;
-      n.x = Math.max(10, Math.min(W-10, n.x));
-      n.y = Math.max(10, Math.min(H-10, n.y));
-      n.z = Math.max(-180, Math.min(180, n.z));
-      n.pulse = Math.max(0, (n.pulse||0) - 0.010);
-    });
-    alpha *= (1 - ALPHA_DECAY);
-    if(alpha < ALPHA_MIN) alpha = 0;
-  }
-  function drawLobe(l){
-    const p = projectNode({x:l.cx, y:l.cy, z:l.cz});
-    const sx = l.rx * Math.max(0.4, p.scale);
-    const sy = l.ry * Math.max(0.4, p.scale);
-    ctx.save();
-    ctx.globalAlpha = isLightTheme() ? 0.10 : 0.08;
-    const grad = ctx.createRadialGradient(p.x, p.y, 2, p.x, p.y, Math.max(sx,sy));
-    const c = isLightTheme() ? '124,140,255' : '124,140,255';
-    grad.addColorStop(0, 'rgba(' + c + ',0.35)');
-    grad.addColorStop(1, 'rgba(' + c + ',0)');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.ellipse(p.x, p.y, sx, sy, 0, 0, Math.PI*2);
-    ctx.fill();
-    ctx.globalAlpha = isLightTheme() ? 0.22 : 0.18;
-    ctx.strokeStyle = isLightTheme() ? 'rgba(79,91,213,0.35)' : 'rgba(124,140,255,0.30)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.ellipse(p.x, p.y, sx, sy, 0, 0, Math.PI*2);
-    ctx.stroke();
-    ctx.restore();
-  }
-  function draw(){
-    const colors = graphPalette();
-    ctx.fillStyle = graphBg();
-    ctx.fillRect(0,0,W,H);
-    // brain lobes (procedural shape)
-    LOBES.forEach(drawLobe);
-    // edges
-    ctx.lineWidth = 0.9;
-    edges.forEach(([i,j])=>{
-      const a = nodes[i], b = nodes[j];
-      const pa = projectNode(a), pb = projectNode(b);
-      const hi = (i === hovered || j === hovered);
-      ctx.strokeStyle = graphEdge(hi);
-      ctx.beginPath(); ctx.moveTo(pa.x,pa.y); ctx.lineTo(pb.x,pb.y); ctx.stroke();
-    });
-    // nodes
-    nodes.forEach((n, idx)=>{
-      const p = projectNode(n);
-      const r = (4 + Math.min(18, (n.degree||0) * 0.42) + (n.pulse||0)*7) * Math.max(0.55, p.scale);
-      if((n.pulse||0) > 0){
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,r+7,0,Math.PI*2);
-        ctx.fillStyle = 'rgba(124,140,255,' + ((n.pulse||0)*0.22) + ')';
-        ctx.fill();
-      }
-      ctx.beginPath();
-      ctx.arc(p.x,p.y,r,0,Math.PI*2);
-      ctx.fillStyle = colors[n.type] || '#9aa3b2';
-      ctx.fill();
-      if(idx === hovered || (n.degree||0) > 14){
-        ctx.fillStyle = graphText();
-        ctx.font = '12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(n.label.length > 24 ? n.label.slice(0,22) + '…' : n.label, p.x, p.y - (r + 4));
-      }
-    });
-  }
-  function ingestOne(){
-    const before = nodes.length;
-    const types = ['source','concept','entity','synthesis'];
-    const t = types[Math.floor(Math.random()*types.length)];
-    const n = addNode('wiki/' + t + '/ingest-' + before, t);
-    n.pulse = 1;
-    const count = 4 + Math.floor(Math.random()*4);
-    const used = new Set();
-    for(let k = 0; k < count; k++){
-      const target = Math.floor(Math.random() * before);
-      if(target === n.id || used.has(target)) continue;
-      used.add(target);
-      addEdge(target, n.id);
-    }
-    const cross = 2 + Math.floor(Math.random()*3);
-    for(let k = 0; k < cross; k++){
-      const a = Math.floor(Math.random() * before);
-      const b = Math.floor(Math.random() * before);
-      addEdge(a,b);
-    }
-    recomputeDegrees();
-    reheat(0.6);
-    updateStats();
-  }
-  function updateStats(){
-    const s = document.getElementById('gStats');
-    if(s) s.textContent = nodes.length + ' pages · ' + edges.length + ' links ' + (growing ? '(growing)' : '(stopped after 5 min)');
-  }
-  updateStats();
-  if('IntersectionObserver' in window){
-    const io = new IntersectionObserver((entries)=>{ visible = !!entries[0] && entries[0].isIntersecting; }, {threshold: 0.05});
-    io.observe(canvas);
-  }
-  document.addEventListener('visibilitychange', ()=>{ visible = !document.hidden; });
-  if(reduceMotion){ growing = false; updateStats(); }
-  const startTime = performance.now();
-  let lastIngest = startTime;
-  function loop(){
-    if(!visible || document.hidden){ requestAnimationFrame(loop); return; }
-    const now = performance.now();
-    step();
-    draw();
-    tick++;
-    if(growing && !reduceMotion && now - startTime < 300000 && now - lastIngest >= 60000){
-      ingestOne();
-      lastIngest = now;
-    }
-    if(growing && now - startTime >= 300000){
-      growing = false;
-      updateStats();
-    }
-    requestAnimationFrame(loop);
-  }
-  canvas.addEventListener('mousemove', (e)=>{
-    const r = canvas.getBoundingClientRect();
-    const x = (e.clientX - r.left) * (W/r.width);
-    const y = (e.clientY - r.top) * (H/r.height);
-    let nearest = -1, best = 16;
-    nodes.forEach((n, idx) => { const p = projectNode(n); const d = Math.hypot(p.x-x, p.y-y); if(d < best){ best = d; nearest = idx; } });
-    hovered = nearest;
-    const tip = document.getElementById('gTip');
-    if(tip){
-      if(nearest >= 0){
-        const n = nodes[nearest];
-        tip.textContent = n.label + ' (' + n.type + ') · ' + (n.degree||0) + ' links';
-      } else {
-        tip.textContent = 'Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.';
-      }
-    }
-  });
-  canvas.addEventListener('mouseleave', ()=>{
-    hovered = -1;
-    const tip = document.getElementById('gTip');
-    if(tip) tip.textContent = 'Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.';
-  });
-  canvas.addEventListener('click', (e)=>{
-    const before = nodes.length;
-    const clickType = pickType();
-    const n = addNode('new-page-' + before, clickType);
-    n.pulse = 1;
-    const count = 2 + Math.floor(Math.random()*4);
-    const used = new Set();
-    for(let k = 0; k < count; k++){
-      const target = Math.floor(Math.random() * before);
-      if(target === n.id || used.has(target)) continue;
-      used.add(target);
-      addEdge(target, n.id);
-    }
-    const cross = 1 + Math.floor(Math.random()*2);
-    for(let k = 0; k < cross; k++){
-      const a = Math.floor(Math.random() * before);
-      const b = Math.floor(Math.random() * before);
-      addEdge(a,b);
-    }
-    recomputeDegrees();
-    reheat(0.6);
-    updateStats();
-  });
-  for(let w = 0; w < 360; w++) step();
-  loop();
-})();
-</script>
-
-<script>
-(function(){
-  const I18N_ROWS = [["LLM Wiki Template — a compounding knowledge base for AI agents", "LLM Wiki Template — uma base de conhecimento composta para agentes de IA", "LLM Wiki Template — una base de conocimiento compuesta para agentes de IA"], ["Skip to content", "Pular para o conteúdo", "Saltar al contenido"], ["LLM Wiki", "LLM Wiki", "LLM Wiki"], ["How it works", "Como funciona", "Cómo funciona"], ["Features", "Recursos", "Características"], ["vs RAG", "vs RAG", "vs RAG"], ["Quick start", "Início rápido", "Inicio rápido"], ["The idea", "A ideia", "La idea"], ["Concepts", "Conceitos", "Conceptos"], ["Live graph", "Grafo ao vivo", "Grafo en vivo"], ["Use template", "Usar template", "Usar plantilla"], ["Persistent · Compounding · No vector DB", "Persistente · Composto · Sem banco vetorial", "Persistente · Compuesto · Sin base vectorial"], ["A living notebook your", "Um caderno vivo do seu", "Un cuaderno vivo de tu"], ["AI assistant", "assistente de IA", "asistente de IA"], ["writes and keeps current", "escreve e mantém atualizado", "escribe y mantiene actualizado"], ["Drop in articles, papers, notes, and data. The assistant reads each source once, writes linked pages into a", "Adicione artigos, papers, notas e dados. O assistente lê cada fonte uma vez, escreve páginas vinculadas em uma", "Añade artículos, papers, notas y datos. El asistente lee cada fuente una vez, escribe páginas enlazadas en una"], ["wiki/", "wiki/", "wiki/"], ["folder, and keeps them current when new material arrives. Knowledge is compiled once, then kept current — not rebuilt on every question.", "pasta e as mantém atualizadas quando novos materiais chegam. O conhecimento é compilado uma vez e mantido atualizado — não reconstruído a cada pergunta.", "carpeta y las mantiene actualizadas cuando llega material nuevo. El conocimiento se compila una vez y se mantiene actualizado, no se reconstruye en cada pregunta."], ["Use this template", "Usar este template", "Usar esta plantilla"], ["View on GitHub", "Ver no GitHub", "Ver en GitHub"], ["Read the docs", "Ler a documentação", "Leer la documentación"], ["Live wiki graph", "Grafo da wiki ao vivo", "Grafo de la wiki en vivo"], ["An Obsidian-style force graph. Nodes are pages (source, entity, concept, synthesis), edges are", "Um grafo de forças estilo Obsidian. Nós são páginas (fonte, entidade, conceito, síntese), arestas são", "Un grafo de fuerzas estilo Obsidian. Los nodos son páginas (fuente, entidad, concepto, síntesis), las aristas son"], ["[[wikilinks]]", "[[wikilinks]]", "[[wikilinks]]"], [". Seeded with ~230 pages and ~100 links; watch it grow as new sources are ingested.", ". Iniciado com ~230 páginas e ~100 links; veja-o crescer conforme novas fontes são ingeridas.", ". Iniciado con ~230 páginas y ~100 enlaces; míralo crecer a medida que se ingieren nuevas fuentes."], ["source", "fonte", "fuente"], ["entity", "entidade", "entidad"], ["concept", "conceito", "concepto"], ["synthesis", "síntese", "síntesis"], ["230 pages · 100 links", "230 páginas · 100 links", "230 páginas · 100 enlaces"], ["Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.", "Dica: passe o mouse sobre um nó para inspecioná-lo. Clique na tela para adicionar uma página. O grafo é uma simulação, não sua wiki real.", "Consejo: pasa el mouse sobre un nodo para inspeccionarlo. Haz clic en el lienzo para agregar una página. El grafo es una simulación, no tu wiki real."], ["How it works", "Como funciona", "Cómo funciona"], ["Three folders. One loop. The assistant does the bookkeeping; you curate and ask.", "Três pastas. Um ciclo. O assistente faz a contabilidade; você cura e pergunta.", "Tres carpetas. Un ciclo. El asistente lleva la contabilidad; tú curas y preguntas."], ["raw/", "raw/", "raw/"], ["articles, papers,", "artigos, papers,", "artículos, papers,"], ["notes, data files", "notas, arquivos de dados", "notas, archivos de datos"], ["you curate", "você cura", "tú curas"], ["LLM assistant", "assistente LLM", "asistente LLM"], ["reads once · writes pages", "lê uma vez · escreve páginas", "lee una vez · escribe páginas"], ["links · revises · flags", "vincula · revisa · sinaliza", "enlaza · revisa · señala"], ["via skills in .agents/", "via skills em .agents/", "vía skills en .agents/"], ["sources · entities · concepts", "fontes · entidades · conceitos", "fuentes · entidades · conceptos"], ["syntheses · index · log", "sínteses · índice · log", "síntesis · índice · log"], ["compounds over time", "composto ao longo do tempo", "se compone con el tiempo"], ["You ask questions against", "Você faz perguntas sobre", "Tu haces preguntas sobre"], [", not against the raw files. Each new source makes the notebook richer.", ", não contra os arquivos brutos. Cada nova fonte torna o caderno mais rico.", ", no contra los archivos crudos. Cada nueva fuente hace el cuaderno más rico."], ["What you get", "O que você recebe", "Qué obtienes"], ["A template you clone once. The assistant maintains the structure; you never hand-edit wiki pages.", "Um template que você clona uma vez. O assistente mantém a estrutura; você nunca edita páginas da wiki manualmente.", "Una plantilla que clonas una vez. El asistente mantiene la estructura; nunca editas páginas de la wiki a mano."], ["Three-folder layout", "Layout de três pastas", "Diseño de tres carpetas"], ["for sources,", "para fontes,", "para fuentes,"], ["for pages,", "para páginas,", "para páginas,"], ["for the rules. Narrow, predictable, git-friendly.", "para as regras. Estreito, previsível, amigável ao git.", "para las reglas. Estrecho, predecible, amigable con git."], ["Wikilinks & citations", "Wikilinks e citações", "Wikilinks y citas"], ["Bare", "Livres", "Desnudos"], ["links plus numbered footnotes to raw files. Cross-references already exist when you ask.", "links mais notas de rodapé numeradas para arquivos brutos. Referências cruzadas já existem quando você pergunta.", "enlaces más notas al pie numeradas a archivos crudos. Las referencias cruzadas ya existen cuando preguntas."], ["Typed pages", "Páginas tipadas", "Páginas tipadas"], ["Source, entity, concept, synthesis — each with a required section shape and frontmatter schema.", "Fonte, entidade, conceito, síntese — cada um com uma forma de seção obrigatória e schema de frontmatter.", "Fuente, entidad, concepto, síntesis — cada uno con una forma de sección requerida y esquema de frontmatter."], ["Agent skills", "Skills do agente", "Skills del agente"], ["Ingest, query, lint, refresh. The assistant follows them instead of improvising.", "Ingest, query, lint, refresh. O assistente as segue em vez de improvisar.", "Ingest, query, lint, refresh. El asistente las sigue en lugar de improvisar."], ["Searchable index", "Índice pesquisável", "Índice buscable"], ["is the catalog;", "é o catálogo;", "es el catálogo;"], ["is the append-only history of every operation.", "é o histórico append-only de toda operação.", "es el historial append-only de toda operación."], ["Validation & tests", "Validação e testes", "Validación y tests"], ["Structural checks and a test suite keep the notebook honest as it grows.", "Verificações estruturais e uma suíte de testes mantêm o caderno honesto enquanto cresce.", "Verificaciones estructurales y una suite de tests mantienen el cuaderno honesto a medida que crece."], ["Who this is for", "Para quem é", "Para quién es"], ["Honest fit check. If two or more of these sound like you, try it.", "Verificação honesta de encaixe. Se dois ou mais soarem como você, experimente.", "Verificación honesta de encaje. Si dos o más te suenan, pruébalo."], ["Researchers & readers", "Pesquisadores e leitores", "Investigadores y lectores"], ["You collect articles, papers, and notes and want them to compound into a queryable notebook.", "Você coleta artigos, papers e notas e quer que se componham em um caderno consultável.", "Recolectas artículos, papers y notas y quieres que se compongan en un cuaderno consultable."], ["Builders & founders", "Builders e founders", "Builders y founders"], ["You track decisions, competitors, and customer research across many sources.", "Você acompanha decisões, concorrentes e pesquisa de clientes em muitas fontes.", "Rastreas decisiones, competidores e investigación de clientes en muchas fuentes."], ["Students & writers", "Estudantes e escritores", "Estudiantes y escritores"], ["You need cross-references and citations that already exist when you start writing.", "Você precisa de referências cruzadas e citações que já existem quando começa a escrever.", "Necesitas referencias cruzadas y citas que ya existen cuando empiezas a escribir."], ["Teams", "Equipes", "Equipos"], ["You want a shared, version-controlled knowledge base that an assistant keeps current.", "Você quer uma base de conhecimento compartilhada e versionada que um assistente mantém atualizada.", "Quieres una base de conocimiento compartida y versionada que un asistente mantiene actualizada."], ["Not for you if you need real-time retrieval over millions of documents or a hosted SaaS. This is a local, compounding notebook.", "Não é para você se precisa de recuperação em tempo real sobre milhões de documentos ou um SaaS hospedado. Este é um caderno local e composto.", "No es para ti si necesitas recuperación en tiempo real sobre millones de documentos o un SaaS hospedado. Este es un cuaderno local y compuesto."], ["LLM wiki vs. RAG vs. note apps", "LLM wiki vs. RAG vs. apps de notas", "LLM wiki vs. RAG vs. apps de notas"], ["Different tools answer the same question differently. Pick the shape that fits your work.", "Ferramentas diferentes respondem à mesma pergunta de formas diferentes. Escolha a forma que se encaixa no seu trabalho.", "Diferentes herramientas responden la misma pregunta de formas distintas. Elige la forma que encaja en tu trabajo."], ["Capability", "Capacidade", "Capacidad"], ["Knowledge persists across questions", "O conhecimento persiste entre perguntas", "El conocimiento persiste entre preguntas"], ["Cross-references pre-built", "Referências cruzadas pré-construídas", "Referencias cruzadas preconstruidas"], ["Contradictions flagged", "Contradições sinalizadas", "Contradicciones señaladas"], ["Setup cost", "Custo de setup", "Costo de setup"], ["Clone template", "Clonar template", "Clonar plantilla"], ["Infra + embeddings", "Infra + embeddings", "Infra + embeddings"], ["Install app", "Instalar app", "Instalar app"], ["Works offline / local files", "Funciona offline / arquivos locais", "Funciona offline / archivos locales"], ["Often no", "Geralmente não", "Generalmente no"], ["AI maintains the notes", "A IA mantém as notas", "La IA mantiene las notas"], ["Quick start (60 seconds)", "Início rápido (60 segundos)", "Inicio rápido (60 segundos)"], ["You need an AI coding assistant. No API keys, no database.", "Você precisa de um assistente de codificação com IA. Sem chaves de API, sem banco de dados.", "Necesitas un asistente de codificación con IA. Sin claves de API, sin base de datos."], ["# 1. Create your own copy", "# 1. Crie sua própria cópia", "# 1. Crea tu propia copia"], ["git clone https://github.com/jonyfs/llm-wiki-template my-wiki", "git clone https://github.com/jonyfs/llm-wiki-template my-wiki", "git clone https://github.com/jonyfs/llm-wiki-template my-wiki"], ["cd my-wiki", "cd my-wiki", "cd my-wiki"], ["# 2. Drop a source into raw/", "# 2. Coloque uma fonte em raw/", "# 2. Pon una fuente en raw/"], ["cp ~/Downloads/article.md raw/", "cp ~/Downloads/article.md raw/", "cp ~/Downloads/article.md raw/"], ["# 3. Ask your assistant to ingest it", "# 3. Peça ao assistente para ingerir", "# 3. Pide al asistente que ingiera"], ["\"Ingest raw/article.md into the wiki.\"", "\"Ingest raw/article.md into the wiki.\"", "\"Ingest raw/article.md into the wiki.\""], ["# 4. Ask questions against the wiki", "# 4. Faça perguntas à wiki", "# 4. Haz preguntas a la wiki"], ["\"What does the wiki say about X?\"", "\"What does the wiki say about X?\"", "\"What does the wiki say about X?\""], ["Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See", "Funciona com Claude Code, Cursor, GitHub Copilot, OpenCode e Codex. Veja", "Funciona con Claude Code, Cursor, GitHub Copilot, OpenCode y Codex. Ver"], ["README.md", "README.md", "README.md"], ["for the full walkthrough.", "para o walkthrough completo.", "para el walkthrough completo."], ["Compatible agents", "Agentes compatíveis", "Agentes compatibles"], ["The rules live in", "Las reglas viven en", "Las reglas viven en"], ["and", "y", "y"], [", so any agent that reads markdown can use them.", ", então qualquer agente que leia markdown pode usá-las.", ", así que cualquier agente que lea markdown puede usarlas."], ["Claude Code", "Claude Code", "Claude Code"], ["Cursor", "Cursor", "Cursor"], ["GitHub Copilot", "GitHub Copilot", "GitHub Copilot"], ["OpenCode", "OpenCode", "OpenCode"], ["Codex", "Codex", "Codex"], ["Windsurf", "Windsurf", "Windsurf"], ["Cline", "Cline", "Cline"], ["Frequently asked questions", "Perguntas frequentes", "Preguntas frecuentes"], ["Short answers to the questions people ask first.", "Respostas curtas para as perguntas que as pessoas fazem primeiro.", "Respuestas cortas a las preguntas que la gente hace primero."], ["Do I need an API key or database?", "Preciso de uma chave de API ou banco de dados?", "¿Necesito una clave de API o base de datos?"], ["No. You need an AI coding assistant that reads markdown. Everything stays in plain files in git.", "Não. Você precisa de um assistente de codificação com IA que leia markdown. Tudo fica em arquivos simples no git.", "No. Necesitas un asistente de codificación con IA que lea markdown. Todo queda en archivos simples en git."], ["How is this different from RAG?", "Como isso é diferente de RAG?", "¿En qué se diferencia de RAG?"], ["RAG rebuilds an answer from chunks every question. A wiki is compiled once and kept current, so cross-references and contradictions already exist.", "RAG reconstrói uma resposta a partir de chunks a cada pergunta. Uma wiki é compilada uma vez e mantida atualizada, então referências cruzadas e contradições já existem.", "RAG reconstruye una respuesta a partir de chunks en cada pregunta. Una wiki se compila una vez y se mantiene actualizada, por lo que las referencias cruzadas y contradicciones ya existen."], ["Can I use my own sources?", "Posso usar minhas próprias fontes?", "¿Puedo usar mis propias fuentes?"], ["Yes. Drop articles, papers, notes, or data into", "Sim. Coloque artigos, papers, notas ou dados em", "Sí. Coloca artículos, papers, notas o datos en"], ["and ask the assistant to ingest them.", "e peça ao assistente para ingeri-las.", "y pide al asistente que las ingiera."], ["Does it work offline?", "Funciona offline?", "¿Funciona offline?"], ["Yes. Files are local; the assistant reads them directly. No network calls required for the wiki itself.", "Sim. Os arquivos são locais; o assistente os lê diretamente. Nenhuma chamada de rede necessária para a wiki em si.", "Sí. Los archivos son locales; el asistente los lee directamente. No se requieren llamadas de red para la wiki en sí."], ["Who maintains the wiki?", "Quem mantém a wiki?", "¿Quién mantiene la wiki?"], ["The assistant does, following the skills in", "O assistente faz, seguindo as skills em", "El asistente lo hace, siguiendo las skills en"], [". You curate sources and ask questions.", ". Você cura fontes e faz perguntas.", ". Tú curas fuentes y haces preguntas."], ["Start your own wiki today", "Comece sua wiki hoje", "Empieza tu wiki hoy"], ["Clone the template, drop in one source, and ask your assistant to ingest it. Sixty seconds to a compounding notebook.", "Clone o template, coloque uma fonte e peça ao assistente para ingeri-la. Sessenta segundos para um caderno composto.", "Clona la plantilla, pon una fuente y pide al asistente que la ingiera. Sesenta segundos para un cuaderno compuesto."], ["Use this template", "Usar este template", "Usar esta plantilla"], ["Star on GitHub", "Dar estrela no GitHub", "Dar estrella en GitHub"], ["The idea, in Karpathy's words", "A ideia, nas palavras de Karpathy", "La idea, en palabras de Karpathy"], ["A short reading of", "Uma leitura curta de", "Una lectura corta de"], ["the LLM Wiki gist", "o gist do LLM Wiki", "el gist del LLM Wiki"], [", paraphrased for builders.", ", parafraseado para builders.", ", parafraseado para builders."], ["Most tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.", "A maioria das ferramentas que trabalham com documentos usa recuperação. Você envia arquivos e, na hora da pergunta, o modelo puxa as partes relevantes e escreve uma resposta a partir delas. Isso funciona, mas o modelo começa do zero a cada pergunta. Nada se acumula, e uma pergunta sutil que abrange vários documentos significa remontar os mesmos fragmentos novamente.", "La mayoría de las herramientas que trabajan con documentos usan recuperación. Subes archivos y, al momento de la pregunta, el modelo toma las partes relevantes y escribe una respuesta a partir de ellas. Funciona, pero el modelo empieza de cero en cada pregunta. Nada se acumula, y una pregunta sutil que abarca varios documentos significa reensamblar los mismos fragmentos de nuevo."], ["An LLM wiki works the other way. The model reads each source once and writes what it learned into a folder of linked markdown pages. It updates topic pages, revises summaries, flags where new material contradicts older claims, and keeps a running synthesis. Knowledge is compiled once and then kept current, instead of being rebuilt on every query.", "Uma LLM wiki funciona do outro jeito. O modelo lê cada fonte uma vez e escreve o que aprendeu em uma pasta de páginas markdown vinculadas. Ele atualiza páginas de tópicos, revisa resumos, sinaliza onde novo material contradiz claims antigos e mantém uma síntese em andamento. O conhecimento é compilado uma vez e então mantido atualizado, em vez de ser reconstruído a cada consulta.", "Una LLM wiki funciona al revés. El modelo lee cada fuente una vez y escribe lo que aprendió en una carpeta de páginas markdown enlazadas. Actualiza páginas de temas, revisa resúmenes, señala donde el material nuevo contradice claims antiguos y mantiene una síntesis en curso. El conocimiento se compila una vez y luego se mantiene actualizado, en lugar de reconstruirse en cada consulta."], ["The result is a persistent, compounding artifact: cross-references already exist, contradictions are already flagged, and each source you add or question you ask makes the notebook richer.", "O resultado é um artefato persistente e composto: referências cruzadas já existem, contradições já são sinalizadas e cada fonte que você adiciona ou pergunta que faz torna o caderno mais rico.", "El resultado es un artefacto persistente y compuesto: las referencias cruzadas ya existen, las contradicciones ya se señalan y cada fuente que agregas o pregunta que haces hace el cuaderno más rico."], ["The three layers", "As três camadas", "Las tres capas"], ["immutable sources", "fontes imutáveis", "fuentes inmutables"], ["you curate, never edit", "você cura, nunca edita", "tú curas, nunca editas"], ["LLM-maintained pages", "páginas mantidas pelo LLM", "páginas mantenidas por el LLM"], ["sources, entities, concepts, syntheses", "fontes, entidades, conceitos, sínteses", "fuentes, entidades, conceptos, síntesis"], ["schema", "esquema", "esquema"], ["AGENTS.md + skills", "AGENTS.md + skills", "AGENTS.md + skills"], ["rules the assistant follows", "regras que o assistente segue", "reglas que sigue el asistente"], ["The schema is the unusual part: instead of a generic RAG pipeline, you give the assistant a small set of rules (this template's", "La parte inusual é o esquema: em vez de um pipeline RAG genérico, você dá ao assistente um pequeno conjunto de regras (deste template", "La parte inusual es el esquema: en lugar de un pipeline RAG genérico, le das al asistente un pequeño conjunto de reglas (de esta plantilla"], ["and", "y", "y"], [") and it becomes a disciplined maintainer of the wiki.", ") e ele se torna um mantenedor disciplinado da wiki.", ") y se convierte en un mantenedor disciplinado de la wiki."], ["Concepts, explained simply", "Conceitos, explicados simplesmente", "Conceptos, explicados simplemente"], ["The vocabulary the template uses. Plain-language definitions, no jargon.", "O vocabulário que o template usa. Definições em linguagem simples, sem jargão.", "El vocabulario que usa la plantilla. Definiciones en lenguaje simple, sin jerga."], ["Source page", "Página de fonte", "Página de fuente"], ["One page per raw file. Records what the source says, its role, and a claims ledger you can cite as", "Uma página por arquivo bruto. Registra o que a fonte diz, seu papel e um ledger de claims que você pode citar como", "Una página por archivo crudo. Registra lo que dice la fuente, su rol y un ledger de claims que puedes citar como"], ["[[slug]] C1", "[[slug]] C1", "[[slug]] C1"], [".", ".", "."], ["Entity page", "Página de entidade", "Página de entidad"], ["A person, org, product, or place that appears across sources. Collects everything the wiki knows about it.", "Uma pessoa, org, produto ou lugar que aparece em várias fontes. Coleta tudo que a wiki sabe sobre isso.", "Una persona, org, producto o lugar que aparece en varias fuentes. Recopila todo lo que la wiki sabe sobre ello."], ["Concept page", "Página de conceito", "Página de concepto"], ["An idea, method, or theme. Explains it and links back to the sources that support it.", "Uma ideia, método ou tema. Explica e vincula de volta às fontes que o sustentam.", "Una idea, método o tema. Lo explica y enlaza a las fuentes que lo sustentan."], ["Synthesis page", "Página de síntese", "Página de síntesis"], ["A durable answer to a question that spanned several pages. Filed so the next question starts further ahead.", "Uma resposta durável a uma pergunta que abrangeu várias páginas. Arquivada para que a próxima pergunta comece mais à frente.", "Una respuesta duradera a una pregunta que abarcó varias páginas. Archivada para que la siguiente pregunta empiece más adelante."], ["Wikilink", "Wikilink", "Wikilink"], ["A bare", "Um link", "Um enlace"], ["link between pages. These links are what make the graph navigable, like in Obsidian.", "bare entre páginas. Esses links são o que tornam o grafo navegável, como no Obsidian.", "bare entre páginas. Estos enlaces son lo que hace el grafo navegable, como en Obsidian."], ["Frontmatter", "Frontmatter", "Frontmatter"], ["YAML at the top of every page: title, type, sources, dates. The schema the assistant validates against.", "YAML no topo de cada página: título, tipo, fontes, datas. O schema que o assistente valida.", "YAML en la parte superior de cada página: título, tipo, fuentes, fechas. El esquema que valida el asistente."], ["Ingest", "Ingest", "Ingest"], ["Read a raw source once, write or update wiki pages, update the index and log. Knowledge compiled once.", "Leia uma fonte bruta uma vez, escreva ou atualize páginas da wiki, atualize o índice e o log. Conhecimento compilado uma vez.", "Lee una fuente cruda una vez, escribe o actualiza páginas de la wiki, actualiza el índice y el log. Conocimiento compilado una vez."], ["Query", "Query", "Query"], ["Answer from the wiki first. File the answer as a synthesis when it is reusable.", "Responda da wiki primeiro. Arquive a resposta como síntese quando for reutilizável.", "Responde de la wiki primero. Archiva la respuesta como síntesis cuando sea reutilizable."], ["Lint", "Lint", "Lint"], ["A health check: broken links, missing fields, stale claims, orphan pages.", "Uma verificação de saúde: links quebrados, campos faltando, claims obsoletos, páginas órfãs.", "Una verificación de salud: enlaces rotos, campos faltantes, claims obsoletos, páginas huérfanas."], ["Compounding", "Composição", "Composición"], ["Each source and each question makes the notebook richer. Nothing is rebuilt from scratch.", "Cada fonte e cada pergunta torna o caderno mais rico. Nada é reconstruído do zero.", "Cada fuente y cada pregunta hace el cuaderno más rico. Nada se reconstruye desde cero."], ["The skills pipeline", "O pipeline de skills", "El pipeline de skills"], ["Each operation is a skill the assistant follows. No improvisation, no skipped steps.", "Cada operação é uma skill que o assistente segue. Sem improvisação, sem passos pulados.", "Cada operación es una skill que sigue el asistente. Sin improvisación, sin pasos omitidos."], ["read once, write pages", "lê uma vez, escreve páginas", "lee una vez, escribe páginas"], ["answer from wiki", "responda da wiki", "responde de la wiki"], ["health checks", "verificações de saúde", "verificaciones de salud"], ["detect drift", "detectar drift", "detectar drift"], ["file durable answers", "arquivar respostas duráveis", "archivar respuestas duraderas"], ["Reads a raw source once, writes or updates source/entity/concept pages, updates index and log. Knowledge compiled once.", "Lê uma fonte bruta uma vez, escreve ou atualiza páginas de fonte/entidade/conceito, atualiza índice e log. Conhecimento compilado uma vez.", "Lee una fuente cruda una vez, escribe o actualiza páginas de fuente/entidad/concepto, actualiza índice y log. Conocimiento compilado una vez."], ["Answers from the wiki first, cites pages inline. Files the answer as a synthesis when reusable.", "Responde da wiki primeiro, cita páginas inline. Arquiva a resposta como síntese quando reutilizável.", "Responde de la wiki primero, cita páginas inline. Archiva la respuesta como síntesis cuando sea reutilizable."], ["Checks broken links, missing fields, stale claims, orphans. Keeps the notebook honest.", "Verifica links quebrados, campos faltando, claims obsoletos, órfãos. Mantém o caderno honesto.", "Verifica enlaces rotos, campos faltantes, claims obsoletos, huérfanos. Mantiene el cuaderno honesto."], ["Detects drift between raw files and source pages. Reports, never silently rewrites.", "Detecta drift entre arquivos brutos e páginas de fonte. Reporta, nunca reescreve silenciosamente.", "Detecta drift entre archivos crudos y páginas de fuente. Reporta, nunca reescribe silenciosamente."], ["Why this is a real differentiator", "Por que é um diferencial real", "Por qué es un diferenciador real"], ["Not a wrapper. A different shape of tool.", "Não é um wrapper. Uma forma diferente de ferramenta.", "No es un wrapper. Una forma distinta de herramienta."], ["Compounds with use", "Compõe com o uso", "Se compone con el uso"], ["Every source and question makes the notebook richer. Nothing is rebuilt from scratch.", "Cada fonte e pergunta torna o caderno mais rico. Nada é reconstruído do zero.", "Cada fuente y pregunta hace el cuaderno más rico. Nada se reconstruye desde cero."], ["Persistent artifact", "Artefato persistente", "Artefacto persistente"], ["The wiki is a folder of markdown you own, in git. Not a vendor's database.", "A wiki é uma pasta de markdown que você possui, no git. Não é o banco de dados de um fornecedor.", "La wiki es una carpeta de markdown que posees, en git. No es la base de datos de un proveedor."], ["No re-retrieval", "Sem re-recuperação", "Sin re-recuperación"], ["Answers come from notes already organized, not from re-chunking on every question.", "Respostas vêm de notas já organizadas, não de re-chunking a cada pergunta.", "Las respuestas vienen de notas ya organizadas, no de re-chunking en cada pregunta."], ["Cross-refs pre-built", "Referências cruzadas pré-construídas", "Referencias cruzadas preconstruidas"], ["Links exist before you ask. Subtle multi-document questions just work.", "Links existem antes de você perguntar. Perguntas sutis multi-documento simplesmente funcionam.", "Los enlaces existen antes de preguntar. Las preguntas sutiles multi-documento simplemente funcionan."], ["Contradictions flagged", "Contradições sinalizadas", "Contradicciones señaladas"], ["New material that conflicts with older claims is surfaced, not hidden.", "Material novo que conflita com claims antigos é surfaciado, não escondido.", "El material nuevo que entra en conflicto con claims antiguos se muestra, no se oculta."], ["Zero infra", "Zero infra", "Cero infra"], ["No embeddings, no vector DB, no API keys. Clone and go.", "Sem embeddings, sem banco vetorial, sem chaves de API. Clone e vá.", "Sin embeddings, sin base vectorial, sin claves de API. Clona y listo."], ["Agent-agnostic", "Independente de agente", "Independiente del agente"], ["Works with Claude Code, Cursor, Copilot, OpenCode, Codex, and others.", "Funciona com Claude Code, Cursor, Copilot, OpenCode, Codex e outros.", "Funciona con Claude Code, Cursor, Copilot, OpenCode, Codex y otros."], ["Local-first", "Local-first", "Local-first"], ["Files stay on your machine. You decide what to share.", "Arquivos ficam na sua máquina. Você decide o que compartilhar.", "Los archivos quedan en tu máquina. Tú decides qué compartir."], ["Common pitfalls", "Armadilhas comuns", "Trampas comunes"], ["Things that trip people up the first time.", "Coisas que atrapalham as pessoas na primeira vez.", "Cosas que tropiezan a la gente la primera vez."], ["Empty wiki after ingest", "Wiki vazia após ingest", "Wiki vacía tras ingest"], ["Make sure the source is in", "Certifique-se de que a fonte está em", "Asegúrate de que la fuente está en"], ["and you asked the assistant to ingest it. The wiki is not auto-populated.", "e você pediu ao assistente para ingeri-la. A wiki não é auto-populada.", "y pediste al asistente que la ingiera. La wiki no se auto-puebla."], ["Broken wikilinks", "Wikilinks quebrados", "Wikilinks rotos"], ["Run the lint skill. It reports missing targets so you can fix or remove them.", "Execute a skill lint. Ela reporta alvos faltando para você corrigir ou remover.", "Ejecuta la skill lint. Reporta objetivos faltantes para que los corrijas o elimines."], ["Stale claims", "Claims obsoletos", "Claims obsoletos"], ["Use refresh to detect drift between raw files and source pages.", "Use refresh para detectar drift entre arquivos brutos e páginas de fonte.", "Usa refresh para detectar drift entre archivos crudos y páginas de fuente."], ["Too many pages", "Muitas páginas", "Demasiadas páginas"], ["That is fine. The index and search keep it navigable; compounding is the point.", "Tudo bem. O índice e a busca mantêm navegável; compor é o ponto.", "Está bien. El índice y la búsqueda la mantienen navegable; componer es el punto."], ["An ingest, step by step", "Um ingest, passo a passo", "Un ingest, paso a paso"], ["What actually happens when you say \"ingest raw/article.md\".", "O que realmente acontece quando você diz \"ingest raw/article.md\".", "Lo que realmente pasa cuando dices \"ingest raw/article.md\"."], ["Read the source once.", "Leia a fonte uma vez.", "Lee la fuente una vez."], ["The assistant reads", "O assistente lê", "El asistente lee"], ["end to end.", "de ponta a ponta.", "de principio a fin."], ["Create a source page.", "Crie uma página de fonte.", "Crea una página de fuente."], ["Writes", "Escreve", "Escribe"], ["with frontmatter, summary, and a claims ledger.", "com frontmatter, resumo e um ledger de claims.", "con frontmatter, resumen y un ledger de claims."], ["Touch related pages.", "Toque nas páginas relacionadas.", "Toca las páginas relacionadas."], ["Updates or creates entity and concept pages that the source mentions, adding wikilinks.", "Atualiza ou cria páginas de entidade e conceito que a fonte menciona, adicionando wikilinks.", "Actualiza o crea páginas de entidad y concepto que menciona la fuente, agregando wikilinks."], ["Update the index.", "Atualize o índice.", "Actualiza el índice."], ["Adds entries to", "Adiciona entradas em", "Añade entradas en"], ["under the right category.", "sob a categoria certa.", "bajo la categoría correcta."], ["Append to the log.", "Acrescente ao log.", "Añade al log."], ["Records the operation in", "Registra a operação em", "Registra la operación en"], ["with date and title.", "com data e título.", "con fecha y título."], ["Done.", "Pronto.", "Hecho."], ["The source is now part of the compiled knowledge base. Next question starts further ahead.", "A fonte agora faz parte da base de conhecimento compilada. A próxima pergunta começa mais à frente.", "La fuente ahora es parte de la base de conocimiento compilada. La siguiente pregunta empieza más adelante."], ["LLM Wiki Template · MIT license", "LLM Wiki Template · licença MIT", "LLM Wiki Template · licencia MIT"], ["GitHub", "GitHub", "GitHub"], ["Docs", "Docs", "Docs"], ["Issues", "Issues", "Issues"], ["Discussions", "Discussões", "Discusiones"]];
-  const DICT = {en:{}, pt:{}, es:{}};
-  for (const [en, pt, es] of I18N_ROWS){
-    DICT.en[en] = en;
-    DICT.pt[en] = pt;
-    DICT.es[en] = es;
-  }
-  function detectLang(){
-    const saved = (function(){ try { return localStorage.getItem('lang'); } catch(e){ return null; } })();
-    if (saved) return saved;
-    const nav = (navigator.language || navigator.userLanguage || 'en').toLowerCase();
-    if (nav.startsWith('pt')) return 'pt';
-    if (nav.startsWith('es')) return 'es';
-    return 'en';
-  }
-  function applyLang(lang){
-    if (!DICT[lang]) lang = 'en';
-    const dict = DICT[lang];
-    const skipTags = new Set(['script','style','code','pre','textarea']);
-    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, {
-      acceptNode: function(node){
-        const p = node.parentNode;
-        if (!p) return NodeFilter.FILTER_REJECT;
-        if (skipTags.has((p.nodeName||'').toLowerCase())) return NodeFilter.FILTER_REJECT;
-        if (p.closest && p.closest('.qs')) return NodeFilter.FILTER_REJECT;
-        if (!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
-        return NodeFilter.FILTER_ACCEPT;
-      }
-    });
-    let n;
-    while ((n = walker.nextNode())){
-      // Remember the original English key so language switching is reversible.
-      if (n.__i18nKey == null){
-        const k = n.nodeValue.trim();
-        if (Object.prototype.hasOwnProperty.call(DICT.en, k)) n.__i18nKey = k;
-      }
-      const key = n.__i18nKey || n.nodeValue.trim();
-      if (Object.prototype.hasOwnProperty.call(dict, key)){
-        const m = n.nodeValue.match(/^(\s*)([\s\S]*?)(\s*)$/);
-        n.nodeValue = (m ? m[1] : '') + dict[key] + (m ? m[3] : '');
-      }
-    }
-    const ariaLabels = {
-      en: 'Toggle color theme',
-      pt: 'Alternar tema de cores',
-      es: 'Alternar tema de color'
-    };
-    const toggle = document.getElementById('themeToggle');
-    if (toggle) toggle.setAttribute('aria-label', ariaLabels[lang] || ariaLabels.en);
-    const htmlLang = lang === 'pt' ? 'pt-BR' : lang;
-    document.documentElement.setAttribute('lang', htmlLang);
-    try { localStorage.setItem('lang', lang); } catch(e){}
-    const sel = document.getElementById('langSelect');
-    if (sel) sel.value = lang;
-  }
-  const sel = document.getElementById('langSelect');
-  if (sel){
-    sel.addEventListener('change', function(){ applyLang(sel.value); });
-  }
-  applyLang(detectLang());
-})();
-</script>
-
-<script>
-(function(){
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', function(){
-      navigator.serviceWorker.register('./sw.js').catch(function(){});
-    });
-  }
-  // progress bar + back to top
-  const progress = document.getElementById('progress');
-  const backToTop = document.getElementById('backToTop');
-  function onScroll(){
-    const h = document.documentElement;
-    const scrolled = (h.scrollTop || document.body.scrollTop);
-    const max = (h.scrollHeight - h.clientHeight) || 1;
-    if (progress) progress.style.width = (scrolled / max * 100) + '%';
-    if (backToTop) backToTop.style.display = scrolled > 400 ? '' : 'none';
-  }
-  window.addEventListener('scroll', onScroll, {passive:true});
-  onScroll();
-  if (backToTop) backToTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
-
-  // site search filter
-  const search = document.getElementById('siteSearch');
-  if (search) {
-    search.addEventListener('input', function(){
-      const q = search.value.trim().toLowerCase();
-      document.querySelectorAll('main section').forEach(function(sec){
-        if (!q) { sec.style.display = ''; return; }
-        sec.style.display = (sec.textContent || '').toLowerCase().includes(q) ? '' : 'none';
-      });
-    });
-  }
-
-  // copy quick start
-  const copyQs = document.getElementById('copyQs');
-  const quickStart = document.getElementById('quickStart');
-  if (copyQs && quickStart) {
-    copyQs.addEventListener('click', async function(){
-      try { await navigator.clipboard.writeText(quickStart.innerText); copyQs.textContent = 'Copied'; setTimeout(function(){ copyQs.textContent='Copy'; }, 1200); }
-      catch(e){ copyQs.textContent = 'Failed'; setTimeout(function(){ copyQs.textContent='Copy'; }, 1200); }
-    });
-  }
-
-  // share button
-  const shareBtn = document.getElementById('shareBtn');
-  if (shareBtn) {
-    shareBtn.addEventListener('click', async function(){
-      const data = {title:'LLM Wiki Template', text:'A persistent, compounding markdown knowledge base maintained by an LLM assistant.', url:'https://github.com/jonyfs/llm-wiki-template'};
-      if (navigator.share) {
-        try { await navigator.share(data); } catch(e){}
-      } else {
-        try { await navigator.clipboard.writeText(data.url); shareBtn.textContent='Copied link'; setTimeout(function(){ shareBtn.textContent='Share'; }, 1200); }
-        catch(e){}
-      }
-    });
-  }
-
-  // metrics from GitHub API
-  (async function(){
-    try {
-      const res = await fetch('https://api.github.com/repos/jonyfs/llm-wiki-template');
-      if (!res.ok) return;
-      const d = await res.json();
-      const stars = document.getElementById('mStars');
-      const forks = document.getElementById('mForks');
-      const issues = document.getElementById('mIssues');
-      const updated = document.getElementById('mUpdated');
-      if (stars) stars.textContent = 'Stars: ' + d.stargazers_count;
-      if (forks) forks.textContent = 'Forks: ' + d.forks_count;
-      if (issues) issues.textContent = 'Open issues: ' + d.open_issues_count;
-      if (updated) updated.textContent = 'Last updated: ' + (d.updated_at || '').slice(0,10);
-    } catch(e){}
-  })();
-
-  // Core Web Vitals (basic)
-  if ('PerformanceObserver' in window) {
-    try {
-      const po = new PerformanceObserver(function(list){
-        list.getEntries().forEach(function(e){ /* LCP/CLS/INP logged for debugging */ });
-      });
-      po.observe({type:'largest-contentful-paint', buffered:true});
-    } catch(e){}
-  }
-
-  // SW update notification
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.addEventListener('controllerchange', function(){
-      const n = document.createElement('div');
-      n.textContent = 'New version available — reload to update.';
-      n.style.cssText = 'position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--card);color:var(--text);border:1px solid var(--border);padding:10px 14px;border-radius:10px;z-index:1001;';
-      n.addEventListener('click', function(){ location.reload(); });
-      document.body.appendChild(n);
-    });
-  }
-})();
-
-</script>
+<script src="assets/i18n.js" defer></script>
+<script src="assets/graph.js" defer></script>
+<script src="assets/app.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,25 @@
+{
+  "id": "./",
+  "name": "LLM Wiki Template",
+  "short_name": "LLM Wiki",
+  "description": "A persistent, compounding markdown knowledge base maintained by an LLM assistant.",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0d12",
+  "theme_color": "#0b0d12",
+  "lang": "en",
+  "categories": ["developer", "productivity", "education"],
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "assets/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Live graph", "url": "./#graph" },
+    { "name": "Quick start", "url": "./#start" }
+  ]
+}
