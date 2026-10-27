@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>LLM Wiki Template — a compounding knowledge base for AI agents</title>
 <meta name="description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant. Turn curated raw/ sources into a linked wiki. Template for Claude Code, Cursor, Copilot, OpenCode, Codex." />
+<link rel="canonical" href="https://jonyfs.github.io/llm-wiki-template/" />
+<meta property="og:url" content="https://jonyfs.github.io/llm-wiki-template/" />
+<meta property="og:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
+<meta property="og:image:width" content="1280" />
+<meta property="og:image:height" content="640" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="LLM Wiki Template" />
+<meta name="twitter:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
+<meta name="twitter:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"SoftwareApplication","name":"LLM Wiki Template","applicationCategory":"DeveloperApplication","operatingSystem":"Any","description":"A persistent, compounding markdown knowledge base maintained by an LLM assistant.","url":"https://jonyfs.github.io/llm-wiki-template/","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"license":"https://opensource.org/licenses/MIT"}
+</script>
 <meta property="og:title" content="LLM Wiki Template" />
 <meta property="og:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
 <meta property="og:type" content="website" />
@@ -121,9 +133,28 @@
     .nav-links { display: none; }
     .hero { padding: 64px 0 40px; }
   }
+
+  /* Skip link */
+  .skip { position: absolute; left: -9999px; top: 0; background: var(--accent); color: #fff; padding: 8px 12px; border-radius: 0 0 8px 0; z-index: 100; }
+  .skip:focus { left: 0; }
+  /* Focus */
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  /* Smooth scroll + anchor offset */
+  html { scroll-behavior: smooth; }
+  section, header { scroll-margin-top: 80px; }
+  h1, h2, h3 { text-wrap: balance; }
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+  }
+  /* Paragraph measure */
+  p { max-width: 68ch; }
+  .hero-sub { max-width: 60ch; }
 </style>
 </head>
 <body>
+<a class="skip" href="#how">Skip to content</a>
 <nav>
   <div class="container inner">
     <div class="brand"><span class="dot"></span>LLM Wiki</div>
@@ -259,6 +290,32 @@
       <span class="chip">Codex</span>
       <span class="chip">Windsurf</span>
       <span class="chip">Cline</span>
+    </div>
+  </div>
+</section>
+
+
+<section id="faq">
+  <div class="container">
+    <h2 class="section-title">Frequently asked questions</h2>
+    <p class="section-sub">Short answers to the questions people ask first.</p>
+    <div class="grid">
+      <div class="card"><h3>Do I need an API key or database?</h3><p>No. You need an AI coding assistant that reads markdown. Everything stays in plain files in git.</p></div>
+      <div class="card"><h3>How is this different from RAG?</h3><p>RAG rebuilds an answer from chunks every question. A wiki is compiled once and kept current, so cross-references and contradictions already exist.</p></div>
+      <div class="card"><h3>Can I use my own sources?</h3><p>Yes. Drop articles, papers, notes, or data into <code>raw/</code> and ask the assistant to ingest them.</p></div>
+      <div class="card"><h3>Does it work offline?</h3><p>Yes. Files are local; the assistant reads them directly. No network calls required for the wiki itself.</p></div>
+      <div class="card"><h3>Who maintains the wiki?</h3><p>The assistant does, following the skills in <code>.agents/skills/</code>. You curate sources and ask questions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section style="text-align:center;">
+  <div class="container">
+    <h2 class="section-title">Start your own wiki today</h2>
+    <p class="section-sub" style="margin:0 auto 32px;">Clone the template, drop in one source, and ask your assistant to ingest it. Sixty seconds to a compounding notebook.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
+      <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">Star on GitHub</a>
     </div>
   </div>
 </section>
