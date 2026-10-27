@@ -228,6 +228,7 @@
       <a href="#concepts">Concepts</a>
       <a href="#graph">Live graph</a>
     </div>
+    <input id="siteSearch" type="search" placeholder="Search" aria-label="Search page" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;width:120px;" />
     <select id="langSelect" aria-label="Language" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;">
       <option value="en">EN</option>
       <option value="pt">PT</option>
@@ -609,6 +610,10 @@
       <a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a> ·
       <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/SECURITY.md">Security</a> ·
       <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/CITATION.cff">Cite</a> ·
+      <a href="changelog.html">Changelog</a> ·
+      <a href="roadmap.html">Roadmap</a> ·
+      <a href="press-kit.html">Press kit</a> ·
+      <a href="media.html">Media</a> ·
       <a href="https://github.com/sponsors/jonyfs">Sponsor</a>
     </div>
   </div>
@@ -1085,6 +1090,18 @@
   window.addEventListener('scroll', onScroll, {passive:true});
   onScroll();
   if (backToTop) backToTop.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+
+  // site search filter
+  const search = document.getElementById('siteSearch');
+  if (search) {
+    search.addEventListener('input', function(){
+      const q = search.value.trim().toLowerCase();
+      document.querySelectorAll('main section').forEach(function(sec){
+        if (!q) { sec.style.display = ''; return; }
+        sec.style.display = (sec.textContent || '').toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+  }
 
   // copy quick start
   const copyQs = document.getElementById('copyQs');

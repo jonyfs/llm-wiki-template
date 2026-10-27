@@ -30,6 +30,10 @@ jobs:
           cp sw.js _site/sw.js 2>/dev/null || true
           cp offline.html _site/offline.html 2>/dev/null || true
           cp 404.html _site/404.html 2>/dev/null || true
+          cp changelog.html _site/changelog.html 2>/dev/null || true
+          cp roadmap.html _site/roadmap.html 2>/dev/null || true
+          cp press-kit.html _site/press-kit.html 2>/dev/null || true
+          cp media.html _site/media.html 2>/dev/null || true
           cp llms.txt _site/llms.txt 2>/dev/null || true
           cp llms-full.txt _site/llms-full.txt 2>/dev/null || true
           cp -r assets _site/assets 2>/dev/null || true
