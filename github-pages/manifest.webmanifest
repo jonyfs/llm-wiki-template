@@ -2,7 +2,7 @@
   "id": "./",
   "name": "LLM Wiki Template",
   "short_name": "LLM Wiki",
-  "description": "A persistent, compounding markdown knowledge base maintained by an LLM assistant.",
+  "description": "A template for starting your own LLM wiki: a markdown knowledge base maintained by an LLM assistant.",
   "start_url": "./?source=pwa",
   "scope": "./",
   "display": "standalone",
