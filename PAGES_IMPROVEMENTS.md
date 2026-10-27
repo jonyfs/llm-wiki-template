@@ -215,3 +215,30 @@ Catalog of candidate improvements for the Pages site (`index.html`). Apply in ba
 198. Add aria-current on active nav
 199. Color not sole conveyor of info
 200. Test with axe-core in CI
+
+## 2026-10 redesign (responsive, PWA, 3D graph)
+
+- `github-pages/index.html` now only holds markup; styles live in `assets/site.css`, behaviour in `assets/app.js`, translations in `assets/i18n.js` and the graph in `assets/graph.js`. The inline theme script is allowed by a CSP hash, so changing it means recomputing the `sha256-` value in the `<meta>` CSP.
+- Add new visible copy to `EXTRA_ROWS` in `assets/i18n.js` (exact English text, then pt, es). JS-written text goes through `llmwT()` and the `STR` table.
+- PWA: `manifest.webmanifest` plus `sw.js` (`llm-wiki-v2`, stale-while-revalidate for assets). Every path in `PRECACHE` must exist or the install fails. Bump the cache name when the list changes.
+- The nav switches to a hamburger below 1300px; the graph is a canvas 2D perspective renderer (no three.js, because the CSP only allows same-origin scripts).
+
+### Graph (assets/graph.js)
+
+- Cells are neurons: soma, dendrites and curved axons, with one shape per page type (pyramidal sources, stellate entities, branched concepts, large synthesis cells).
+- The brain has a midline fissure, folded cortex outline, white-matter interior and cross-hemisphere tracts.
+- Buttons play the wiki operations on the graph: add a page (ingest), ask the wiki (walks links two hops, then files a synthesis page) and run lint (flags pages with one link or none).
+- Input: pinch and two-finger pan, Shift or right-drag to pan, double-tap to fly to a cell, orbit mode for touch (turns off `pan-y`), keyboard stepping through hubs with `[` and `]`.
+- Performance: adaptive quality from measured frame time, LOD for dendrites, culling, no per-frame allocations in the hot path, DPR capped by canvas size, hard cap of 420 pages. `window.llmwGraph.stats()` reports frame time and quality.
+
+### Page copy: skills first (2026-10)
+
+- The page now explains the workflow in this order: how it works, what you can give it (files, links, pasted text, images), which skill runs for each request, everyday examples, then benefits.
+- Every skill and slash command named on the page is checked against `.agents/skills/` and `.agents/commands/` by `tests/test_github_pages.py`, so the copy cannot promise a skill that does not exist.
+- Keep the honest limits in the copy: the skills are instructions in `AGENTS.md`, not an enforced lock, and links or pasted text only enter `raw/` after the assistant asks.
+
+### Graph full screen
+
+- `#gFull` (or the `F` key on the canvas) fullscreens `#graphWrap` with the Fullscreen API. Where that fails or is missing (iPhone Safari), the wrapper becomes `position: fixed` instead (`.is-full`), and Esc leaves it.
+- In full screen only the graph and its controls show: type filters, zoom, reset, auto-rotate, orbit, exit, and the add / ask / lint buttons plus the stats line. Orbit mode turns on by itself while full screen (nothing to scroll) and goes back afterwards.
+- The fixed fallback needs `html.graph-full #graph { contain: none }`: sections use `content-visibility: auto`, which implies `contain: paint` and would otherwise trap a fixed child inside the section.
