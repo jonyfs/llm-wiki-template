@@ -65,6 +65,12 @@
 </head>
 <body>
 <script>(function(){var d=document.documentElement,t='dark';try{t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');}catch(e){}d.setAttribute('data-theme',t);if('IntersectionObserver' in window)d.classList.add('js');})();</script>
+<svg class="sprite" aria-hidden="true" focusable="false"><defs>
+<marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0 0L10 5L0 10z"/></marker>
+<symbol id="i-doc" viewBox="0 0 40 48"><path class="doc" d="M4 2h20l12 12v30a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path class="doc" d="M24 2v12h12"/><path class="ln" d="M9 24h22M9 31h22M9 38h14"/></symbol>
+<symbol id="i-chat" viewBox="0 0 48 44"><path class="doc" d="M6 4h36a4 4 0 0 1 4 4v20a4 4 0 0 1-4 4H22l-10 9v-9H6a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4z"/><path class="ln" d="M12 14h24M12 22h16"/></symbol>
+<symbol id="i-chunk" viewBox="0 0 28 20"><rect class="doc" x="1" y="1" width="26" height="18" rx="3"/><path class="ln" d="M6 7h16M6 13h10"/></symbol>
+</defs></svg>
 <div id="progress" aria-hidden="true"></div>
 <a class="skip" href="#content">Skip to content</a>
 <button id="backToTop" class="ctl" type="button" hidden aria-label="Back to top" data-i18n-aria="Back to top" data-i18n-title title="Back to top"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
@@ -78,12 +84,12 @@
     </div>
     <nav class="nav-panel" id="navPanel" aria-label="Primary" data-i18n-aria="Primary">
       <div class="nav-links">
-        <a href="#how">How it works</a>
-        <a href="#skills">Skills</a>
-        <a href="#examples">Examples</a>
-        <a href="#compare">vs RAG</a>
-        <a href="#start">Quick start</a>
+        <a href="#problem">The idea</a>
         <a href="#graph">Live graph</a>
+        <a href="#inputs">Use it</a>
+        <a href="#features">Benefits</a>
+        <a href="#start">Quick start</a>
+        <a href="#faq">FAQ</a>
       </div>
       <div class="nav-tools">
         <input class="field" id="siteSearch" type="search" placeholder="Search" data-i18n-ph="Search" aria-label="Search page" data-i18n-aria="Search page" autocomplete="off" spellcheck="false" enterkeyhint="search" />
@@ -108,11 +114,112 @@
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">View on GitHub</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Read the docs</a>
     </div>
+    <p class="hint">New here? Read the five parts in order, or jump to the one you need.</p>
+    <nav class="toc" aria-label="Reading order" data-i18n-aria="Reading order"><a class="chip" href="#problem"><span class="num">1</span>Understand the idea</a><a class="chip" href="#graph"><span class="num">2</span>See it working</a><a class="chip" href="#inputs"><span class="num">3</span>Use it</a><a class="chip" href="#features"><span class="num">4</span>Why it pays off</a><a class="chip" href="#start"><span class="num">5</span>Start</a></nav>
   </div>
 </header>
 
+<section id="problem">
+  <div class="container">
+    <p class="eyebrow"><span class="num">1</span>Understand the idea</p>
+    <h2 class="section-title">Asking your documents a question, today</h2>
+    <p class="section-sub">Most tools that answer from documents work like the first picture.</p>
+    <p class="hint">This part paraphrases <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">the gist</a>, using the names this template gives things.</p>
+    <div class="fig-grid">
+      <figure class="fig"><h3>Retrieval, the usual way</h3><svg viewBox="0 0 480 190" role="img" aria-label="Retrieval: documents are cut into pieces, the pieces become an answer, and every new question starts the loop again" data-i18n-aria="Retrieval: documents are cut into pieces, the pieces become an answer, and every new question starts the loop again" focusable="false"><use href="#i-doc" x="14" y="44" width="40" height="48"/><use href="#i-doc" x="24" y="34" width="40" height="48"/><use href="#i-doc" x="34" y="24" width="40" height="48"/><path class="ar" d="M92 76L172 76" marker-end="url(#ah)"/><use href="#i-chunk" x="184" y="30" width="34" height="24"/><use href="#i-chunk" x="238" y="46" width="34" height="24"/><use href="#i-chunk" x="190" y="72" width="34" height="24"/><use href="#i-chunk" x="244" y="90" width="34" height="24"/><use href="#i-chunk" x="206" y="112" width="34" height="24"/><path class="ar" d="M292 76L372 76" marker-end="url(#ah)"/><use href="#i-chat" x="380" y="48" width="64" height="59"/><path class="ar dash" d="M412 116C412 180 60 180 60 104" marker-end="url(#ah)"/></svg><ol class="steps-list"><li>You upload files.</li><li>When you ask, the tool pulls out the pieces that look relevant.</li><li>The model writes a fresh answer from those pieces.</li><li>The next question starts again at step 2. Nothing is kept.</li></ol></figure>
+      <figure class="fig hl"><h3>An LLM wiki</h3><svg viewBox="0 0 480 190" role="img" aria-label="LLM wiki: documents are read once into linked pages, and answers draw on those pages and can be added back" data-i18n-aria="LLM wiki: documents are read once into linked pages, and answers draw on those pages and can be added back" focusable="false"><use href="#i-doc" x="14" y="44" width="40" height="48"/><use href="#i-doc" x="24" y="34" width="40" height="48"/><use href="#i-doc" x="34" y="24" width="40" height="48"/><path class="ar" d="M92 76L162 76" marker-end="url(#ah)"/><rect class="bx" x="170" y="30" width="136" height="120" rx="14"/><path class="lk" d="M204 64L240 52"/><path class="lk" d="M240 52L282 64"/><path class="lk" d="M204 64L214 100"/><path class="lk" d="M240 52L256 96"/><path class="lk" d="M214 100L256 96"/><path class="lk" d="M256 96L282 64"/><path class="lk" d="M256 96L284 124"/><path class="lk" d="M214 100L236 124"/><path class="lk" d="M236 124L256 96"/><circle class="n-src" cx="204" cy="64" r="8"/><circle class="n-ent" cx="240" cy="52" r="8"/><circle class="n-con" cx="282" cy="64" r="8"/><circle class="n-con" cx="214" cy="100" r="8"/><circle class="n-syn" cx="256" cy="96" r="8"/><circle class="n-ent" cx="284" cy="124" r="8"/><circle class="n-src" cx="236" cy="124" r="8"/><path class="ar" d="M312 90L372 90" marker-end="url(#ah)"/><use href="#i-chat" x="380" y="48" width="64" height="59"/><path class="ar dash" d="M412 116C412 176 238 176 238 156" marker-end="url(#ah)"/></svg><ol class="steps-list"><li>You add a source.</li><li>The assistant reads it once and writes or updates linked pages.</li><li>Later questions start from those pages, with links and flagged contradictions already there.</li><li>The pages stay, and every new source or answer adds to them.</li></ol></figure>
+    </div>
+    <p class="hint">The gist puts NotebookLM, ChatGPT file uploads and most RAG setups in the first group.</p>
+    <p class="example">Example: you save five papers about sleep. Ask how they disagree and a retrieval tool digs through fragments of all five again, every time. In a wiki, the page on sleep and memory already says where paper 2 and paper 4 disagree, and cites both.</p>
+  </div>
+</section>
+
+<section id="roles">
+  <div class="container">
+    <h2 class="section-title">Who does what</h2>
+    <p class="section-sub">You decide what goes in and what to ask. The assistant does the upkeep.</p>
+    <div class="grid two">
+      <div class="card"><h3>You</h3><ul class="tick"><li>Pick the sources.</li><li>Ask the questions.</li><li>Read the pages and decide what it all means.</li></ul></div>
+      <div class="card"><h3>The assistant</h3><ul class="tick"><li>Summarizes each source.</li><li>Links related pages.</li><li>Files everything in the right place.</li><li>Keeps summaries current and flags contradictions.</li></ul></div>
+    </div>
+    <p class="hint">Karpathy compares it to programming: Obsidian is the editor, the assistant is the programmer and the wiki is the codebase. Obsidian is optional here. Any markdown editor, or just your file browser, works.</p>
+  </div>
+</section>
+
+<section id="layers">
+  <div class="container">
+    <h2 class="section-title">Three layers</h2>
+    <p class="section-sub">Each layer has one owner. That keeps the sources trustworthy and the pages consistent.</p>
+    <div class="fig-grid wide">
+      <figure class="fig"><svg viewBox="0 0 480 330" role="img" aria-label="Three layers: instructions on top, linked wiki pages in the middle, read-only source files at the bottom" data-i18n-aria="Three layers: instructions on top, linked wiki pages in the middle, read-only source files at the bottom" focusable="false"><rect class="bx acc" x="10" y="10" width="460" height="78" rx="14"/><use href="#i-doc" x="32" y="28" width="34" height="41"/><text class="mono" x="82" y="56">AGENTS.md</text><path class="ln" d="M300 36H440M300 52H420M300 68H436"/><path class="ar" d="M240 92L240 118" marker-end="url(#ah)"/><rect class="bx" x="10" y="124" width="460" height="108" rx="14"/><text class="mono sm" x="26" y="152">wiki/</text><path class="lk" d="M60 168L110 150"/><path class="lk" d="M110 150L160 176"/><path class="lk" d="M160 176L215 154"/><path class="lk" d="M215 154L270 180"/><path class="lk" d="M270 180L325 156"/><path class="lk" d="M325 156L380 178"/><path class="lk" d="M380 178L425 152"/><path class="lk" d="M110 150L215 154"/><path class="lk" d="M215 154L325 156"/><path class="lk" d="M160 176L270 180"/><circle class="n-src" cx="60" cy="168" r="8"/><circle class="n-ent" cx="110" cy="150" r="8"/><circle class="n-con" cx="160" cy="176" r="8"/><circle class="n-con" cx="215" cy="154" r="8"/><circle class="n-syn" cx="270" cy="180" r="8"/><circle class="n-ent" cx="325" cy="156" r="8"/><circle class="n-src" cx="380" cy="178" r="8"/><circle class="n-con" cx="425" cy="152" r="8"/><path class="ar" d="M240 270L240 240" marker-end="url(#ah)"/><rect class="bx" x="10" y="262" width="460" height="58" rx="14"/><text class="mono sm" x="26" y="288">raw/</text><use href="#i-doc" x="150" y="278" width="26" height="31"/><use href="#i-doc" x="188" y="278" width="26" height="31"/><use href="#i-doc" x="226" y="278" width="26" height="31"/><use href="#i-doc" x="264" y="278" width="26" height="31"/><use href="#i-doc" x="302" y="278" width="26" height="31"/><rect class="lock" x="398" y="288" width="30" height="22" rx="4"/><path class="lockln" d="M404 288v-7a9 9 0 0 1 18 0v7"/></svg></figure>
+      <dl class="legend">
+        <dt class="k-acc">The schema</dt><dd>A short instruction file (here, <code>AGENTS.md</code> plus the skills) that says how the wiki is laid out and what to do for each kind of request. You and the assistant refine it as you learn what works.</dd>
+        <dt class="k-wiki">The wiki</dt><dd>Markdown pages the assistant writes: summaries, entity and concept pages, comparisons, syntheses. You read them. The assistant owns them and keeps them consistent.</dd>
+        <dt class="k-raw">Raw sources</dt><dd>Your articles, papers, images and data files. They never change. This is the source of truth.</dd>
+      </dl>
+    </div>
+    <p class="example">Example: reading a novel. The chapters you save are the raw layer. The wiki gets a page for each character and theme. The schema can say that every character page lists the chapters where that person appears.</p>
+  </div>
+</section>
+
+<section id="operations">
+  <div class="container">
+    <h2 class="section-title">Three operations</h2>
+    <p class="section-sub">Everything you do with the wiki is one of these.</p>
+    <div class="op">
+      <h3>Ingest</h3>
+      <figure class="fig"><svg viewBox="0 0 480 304" role="img" aria-label="One source on the left fans out to about eight pages: a source page, entity pages, concept pages, a synthesis, the index and the log" data-i18n-aria="One source on the left fans out to about eight pages: a source page, entity pages, concept pages, a synthesis, the index and the log" focusable="false"><use href="#i-doc" x="30" y="118" width="62" height="74"/><path class="ar thin" d="M98 156C200 156 230 25 322 25" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 61 322 61" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 97 322 97" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 133 322 133" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 169 322 169" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 205 322 205" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 241 322 241" marker-end="url(#ah)"/><path class="ar thin" d="M98 156C200 156 230 277 322 277" marker-end="url(#ah)"/><rect class="tile" x="330" y="10" width="110" height="30" rx="6"/><rect class="s-src" x="330" y="10" width="8" height="30" rx="3"/><path class="ln" d="M350 21H428 M350 30H404"/><rect class="tile" x="330" y="46" width="110" height="30" rx="6"/><rect class="s-ent" x="330" y="46" width="8" height="30" rx="3"/><path class="ln" d="M350 57H428 M350 66H404"/><rect class="tile" x="330" y="82" width="110" height="30" rx="6"/><rect class="s-ent" x="330" y="82" width="8" height="30" rx="3"/><path class="ln" d="M350 93H428 M350 102H404"/><rect class="tile" x="330" y="118" width="110" height="30" rx="6"/><rect class="s-con" x="330" y="118" width="8" height="30" rx="3"/><path class="ln" d="M350 129H428 M350 138H404"/><rect class="tile" x="330" y="154" width="110" height="30" rx="6"/><rect class="s-con" x="330" y="154" width="8" height="30" rx="3"/><path class="ln" d="M350 165H428 M350 174H404"/><rect class="tile" x="330" y="190" width="110" height="30" rx="6"/><rect class="s-syn" x="330" y="190" width="8" height="30" rx="3"/><path class="ln" d="M350 201H428 M350 210H404"/><rect class="tile" x="330" y="226" width="110" height="30" rx="6"/><rect class="s-idx" x="330" y="226" width="8" height="30" rx="3"/><path class="ln" d="M350 237H428 M350 246H404"/><rect class="tile" x="330" y="262" width="110" height="30" rx="6"/><rect class="s-log" x="330" y="262" width="8" height="30" rx="3"/><path class="ln" d="M350 273H428 M350 282H404"/></svg><div class="key"><span><i class="sw s-src"></i>source</span><span><i class="sw s-ent"></i>entity</span><span><i class="sw s-con"></i>concept</span><span><i class="sw s-syn"></i>synthesis</span><span><i class="sw s-idx"></i>index</span><span><i class="sw s-log"></i>log</span></div></figure>
+      <div class="op-text">
+        <p>You add a source and ask the assistant to process it. It reads the source, talks through the main points with you if you like, writes a summary page, updates the index, updates the entity and concept pages the source touches, and adds a line to the log.</p>
+        <p>One source can change 10 to 15 pages. The gist prefers ingesting one source at a time and staying involved: reading the summaries and steering what to emphasize. You can also ingest many at once with less supervision. Whichever you pick, write the workflow into the schema so the next session follows it.</p>
+        <p class="example">Example: you add a transcript of a podcast about sleep. The assistant writes a page for the episode, adds a paragraph to the page on melatonin, creates a page for the guest and links the three.</p>
+        <p class="hint">In this template that is the <code>wiki-ingest</code> skill.</p>
+      </div>
+    </div>
+    <div class="op">
+      <h3>Query</h3>
+      <figure class="fig"><svg viewBox="0 0 480 230" role="img" aria-label="A question reads wiki pages and produces an answer, and the answer can be filed back as a new page" data-i18n-aria="A question reads wiki pages and produces an answer, and the answer can be filed back as a new page" focusable="false"><use href="#i-chat" x="14" y="70" width="60" height="55"/><path class="ar" d="M80 98L114 98" marker-end="url(#ah)"/><rect class="bx" x="120" y="46" width="108" height="104" rx="14"/><path class="lk" d="M148 78L184 66"/><path class="lk" d="M184 66L204 100"/><path class="lk" d="M148 78L152 108"/><path class="lk" d="M152 108L176 128"/><path class="lk" d="M184 66L152 108"/><path class="lk" d="M204 100L176 128"/><circle class="n-con" cx="148" cy="78" r="8"/><circle class="n-ent" cx="184" cy="66" r="8"/><circle class="n-src" cx="204" cy="100" r="8"/><circle class="n-con" cx="152" cy="108" r="8"/><circle class="n-ent" cx="176" cy="128" r="8"/><path class="ar" d="M234 98L268 98" marker-end="url(#ah)"/><use href="#i-doc" x="274" y="68" width="48" height="58"/><path class="ar" d="M330 98L366 98" marker-end="url(#ah)"/><rect class="tile" x="372" y="78" width="96" height="44" rx="6"/><rect class="s-syn" x="372" y="78" width="8" height="44" rx="3"/><path class="ln" d="M392 89H456 M392 98H432"/><path class="ar dash" d="M420 130C420 214 174 214 174 156" marker-end="url(#ah)"/></svg></figure>
+      <div class="op-text">
+        <p>You ask a question. The assistant searches the wiki, reads the relevant pages and answers with citations. The answer can be a page, a table, a slide deck or a chart, whatever fits the question.</p>
+        <p>A good answer can also be filed back into the wiki as a new page. A comparison you asked for or a connection you found should not vanish into chat history.</p>
+        <p class="example">Example: you ask for a comparison of two note apps and like it, so the assistant saves it as a synthesis page. A month later you ask a follow-up and it starts from that page.</p>
+        <p class="hint">In this template that is the <code>wiki-query</code> skill, or <code>wiki</code> when nothing may be written.</p>
+      </div>
+    </div>
+    <div class="op">
+      <h3>Lint</h3>
+      <figure class="fig"><svg viewBox="0 0 480 190" role="img" aria-label="A wiki graph with one orphan page circled, one stale page drawn dotted and one pair of pages that contradict each other" data-i18n-aria="A wiki graph with one orphan page circled, one stale page drawn dotted and one pair of pages that contradict each other" focusable="false"><path class="lk" d="M60 70L112 50"/><path class="lk" d="M112 50L170 78"/><path class="lk" d="M60 70L120 120"/><path class="lk" d="M120 120L188 130"/><path class="lk" d="M170 78L188 130"/><path class="lk" d="M112 50L236 56"/><path class="lk" d="M170 78L236 56"/><circle class="n-con" cx="60" cy="70" r="8"/><circle class="n-ent" cx="112" cy="50" r="8"/><circle class="n-src" cx="170" cy="78" r="8"/><circle class="n-con" cx="120" cy="120" r="8"/><circle class="n-ent" cx="188" cy="130" r="8"/><circle class="n-syn" cx="236" cy="56" r="8"/><circle class="n-src stale" cx="300" cy="122" r="12"/><path class="lk" d="M236 56L300 122"/><circle class="n-con" cx="410" cy="50" r="8"/><circle class="orphan" cx="410" cy="50" r="21"/><circle class="n-ent" cx="352" cy="150" r="8"/><circle class="n-ent" cx="440" cy="150" r="8"/><path class="bad" d="M362 150H428"/><path class="bad" d="M391 138l12 24M397 138l12 24"/></svg></figure>
+      <div class="op-text">
+        <p>From time to time, ask the assistant to check the wiki's health. It looks for:</p>
+        <ul class="tick"><li>pages that contradict each other</li><li>claims that newer sources have replaced</li><li>orphan pages that nothing links to</li><li>ideas mentioned often but without a page of their own</li><li>missing cross-references between related pages</li><li>gaps that a web search could fill</li></ul>
+        <p>It is also good at suggesting what to read or ask next.</p>
+        <p class="hint">In this template, lint and refresh live in the <code>wiki-maintenance</code> skill.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="concepts">
+  <div class="container">
+    <h2 class="section-title">The vocabulary</h2>
+    <div class="grid">
+      <div class="card"><h3>Source page</h3><p>One page per raw file. It summarizes what the source says and numbers its claims so other pages can cite them, like <code>[[slug]] C1</code>.</p></div>
+      <div class="card"><h3>Entity page</h3><p>A person, company, product or place that shows up in more than one source. Gathers what the wiki knows about it in one spot.</p></div>
+      <div class="card"><h3>Concept page</h3><p>An idea, method or theme. It explains the thing and links to the sources behind it.</p></div>
+      <div class="card"><h3>Synthesis page</h3><p>The saved answer to a question that needed several pages. Next time, you start from it.</p></div>
+      <div class="card"><h3>Wikilink</h3><p>Links like <code>[[slug]]</code> take you from one page to another. They are what the graph above draws, and Obsidian reads them too.</p></div>
+      <div class="card"><h3>Frontmatter</h3><p>A small block of YAML at the top of each page with title, type, sources and dates. The lint script checks it.</p></div>
+      <div class="card"><h3>Ingest</h3><p>The assistant reads a raw source, writes or updates the wiki pages it touches, and records it in the index and log.</p></div>
+      <div class="card"><h3>Query</h3><p>Ask a question. The assistant answers from the wiki first and can save a useful answer as a synthesis page.</p></div>
+      <div class="card"><h3>Lint</h3><p>A health check for broken links, missing fields, stale claims and pages nothing links to.</p></div>
+      <div class="card"><h3>Skill</h3><p>A markdown file in <code>.agents/skills/</code> that tells the assistant how to do one job, such as ingest, query or lint.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="graph">
   <div class="container">
+    <p class="eyebrow"><span class="num">2</span>See it working</p>
     <h2 class="section-title">What a grown wiki looks like</h2>
     <p class="section-sub">This is made-up data in the shape of a brain, not a real vault. Each cell is a page in <code>wiki/</code>, and each connection is a <code>[[wikilink]]</code> between two pages. Pages that get more links grow bigger, same as in Obsidian.</p>
     <div class="graph-wrap" id="graphWrap">
@@ -142,27 +249,14 @@
     <div class="graph-meta"><p id="gTip"></p><p id="gStats"></p></div>
     <p class="sr-only" id="gStatus" role="status"></p>
     </div>
+    <p class="hint">The buttons below the graph play the three operations: adding a page is an ingest, asking the wiki is a query, and running lint is a lint.</p>
     <details class="graph-list"><summary>Most connected pages</summary><ul id="gList"></ul></details>
-  </div>
-</section>
-
-<section class="flow" id="how">
-  <div class="container">
-    <h2 class="section-title">How it works</h2>
-    <p class="section-sub">You add sources. The assistant files them. You ask questions, and a wiki skill handles each step.</p>
-    <div class="flow-card">
-      <ol class="diagram" aria-label="Flow from raw sources to wiki to answers" data-i18n-aria="Flow from raw sources to wiki to answers">
-        <li><div class="node"><b>raw/</b><span>files, links and pasted text</span><span>saved here, never edited</span><span class="tag">you choose them</span></div><span class="arrow" aria-hidden="true"></span></li>
-        <li><div class="node hl"><b>LLM assistant</b><span>loads a wiki skill first</span><span>then reads, writes or answers</span><span class="tag">skills in .agents/skills/</span></div><span class="arrow" aria-hidden="true"></span></li>
-        <li><div class="node"><b>wiki/</b><span>sources · entities · concepts</span><span>syntheses · index · log</span><span class="tag">grows as you add</span></div></li>
-      </ol>
-      <p class="flow-note">Questions go to <code>wiki/</code> first. The assistant opens the raw files only to check a detail.</p>
-    </div>
   </div>
 </section>
 
 <section id="inputs">
   <div class="container">
+    <p class="eyebrow"><span class="num">3</span>Use it</p>
     <h2 class="section-title">Give it almost anything</h2>
     <p class="section-sub">Start with what you already have. You choose the sources, and the assistant never edits them.</p>
     <div class="grid">
@@ -199,6 +293,33 @@
   </div>
 </section>
 
+<section id="files">
+  <div class="container">
+    <h2 class="section-title">Index and log</h2>
+    <p class="section-sub">Two plain files help both of you find your way as the wiki grows.</p>
+    <div class="grid two">
+      <div class="card"><h3><code>index.md</code></h3><p>A catalog of every page: a link, a one-line summary, grouped by category. The assistant updates it on every ingest and reads it first when you ask something. The gist says this works well up to roughly a hundred sources and a few hundred pages, with no search infrastructure.</p>
+      <div class="qs" data-label="wiki/index.md">
+        <span class="line"><span class="c">## Concepts</span></span>
+        <span class="line">- [[wikilink]]: a link from one page to another</span>
+        <span class="line">- [[lint]]: a health check for the wiki</span>
+        <span class="line"></span>
+        <span class="line"><span class="c">## Sources</span></span>
+        <span class="line">- [[sleep-podcast]]: transcript, ingested 2026-04-02</span>
+      </div></div>
+      <div class="card"><h3><code>log.md</code></h3><p>A record of what happened and when: ingests, questions, lint passes. It only ever grows. Start every entry with the same prefix and simple tools can read it. This command prints the last five entries:</p>
+      <div class="qs" data-label="wiki/log.md">
+        <span class="line">## [2026-04-02] ingest | Sleep podcast transcript</span>
+        <span class="line">## [2026-04-03] query | How do the sleep papers disagree?</span>
+        <span class="line">## [2026-04-09] lint | 3 orphan pages found</span>
+        <span class="line"></span>
+        <span class="line"><span class="c"># the last five entries</span></span>
+        <span class="line"><span class="k">grep "^## \[" wiki/log.md | tail -5</span></span>
+      </div></div>
+    </div>
+  </div>
+</section>
+
 <section id="examples">
   <div class="container">
     <h2 class="section-title">Examples from an ordinary week</h2>
@@ -215,6 +336,7 @@
 
 <section id="features">
   <div class="container">
+    <p class="eyebrow"><span class="num">4</span>Why it pays off</p>
     <h2 class="section-title">What it does for you</h2>
     <p class="section-sub">Plain files, a few scripts and instructions your assistant follows. Nothing runs in the background.</p>
     <div class="grid">
@@ -224,6 +346,17 @@
       <div class="card"><h3>Good answers get reused</h3><p>A useful answer can be saved as a synthesis page. The next similar question starts from that page instead of the raw files.</p></div>
       <div class="card"><h3>Problems show up early</h3><p>Lint catches broken links and missing fields. Refresh tells you when a raw file changed after its page was written.</p></div>
       <div class="card"><h3>Removing things is safe</h3><p>Removing a subject lists every mention first and waits for your yes. The raw files stay where they are.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="container">
+    <h2 class="section-title">Why this works</h2>
+    
+    <div class="prose-block">
+      <p>Keeping a knowledge base up to date is mostly bookkeeping: fixing cross-references, rewriting summaries, noticing when new data contradicts old claims. People give up on wikis because that work grows faster than the value they get back. An assistant does not get bored, does not forget a link and can touch 15 files in one pass.</p>
+      <p>The gist ties this to the Memex, an idea Vannevar Bush described in 1945: a private, curated store of documents with trails of associations between them. What Bush could not solve was who would do the upkeep. That is the part the assistant takes on.</p>
     </div>
   </div>
 </section>
@@ -264,6 +397,7 @@
 
 <section id="start">
   <div class="container">
+    <p class="eyebrow"><span class="num">5</span>Start</p>
     <h2 class="section-title">Quick start</h2>
     <p class="section-sub">You need an AI coding assistant that can read your files. No API keys, no database.</p>
     <div class="code-box">
@@ -288,7 +422,7 @@
   </div>
 </section>
 
-<section>
+<section id="agents">
   <div class="container">
     <h2 class="section-title">Compatible agents</h2>
     <p class="section-sub">The instructions live in <code>AGENTS.md</code> and <code>.agents/skills/</code>. Any agent that reads markdown can follow them.</p>
@@ -304,6 +438,22 @@
   </div>
 </section>
 
+<section id="yours">
+  <div class="container">
+    <h2 class="section-title">Make it yours</h2>
+    <p class="section-sub">The gist is deliberately abstract. Everything in it is optional, so take what helps.</p>
+    <div class="grid">
+      <div class="card"><h3>Search for a big wiki</h3><p>Past a few hundred pages the index stops being enough. The gist suggests a local search engine for markdown, such as qmd. This template ships a small script, <code>scripts/wiki_search.py</code>.</p></div>
+      <div class="card"><h3>Clip web pages</h3><p>The gist uses the Obsidian Web Clipper, a browser extension that turns articles into markdown. Save the result in <code>raw/</code> or paste the link and let the assistant ask before saving it.</p></div>
+      <div class="card"><h3>Keep images local</h3><p>Download an article's images next to it, so the assistant can look at them without relying on links that may break. It reads the text first, then views the images it needs.</p></div>
+      <div class="card"><h3>See the shape</h3><p>Obsidian's graph view shows what connects to what, which pages are hubs and which are orphans. The graph on the home page imitates it.</p></div>
+      <div class="card"><h3>Slides and tables</h3><p>Marp turns markdown into slide decks, and Dataview builds tables from page frontmatter. Both are Obsidian plugins from the gist's tips. Every page here has frontmatter, so Dataview has something to read.</p></div>
+      <div class="card"><h3>History for free</h3><p>The wiki is a git repository of markdown files, so you get history, branches and collaboration without extra tools.</p></div>
+    </div>
+    <p class="hint">The gist ends by saying its only job is to pass on the pattern. Share it with your assistant and shape the details together.</p>
+  </div>
+</section>
+
 <section id="faq">
   <div class="container">
     <h2 class="section-title">Common questions</h2>
@@ -314,6 +464,19 @@
       <div class="card"><h3>Do I have to use the skills?</h3><p>They are how the template works. <code>AGENTS.md</code> tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.</p></div>
       <div class="card"><h3>Does it work offline?</h3><p>The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.</p></div>
       <div class="card"><h3>Who maintains the wiki?</h3><p>The assistant does, following the instructions in <code>.agents/skills/</code>. You choose the sources and ask the questions.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="troubleshoot">
+  <div class="container">
+    <h2 class="section-title">When something looks wrong</h2>
+    <div class="grid">
+      <div class="card"><h3>Empty wiki after ingest</h3><p>Check that the file is in <code>raw/</code> and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.</p></div>
+      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It lists links that point nowhere so you can fix or remove them.</p></div>
+      <div class="card"><h3>Stale claims</h3><p>Run refresh. It shows which raw files changed since their source pages were written.</p></div>
+      <div class="card"><h3>Too many pages</h3><p>That's normal. Use <code>wiki/index.md</code> and the search script to find your way around.</p></div>
+      <div class="card"><h3>The answer ignored the wiki</h3><p>Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.</p></div>
     </div>
   </div>
 </section>
@@ -343,74 +506,6 @@
     </div>
   </div>
 </section>
-
-<section id="article">
-  <div class="container">
-    <h2 class="section-title">Where the idea comes from</h2>
-    <p class="section-sub">Andrej Karpathy described the pattern in <a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">a gist</a>. This is a short paraphrase, not a quote.</p>
-    <div class="card prose">
-      <p>Most document tools use retrieval. You upload files, and when you ask something the model pulls out the relevant pieces and writes an answer. It works, but every question starts from zero. Nothing builds up, and a question that spans several documents makes the model piece the same fragments together again.</p>
-      <p>In an LLM wiki, the model reads each source once and writes what it learned into a folder of linked markdown pages. When new material arrives it updates the topic pages, revises summaries, and points out where something contradicts an older claim.</p>
-      <p>What you end up with is a set of pages you can open, read and correct yourself. The links between ideas are already there, and each source you add gives the next question more to draw on.</p>
-      <h3 class="mt">Three layers</h3>
-      <ol class="diagram" aria-label="Three layers: raw, wiki, schema" data-i18n-aria="Three layers: raw, wiki, schema">
-        <li><div class="node"><b>raw/</b><span>read-only sources</span><span>the assistant never edits these</span></div><span class="arrow" aria-hidden="true"></span></li>
-        <li><div class="node hl"><b>wiki/</b><span>pages the assistant writes</span><span>sources, entities, concepts, syntheses</span></div><span class="arrow" aria-hidden="true"></span></li>
-        <li><div class="node"><b>schema</b><span>AGENTS.md + skills</span><span>the instructions it follows</span></div></li>
-      </ol>
-      <p>Instead of a generic pipeline, the assistant gets a short set of instructions (<code>AGENTS.md</code> and <code>.agents/skills/</code>) in this template, and it follows them.</p>
-    </div>
-  </div>
-</section>
-
-<section id="concepts">
-  <div class="container">
-    <h2 class="section-title">The vocabulary</h2>
-    <div class="grid">
-      <div class="card"><h3>Source page</h3><p>One page per raw file. It summarizes what the source says and numbers its claims so other pages can cite them, like <code>[[slug]] C1</code>.</p></div>
-      <div class="card"><h3>Entity page</h3><p>A person, company, product or place that shows up in more than one source. Gathers what the wiki knows about it in one spot.</p></div>
-      <div class="card"><h3>Concept page</h3><p>An idea, method or theme. It explains the thing and links to the sources behind it.</p></div>
-      <div class="card"><h3>Synthesis page</h3><p>The saved answer to a question that needed several pages. Next time, you start from it.</p></div>
-      <div class="card"><h3>Wikilink</h3><p>Links like <code>[[slug]]</code> take you from one page to another. They are what the graph above draws, and Obsidian reads them too.</p></div>
-      <div class="card"><h3>Frontmatter</h3><p>A small block of YAML at the top of each page with title, type, sources and dates. The lint script checks it.</p></div>
-      <div class="card"><h3>Ingest</h3><p>The assistant reads a raw source, writes or updates the wiki pages it touches, and records it in the index and log.</p></div>
-      <div class="card"><h3>Query</h3><p>Ask a question. The assistant answers from the wiki first and can save a useful answer as a synthesis page.</p></div>
-      <div class="card"><h3>Lint</h3><p>A health check for broken links, missing fields, stale claims and pages nothing links to.</p></div>
-      <div class="card"><h3>Skill</h3><p>A markdown file in <code>.agents/skills/</code> that tells the assistant how to do one job, such as ingest, query or lint.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="troubleshoot">
-  <div class="container">
-    <h2 class="section-title">When something looks wrong</h2>
-    <div class="grid">
-      <div class="card"><h3>Empty wiki after ingest</h3><p>Check that the file is in <code>raw/</code> and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.</p></div>
-      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It lists links that point nowhere so you can fix or remove them.</p></div>
-      <div class="card"><h3>Stale claims</h3><p>Run refresh. It shows which raw files changed since their source pages were written.</p></div>
-      <div class="card"><h3>Too many pages</h3><p>That's normal. Use <code>wiki/index.md</code> and the search script to find your way around.</p></div>
-      <div class="card"><h3>The answer ignored the wiki</h3><p>Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="walkthrough">
-  <div class="container">
-    <h2 class="section-title">An ingest, step by step</h2>
-    <p class="section-sub">What happens when you tell the assistant to ingest <code>raw/article.md</code>.</p>
-    <div class="flow-card">
-      <ol class="steps-list">
-        <li>It loads the skill <code>wiki-ingest</code> and reads <code>wiki/index.md</code>.</li>
-        <li>The assistant reads <code>raw/article.md</code> from start to finish.</li>
-        <li>It creates <code>wiki/sources/article.md</code> with frontmatter, a summary and a numbered list of claims.</li>
-        <li>It edits or creates the entity and concept pages the source mentions, and links them.</li>
-        <li>It adds the new pages to <code>wiki/index.md</code>, under the right heading.</li>
-        <li>It adds an entry to <code>wiki/log.md</code> with the date and a title.</li>
-        <li>The source is now part of the wiki, so your next question can use it.</li>
-      </ol>
-    </div>
-  </div>
-</section>
 </main>
 <p id="searchEmpty" role="status" hidden></p>
 
@@ -424,6 +519,7 @@
       <li><a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a></li>
       <li><a href="https://github.com/jonyfs/llm-wiki-template/blob/main/SECURITY.md">Security</a></li>
       <li><a href="https://github.com/jonyfs/llm-wiki-template/blob/main/CITATION.cff">Cite</a></li>
+      <li><a href="https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f">The original gist</a></li>
       <li><a href="changelog.html">Changelog</a></li>
       <li><a href="roadmap.html">Roadmap</a></li>
       <li><a href="press-kit.html">Press kit</a></li>

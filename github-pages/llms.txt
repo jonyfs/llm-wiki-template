@@ -6,6 +6,7 @@
 
 - [README](https://github.com/jonyfs/llm-wiki-template/blob/main/README.md): What it is, why it differs from RAG, getting started, folder map, skills, and everyday workflow.
 - [AGENTS.md](https://github.com/jonyfs/llm-wiki-template/blob/main/AGENTS.md): Always-on rules for structure, frontmatter schema, citations, and operations. Under 8 KB so any agent can load it cheaply.
+- [Home page](https://jonyfs.github.io/llm-wiki-template/): The pattern from Karpathy's gist explained in five parts: the idea, a live graph, how to use it with the wiki skills, why it pays off, and how to start.
 - [Migration notes](https://github.com/jonyfs/llm-wiki-template/blob/main/docs/migration.md): Guidance for derived notebooks.
 - [Improvement catalog](https://github.com/jonyfs/llm-wiki-template/blob/main/IMPROVEMENTS.md): 100 internal correctness/performance candidates, many resolved.
 - [Discoverability catalog](https://github.com/jonyfs/llm-wiki-template/blob/main/DISCOVERABILITY.md): SEO and distribution candidates.

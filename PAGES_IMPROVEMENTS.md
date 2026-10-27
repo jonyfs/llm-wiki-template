@@ -242,3 +242,17 @@ Catalog of candidate improvements for the Pages site (`index.html`). Apply in ba
 - `#gFull` (or the `F` key on the canvas) fullscreens `#graphWrap` with the Fullscreen API. Where that fails or is missing (iPhone Safari), the wrapper becomes `position: fixed` instead (`.is-full`), and Esc leaves it.
 - In full screen only the graph and its controls show: type filters, zoom, reset, auto-rotate, orbit, exit, and the add / ask / lint buttons plus the stats line. Orbit mode turns on by itself while full screen (nothing to scroll) and goes back afterwards.
 - The fixed fallback needs `html.graph-full #graph { contain: none }`: sections use `content-visibility: auto`, which implies `contain: paint` and would otherwise trap a fixed child inside the section.
+
+### One page, five parts (reader journey)
+
+The landing page is a single document ordered by what a newcomer asks next. A numbered label (`.eyebrow`) opens each part and the hero lists them as reading-order chips.
+
+1. **Understand the idea** (`#problem`): retrieval vs. a maintained wiki, who does what, three layers, the three operations (ingest, query, lint), the vocabulary.
+2. **See it working** (`#graph`): the live graph. It sits right after the operations because its Add / Ask / Run lint buttons play them, and its legend uses the page types from the vocabulary.
+3. **Use it** (`#inputs`): what you can add, every request goes through a skill, `index.md` and `log.md`, everyday examples.
+4. **Why it pays off** (`#features`): benefits, why it works, who it is for, comparison with RAG and note apps.
+5. **Start** (`#start`): quick start, compatible agents, make it yours, FAQ, common problems, call to action, repo metrics.
+
+- Part 1 paraphrases Karpathy's gist and says so. Its six inline SVG figures use the page tokens and the graph's colour per page type, carry almost no text (labels sit in HTML beside them) and each has an `aria-label`.
+- `tests/test_github_pages.py` checks that the parts are numbered 1 to 5, that every nav and chip link has a target, and that the graph comes after the operations.
+- The page builder scripts were one-off; edit `index.html` directly. Any new inline script needs its CSP hash, which the tests check.
