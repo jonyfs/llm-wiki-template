@@ -283,7 +283,7 @@
 <section id="graph" style="padding:48px 0 32px;">
   <div class="container">
     <h2 class="section-title">Live wiki graph</h2>
-    <p class="section-sub">A brain-shaped force graph. Nodes are pages (source, entity, concept, synthesis) scattered across a procedural cerebrum, edges are <code>[[wikilinks]]</code>. Seeded with ~230 pages and ~1,000 links; watch it grow as new sources are ingested.</p>
+    <p class="section-sub">A visual example of how a wiki grows. Each dot is a page in <code>wiki/</code> (source, entity, concept or synthesis), each line is a <code>[[wikilink]]</code> between two pages. The shape is a brain, not your real wiki: about 230 pages and 1,000 links, simulated, and it keeps growing as new sources are ingested.</p>
     <div class="flow-card">
       <canvas id="g" width="900" height="900" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
       <div style="display:flex;gap:8px;justify-content:center;margin:8px 0 0;">
@@ -298,7 +298,7 @@
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
         <span id="gStats" style="color:var(--muted);">230 pages · 1000 links</span>
       </div>
-      <p id="gTip" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.</p>
+      <p id="gTip" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.</p>
       <p style="text-align:center;color:var(--muted);font-size:15px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
     </div>
   </div>
@@ -1026,14 +1026,14 @@
         const n = nodes[nearest];
         tip.textContent = n.label + ' (' + n.type + ') · ' + (n.degree||0) + ' links';
       } else {
-        tip.textContent = 'Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.';
+        tip.textContent = 'Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.';
       }
     }
   });
   canvas.addEventListener('mouseleave', ()=>{
     hovered = -1;
     const tip = document.getElementById('gTip');
-    if(tip) tip.textContent = 'Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.';
+    if(tip) tip.textContent = 'Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.';
   });
   canvas.addEventListener('click', (e)=>{
     const before = nodes.length;
