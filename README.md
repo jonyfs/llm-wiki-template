@@ -15,6 +15,14 @@ Add files, links or pasted text. Your assistant reads them with its wiki skills,
 
 <p align="center"><sub>A made-up wiki in the shape of a brain, captured from the live graph on the site. Each cell is a page, each line is a <code>[[wikilink]]</code>, and pages with more links grow bigger. GitHub does not run the animation, so this is a still.</sub></p>
 
+## In short
+
+LLM Wiki Template turns the material you collect into linked markdown pages, so you ask the wiki instead of digging through files.
+
+- **What it can do.** It reads the files, links and pasted text you give it. It writes a page for each source, plus pages for the people, ideas and comparisons inside them, and answers your questions from those pages with citations.
+- **What it solves.** Tools that answer from documents rebuild the answer from fragments on every question, so nothing builds up. Here the summarizing, linking and spotting of contradictions happens once and stays on the page.
+- **What it is for.** Any subject you keep reading about: a course, a research topic, client files, a team's decisions. It suits you if you want answers you can check and notes that stay current without you maintaining them.
+
 New here? Read the five parts in order, or jump to the one you need: [1 Understand the idea](#1-understand-the-idea) · [2 See it working](#2-see-it-working) · [3 Use it](#3-use-it) · [4 Why it pays off](#4-why-it-pays-off) · [5 Start](#5-start)
 
 ---
