@@ -204,16 +204,17 @@
 <section id="graph" style="padding:48px 0 32px;">
   <div class="container">
     <h2 class="section-title">Live wiki graph</h2>
-    <p class="section-sub">A small Obsidian-style force graph. Nodes are pages, edges are <code>[[wikilinks]]</code>. Watch it grow as new sources are ingested.</p>
+    <p class="section-sub">An Obsidian-style force graph. Nodes are pages (source, entity, concept, synthesis), edges are <code>[[wikilinks]]</code>. Seeded with ~230 pages and ~1,000 links; watch it grow as new sources are ingested.</p>
     <div class="flow-card">
-      <canvas id="g" width="860" height="360" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>
+      <canvas id="g" width="860" height="400" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:12px;color:var(--muted);">
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c8cff;margin-right:4px;"></span>concept</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
+        <span id="gStats" style="color:var(--muted);">230 pages · 1000 links</span>
       </div>
-      <p id="gTip" style="text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0;">Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.</p>
+      <p id="gTip" style="text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0;">Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.</p>
     </div>
   </div>
 </section>
@@ -541,106 +542,201 @@
   const W = canvas.width, H = canvas.height;
   const nodes = [];
   const edges = [];
-  function addNode(label, type){
-    const n = {id: nodes.length, label, type: type||'concept', x: W/2 + (Math.random()-0.5)*60, y: H/2 + (Math.random()-0.5)*60, vx:0, vy:0, pulse: 0};
+  const edgeSet = new Set();
+  function edgeKey(a,b){ return a < b ? a + ',' + b : b + ',' + a; }
+  function addEdge(a,b){
+    if(a === b) return false;
+    const key = edgeKey(a,b);
+    if(edgeSet.has(key)) return false;
+    edgeSet.add(key);
+    edges.push([a,b]);
+    return true;
+  }
+  function addNode(label,type){
+    const n = {id:nodes.length, label, type:type||'concept', x: W/2 + (Math.random()-0.5)*140, y: H/2 + (Math.random()-0.5)*140, vx:0, vy:0, pulse:0, degree:0};
     nodes.push(n);
     return n;
   }
-  const seed = [
-    ['raw/article.md','source'], ['wiki/sources/article','source'], ['wiki/concepts/llm-wiki','concept'],
-    ['wiki/entities/karpathy','entity'], ['wiki/syntheses/rag-vs-wiki','synthesis'],
-    ['wiki/concepts/compounding','concept'], ['wiki/concepts/ingest','concept']
-  ];
-  seed.forEach(([l,t])=>addNode(l,t));
-  // initial edges
-  edges.push([0,1],[1,2],[2,3],[1,4],[4,5],[2,5],[5,6]);
+  const NAMES = {
+    source: ['raw/article.md','raw/paper-karpathy.md','raw/notes.md','raw/transcript.md','raw/dataset.csv','raw/changelog.md'],
+    entity: ['wiki/entities/karpathy','wiki/entities/obsidian','wiki/entities/claude','wiki/entities/rag','wiki/entities/wikilink','wiki/entities/mcp'],
+    concept: ['wiki/concepts/llm-wiki','wiki/concepts/compounding','wiki/concepts/ingest','wiki/concepts/query','wiki/concepts/lint','wiki/concepts/refresh','wiki/concepts/frontmatter','wiki/concepts/synthesis'],
+    synthesis: ['wiki/syntheses/rag-vs-wiki','wiki/syntheses/compounding-notes','wiki/syntheses/agent-fit']
+  };
+  function pickType(){
+    const r = Math.random();
+    if(r < 0.30) return 'source';
+    if(r < 0.54) return 'entity';
+    if(r < 0.86) return 'concept';
+    return 'synthesis';
+  }
+  function labelFor(type, i){
+    const pool = NAMES[type];
+    if(pool && i < pool.length) return pool[i];
+    return 'wiki/' + type + '/' + (i + 1);
+  }
+  // Seed a realistic-ish wiki: ~230 pages, then ~1000 links.
+  const TARGET_NODES = 230;
+  for(let i = 0; i < TARGET_NODES; i++){
+    const t = pickType();
+    addNode(labelFor(t, i % 20), t);
+  }
+  // Keep every page reachable: a single backbone chain.
+  for(let i = 1; i < nodes.length; i++) addEdge(i-1, i);
+  // Type-affinity links: each page links to a few pages of the kinds it would really touch.
+  const affinity = {
+    source: ['source','entity','concept'],
+    entity: ['concept','entity','synthesis'],
+    concept: ['concept','entity','source'],
+    synthesis: ['concept','entity','source']
+  };
+  for(let i = 0; i < nodes.length; i++){
+    const n = nodes[i];
+    const wanted = affinity[n.type] || ['concept'];
+    const k = 3 + Math.floor(Math.random() * 4);
+    for(let j = 0; j < k; j++){
+      const desired = wanted[Math.floor(Math.random() * wanted.length)];
+      // find a random node of that type, else any
+      let target = Math.floor(Math.random() * nodes.length);
+      for(let t = 0; t < 4 && nodes[target].type !== desired; t++){
+        target = Math.floor(Math.random() * nodes.length);
+      }
+      addEdge(i, target);
+    }
+  }
+  // Top up to ~1000 cross-links, including random long-range connections.
+  while(edges.length < 1000){
+    const a = Math.floor(Math.random() * nodes.length);
+    const b = Math.floor(Math.random() * nodes.length);
+    addEdge(a,b);
+  }
+  function recomputeDegrees(){
+    nodes.forEach(n => n.degree = 0);
+    edges.forEach(([a,b]) => { nodes[a].degree++; nodes[b].degree++; });
+  }
+  recomputeDegrees();
   const colors = {source:'#5eead4', entity:'#fbbf24', concept:'#7c8cff', synthesis:'#f472b6'};
+  const anchors = {
+    source: {x: W*0.22, y: H*0.30},
+    entity: {x: W*0.78, y: H*0.28},
+    concept: {x: W*0.30, y: H*0.76},
+    synthesis: {x: W*0.76, y: H*0.74}
+  };
   let tick = 0;
+  let hovered = -1;
   function step(){
-    // forces
-    for(let i=0;i<nodes.length;i++){
-      for(let j=i+1;j<nodes.length;j++){
-        const a=nodes[i], b=nodes[j];
-        const dx=b.x-a.x, dy=b.y-a.y;
-        const d=Math.max(1, Math.hypot(dx,dy));
-        const f=1200/(d*d);
+    // repulsion
+    for(let i = 0; i < nodes.length; i++){
+      for(let j = i+1; j < nodes.length; j++){
+        const a = nodes[i], b = nodes[j];
+        const dx = b.x - a.x, dy = b.y - a.y;
+        const d = Math.max(1, Math.hypot(dx,dy));
+        const f = 900 / (d*d);
         a.vx -= f*dx/d; a.vy -= f*dy/d;
         b.vx += f*dx/d; b.vy += f*dy/d;
       }
     }
+    // springs
     edges.forEach(([i,j])=>{
-      const a=nodes[i], b=nodes[j];
-      const dx=b.x-a.x, dy=b.y-a.y;
-      const d=Math.max(1, Math.hypot(dx,dy));
-      const f=(d-90)*0.02;
+      const a = nodes[i], b = nodes[j];
+      const dx = b.x - a.x, dy = b.y - a.y;
+      const d = Math.max(1, Math.hypot(dx,dy));
+      const f = (d - 80) * 0.018;
       a.vx += f*dx/d; a.vy += f*dy/d;
       b.vx -= f*dx/d; b.vy -= f*dy/d;
     });
     nodes.forEach(n=>{
-      // center gravity
-      n.vx += (W/2 - n.x)*0.001;
-      n.vy += (H/2 - n.y)*0.001;
-      n.vx *= 0.85; n.vy *= 0.85;
+      const a = anchors[n.type] || {x:W/2,y:H/2};
+      n.vx += (a.x - n.x) * 0.0012;
+      n.vy += (a.y - n.y) * 0.0012;
+      n.vx += (W/2 - n.x) * 0.0003;
+      n.vy += (H/2 - n.y) * 0.0003;
+      n.vx *= 0.86; n.vy *= 0.86;
       n.x += n.vx; n.y += n.vy;
-      n.x = Math.max(12, Math.min(W-12, n.x));
-      n.y = Math.max(12, Math.min(H-12, n.y));
-      n.pulse = Math.max(0, (n.pulse||0) - 0.012);
+      n.x = Math.max(10, Math.min(W-10, n.x));
+      n.y = Math.max(10, Math.min(H-10, n.y));
+      n.pulse = Math.max(0, (n.pulse||0) - 0.010);
     });
   }
   function draw(){
     ctx.fillStyle = '#0f1117';
     ctx.fillRect(0,0,W,H);
+    // subtle cluster halos
+    Object.keys(anchors).forEach(type=>{
+      const a = anchors[type];
+      const grad = ctx.createRadialGradient(a.x,a.y,10,a.x,a.y,150);
+      grad.addColorStop(0, colors[type] + '14');
+      grad.addColorStop(1, 'transparent');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0,0,W,H);
+    });
     // edges
-    ctx.strokeStyle = 'rgba(124,140,255,0.25)';
-    ctx.lineWidth = 1.2;
+    ctx.lineWidth = 0.9;
     edges.forEach(([i,j])=>{
-      const a=nodes[i], b=nodes[j];
+      const a = nodes[i], b = nodes[j];
+      const hi = (i === hovered || j === hovered);
+      ctx.strokeStyle = hi ? 'rgba(232,234,240,0.55)' : 'rgba(124,140,255,0.16)';
       ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
     });
     // nodes
-    nodes.forEach(n=>{
-      const r = 6 + (n.pulse||0)*8;
+    nodes.forEach((n, idx)=>{
+      const r = 4 + Math.min(9, (n.degree||0) * 0.18) + (n.pulse||0)*7;
       if((n.pulse||0) > 0){
         ctx.beginPath();
-        ctx.arc(n.x,n.y,r+6,0,Math.PI*2);
-        ctx.fillStyle = 'rgba(124,140,255,' + ((n.pulse||0)*0.25) + ')';
+        ctx.arc(n.x,n.y,r+7,0,Math.PI*2);
+        ctx.fillStyle = 'rgba(124,140,255,' + ((n.pulse||0)*0.22) + ')';
         ctx.fill();
       }
       ctx.beginPath();
       ctx.arc(n.x,n.y,r,0,Math.PI*2);
-      ctx.fillStyle = colors[n.type]||'#9aa3b2';
+      ctx.fillStyle = colors[n.type] || '#9aa3b2';
       ctx.fill();
-      ctx.fillStyle = '#e8eaf0';
-      ctx.font = '10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(n.label.length>22? n.label.slice(0,20)+'…': n.label, n.x, n.y-10);
+      if(idx === hovered || (n.degree||0) > 14){
+        ctx.fillStyle = '#e8eaf0';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(n.label.length > 24 ? n.label.slice(0,22) + '…' : n.label, n.x, n.y - (r + 4));
+      }
     });
   }
+  function ingestOne(){
+    const before = nodes.length;
+    const types = ['source','concept','entity','synthesis'];
+    const t = types[Math.floor(Math.random()*types.length)];
+    const n = addNode('wiki/' + t + '/ingest-' + before, t);
+    n.pulse = 1;
+    n.x = W/2 + (Math.random()-0.5)*40;
+    n.y = H/2 + (Math.random()-0.5)*40;
+    const count = 4 + Math.floor(Math.random()*4);
+    const used = new Set();
+    for(let k = 0; k < count; k++){
+      const target = Math.floor(Math.random() * before);
+      if(target === n.id || used.has(target)) continue;
+      used.add(target);
+      addEdge(target, n.id);
+    }
+    // random connections between existing pages triggered by the new page
+    const cross = 2 + Math.floor(Math.random()*3);
+    for(let k = 0; k < cross; k++){
+      const a = Math.floor(Math.random() * before);
+      const b = Math.floor(Math.random() * before);
+      addEdge(a,b);
+    }
+    recomputeDegrees();
+    updateStats();
+  }
+  function updateStats(){
+    const s = document.getElementById('gStats');
+    if(s) s.textContent = nodes.length + ' pages · ' + edges.length + ' links (growing)';
+  }
+  updateStats();
   function loop(){
     step();
     draw();
     tick++;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    // periodically ingest a new page: connect it to several random existing pages
-    if(!reduceMotion && tick % 180 === 0){
-      const types = ['concept','entity','source','synthesis'];
-      const t = types[Math.floor(Math.random()*types.length)];
-      const before = nodes.length;
-      const n = addNode('wiki/'+t+'/'+before, t); n.pulse = 1;
-      const count = 2 + Math.floor(Math.random()*3); // 2..4 random links
-      const used = new Set();
-      for(let k=0;k<count;k++){
-        const target = Math.floor(Math.random()*before);
-        if(target === n.id || used.has(target)) continue;
-        used.add(target);
-        edges.push([target, n.id]);
-      }
-      // occasionally add a random cross-link between two existing pages
-      if(Math.random() < 0.6 && nodes.length > 3){
-        const a = Math.floor(Math.random()*before);
-        const b = Math.floor(Math.random()*before);
-        if(a !== b) edges.push([a,b]);
-      }
+    if(!reduceMotion && tick % 220 === 0){
+      ingestOne();
     }
     requestAnimationFrame(loop);
   }
@@ -648,26 +744,47 @@
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) * (W/r.width);
     const y = (e.clientY - r.top) * (H/r.height);
-    let nearest = null, best = 18;
-    nodes.forEach(n => { const d = Math.hypot(n.x-x, n.y-y); if(d < best){ best = d; nearest = n; } });
+    let nearest = -1, best = 16;
+    nodes.forEach((n, idx) => { const d = Math.hypot(n.x-x, n.y-y); if(d < best){ best = d; nearest = idx; } });
+    hovered = nearest;
     const tip = document.getElementById('gTip');
-    if(tip) tip.textContent = nearest ? (nearest.label + ' (' + nearest.type + ')') : 'Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.';
+    if(tip){
+      if(nearest >= 0){
+        const n = nodes[nearest];
+        tip.textContent = n.label + ' (' + n.type + ') · ' + (n.degree||0) + ' links';
+      } else {
+        tip.textContent = 'Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.';
+      }
+    }
+  });
+  canvas.addEventListener('mouseleave', ()=>{
+    hovered = -1;
+    const tip = document.getElementById('gTip');
+    if(tip) tip.textContent = 'Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.';
   });
   canvas.addEventListener('click', (e)=>{
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) * (W/r.width);
     const y = (e.clientY - r.top) * (H/r.height);
     const before = nodes.length;
-    const n = addNode('new-page-'+before, 'concept'); n.pulse = 1;
-    n.x = x; n.y = y;
-    const count = 1 + Math.floor(Math.random()*3);
+    const n = addNode('new-page-' + before, 'concept');
+    n.pulse = 1; n.x = x; n.y = y;
+    const count = 2 + Math.floor(Math.random()*4);
     const used = new Set();
-    for(let k=0;k<count;k++){
-      const target = Math.floor(Math.random()*before);
+    for(let k = 0; k < count; k++){
+      const target = Math.floor(Math.random() * before);
       if(target === n.id || used.has(target)) continue;
       used.add(target);
-      edges.push([target, n.id]);
+      addEdge(target, n.id);
     }
+    const cross = 1 + Math.floor(Math.random()*2);
+    for(let k = 0; k < cross; k++){
+      const a = Math.floor(Math.random() * before);
+      const b = Math.floor(Math.random() * before);
+      addEdge(a,b);
+    }
+    recomputeDegrees();
+    updateStats();
   });
   loop();
 })();
