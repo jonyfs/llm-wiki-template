@@ -212,7 +212,7 @@ class ManifestTest(unittest.TestCase):
 
     def test_template_owned_files_are_managed(self):
         self.assertEqual(self.policy("AGENTS.md"), "merge")
-        for path in (".agents/skills/wiki-update/SKILL.md", ".agents/commands/wiki-update.md", "scripts/lint.py", "scripts/update-llm-wiki.sh", "tests/test_lint.py", "docs/migration.md"):
+        for path in (".agents/template-manifest", ".agents/skills/wiki-update/SKILL.md", ".agents/commands/wiki-update.md", "scripts/lint.py", "scripts/update-llm-wiki.sh", "tests/test_lint.py", "docs/migration.md"):
             self.assertEqual(self.policy(path), "managed", path)
         self.assertEqual(self.policy(".github/workflows/test.yml"), "once")
 

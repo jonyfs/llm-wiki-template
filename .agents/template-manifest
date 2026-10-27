@@ -18,6 +18,7 @@ merge	AGENTS.md
 once	.github/workflows/test.yml
 managed	.agents/skills/*
 managed	.agents/commands/*
+managed	.agents/template-manifest
 managed	scripts/*
 managed	tests/*
 managed	docs/migration.md
