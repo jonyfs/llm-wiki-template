@@ -1,4 +1,4 @@
-"""Keep the README honest: images exist, the pasted starter script matches the real one, intro anchors resolve."""
+"""Keep the README honest: images exist, the scripts are linked, not pasted, intro anchors resolve."""
 import re
 import shutil
 import subprocess
@@ -32,15 +32,11 @@ class ReadmeTest(unittest.TestCase):
 
 @unittest.skipUnless(SCRIPT.is_file(), "starter script not present in this copy")
 class StarterScriptTest(unittest.TestCase):
-    def test_readme_pastes_the_real_scripts(self):
-        if "## The starter script" not in README:
-            self.skipTest("README does not paste the scripts")
-        for heading, name in (("The starter script", "new-llm-wiki.sh"), ("The update script", "update-llm-wiki.sh")):
-            path = ROOT / "scripts" / name
-            if not path.is_file():
-                continue
-            block = re.search(r"## " + heading + r".*?````bash\n(.*?)\n````", README, re.S).group(1)
-            self.assertEqual(block.strip(), path.read_text(encoding="utf-8").strip(), name)
+    def test_readme_links_the_scripts_instead_of_pasting_them(self):
+        self.assertNotIn("````bash", README, "link to the scripts instead of pasting them")
+        for name in ("new-llm-wiki.sh", "update-llm-wiki.sh"):
+            if (ROOT / "scripts" / name).is_file():
+                self.assertIn(f"blob/main/scripts/{name}", README, name)
 
     def test_script_is_executable_and_parses(self):
         bash = shutil.which("bash")

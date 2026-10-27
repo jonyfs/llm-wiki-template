@@ -90,7 +90,7 @@ if os.environ["KEEP_PAGES"] == "0":
 log = pathlib.Path("wiki/log.md")
 text = log.read_text(encoding="utf-8")
 head = text.split("\n## [", 1)[0].rstrip() + "\n"
-log.write_text(head + f"\n## [{today}] bootstrap | Start {name} from llm-wiki-template\n\nCreated from the LLM Wiki Template. Add sources to `raw/`, then ask the assistant to ingest them.\n", encoding="utf-8")
+log.write_text(head + f"\n## [{today}] bootstrap | Start {name} from llm-wiki-template\n\nCreated from the LLM Wiki Template. Open the folder with your assistant and run `/wiki-ingest` on a first source.\n", encoding="utf-8")
 
 # README.md: a short one for the new notebook.
 pathlib.Path("README.md").write_text(f"""# {name}
@@ -104,19 +104,14 @@ A notebook that an AI assistant writes and keeps up to date, built from the
 
 ## First steps
 
-1. Copy a file into `raw/`, or paste a link and let the assistant ask before saving it there.
-2. Ask your assistant: "Ingest raw/<file> into the wiki."
-3. Ask a question: "What does the wiki say about ...?"
-4. Now and then: "Run lint on the wiki."
-5. To get the template's newer skills and scripts later: ask your assistant to run `/wiki-update`, or run `bash scripts/update-llm-wiki.sh`.
+Open this folder with your assistant, then run the skills from its prompt:
 
-Checks you can run yourself:
+1. Add a source: `/wiki-ingest <path or link>`. It asks before saving a copy in `raw/`.
+2. Ask a question: `/wiki-query What does the wiki say about ...?`
+3. Now and then: `/wiki-lint`.
+4. To get the template's newer skills and scripts later: `/wiki-update`.
 
-```bash
-python3 -m unittest discover -s tests -t .
-python3 scripts/lint.py
-python3 scripts/wiki_search.py "<terms>"
-```
+If your assistant has no slash commands, name the skill in a sentence, such as "Use wiki-ingest on <file>."
 """, encoding="utf-8")
 PY
 
@@ -140,7 +135,7 @@ cat <<EOF
 
 Done. Your notebook is in ./$name
   cd $name
-  1. Copy a file into raw/ (or paste a link to your assistant).
-  2. Ask your assistant: "Ingest raw/<file> into the wiki."
-  3. Ask it a question about what you added.
+  1. Open the folder with your assistant.
+  2. Add a source: /wiki-ingest <path or link>   (it asks before saving a copy in raw/)
+  3. Ask about it: /wiki-query <your question>
 EOF
