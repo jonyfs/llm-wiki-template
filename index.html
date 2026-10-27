@@ -23,16 +23,14 @@
 <meta property="og:image" content="assets/social-preview.png" />
 <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
 <style>
-  :root {
-    --bg: #0b0d12;
-    --bg-soft: #12151d;
-    --card: #171a24;
-    --border: #262a38;
-    --text: #e8eaf0;
-    --muted: #9aa3b2;
-    --accent: #7c8cff;
-    --accent-2: #5eead4;
-    --code: #0f1117;
+  /* Theme tokens */
+  :root, :root[data-theme="dark"] {
+    --bg: #0b0d12; --bg-soft: #12151d; --card: #171a24; --border: #262a38;
+    --text: #e8eaf0; --muted: #9aa3b2; --accent: #7c8cff; --accent-2: #5eead4; --code: #0f1117;
+  }
+  :root[data-theme="light"] {
+    --bg: #f7f8fc; --bg-soft: #eef0f6; --card: #ffffff; --border: #d9dde8;
+    --text: #1a1d29; --muted: #5a6275; --accent: #4f5bd5; --accent-2: #0f9f8f; --code: #f1f3f9;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -68,6 +66,10 @@
   }
   .btn:hover { transform: translateY(-1px); border-color: var(--accent); text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--accent), #5b6cff); border: none; color: #fff; }
+  .theme-toggle { padding: 8px 12px; font-size: 16px; line-height: 1; }
+  /* Fade-in on scroll */
+  .reveal { opacity: 0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
 
   /* Hero */
   .hero { padding: 96px 0 64px; text-align: center; position: relative; overflow: hidden; }
@@ -101,7 +103,8 @@
 
   /* Feature grid */
   .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: border-color .2s ease, transform .2s ease; }
+  .card:hover { border-color: var(--accent); transform: translateY(-2px); }
   .card .icon { font-size: 24px; margin-bottom: 12px; }
   .card h3 { margin: 0 0 8px; font-size: 17px; }
   .card p { margin: 0; color: var(--muted); font-size: 14px; }
@@ -152,6 +155,15 @@
   p { max-width: 68ch; }
   .hero-sub { max-width: 60ch; }
 </style>
+<script>
+  (function(){
+    try {
+      var t = localStorage.getItem('theme');
+      if(!t){ t = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'; }
+      document.documentElement.setAttribute('data-theme', t);
+    } catch(e){}
+  })();
+</script>
 </head>
 <body>
 <a class="skip" href="#how">Skip to content</a>
@@ -167,9 +179,11 @@
       <a href="#concepts">Concepts</a>
       <a href="#graph">Live graph</a>
     </div>
+    <button class="btn theme-toggle" id="themeToggle" type="button" aria-label="Toggle color theme">🌙</button>
     <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
   </div>
 </nav>
+<main id="main">
 
 <header class="hero">
   <div class="container">
@@ -183,6 +197,23 @@
     </div>
   </div>
 </header>
+
+<section id="graph" style="padding:48px 0 32px;">
+  <div class="container">
+    <h2 class="section-title">Live wiki graph</h2>
+    <p class="section-sub">A small Obsidian-style force graph. Nodes are pages, edges are <code>[[wikilinks]]</code>. Watch it grow as new sources are ingested.</p>
+    <div class="flow-card">
+      <canvas id="g" width="860" height="360" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:12px;color:var(--muted);">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c8cff;margin-right:4px;"></span>concept</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
+      </div>
+      <p id="gTip" style="text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0;">Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.</p>
+    </div>
+  </div>
+</section>
 
 <section class="flow" id="how">
   <div class="container">
@@ -374,16 +405,7 @@
   </div>
 </section>
 
-<section id="graph">
-  <div class="container">
-    <h2 class="section-title">Live wiki graph</h2>
-    <p class="section-sub">A small Obsidian-style force graph. Nodes are pages, edges are <code>[[wikilinks]]</code>. Watch it grow as new sources are ingested.</p>
-    <div class="flow-card">
-      <canvas id="g" width="860" height="360" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>
-      <p style="text-align:center;color:var(--muted);font-size:13px;margin:12px 0 0;">Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.</p>
-    </div>
-  </div>
-</section>
+
 
 
 <section id="skills">
@@ -448,6 +470,7 @@
     </div>
   </div>
 </section>
+</main>
 <footer>
   <div class="container inner">
     <div>LLM Wiki Template · MIT license</div>
@@ -462,6 +485,26 @@
 
 <script>
 (function(){
+  // theme toggle
+  const toggle = document.getElementById('themeToggle');
+  if(toggle){
+    const sync = () => { toggle.textContent = document.documentElement.getAttribute('data-theme') === 'light' ? '☀️' : '🌙'; };
+    sync();
+    toggle.addEventListener('click', () => {
+      const next = document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+      try { localStorage.setItem('theme', next); } catch(e){}
+      sync();
+    });
+  }
+  // fade-in sections on scroll
+  if('IntersectionObserver' in window){
+    document.querySelectorAll('section, .card').forEach(el => el.classList.add('reveal'));
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target);} });
+    }, {threshold: 0.12});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  }
   const canvas = document.getElementById('g');
   if(!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -469,7 +512,7 @@
   const nodes = [];
   const edges = [];
   function addNode(label, type){
-    const n = {id: nodes.length, label, type: type||'concept', x: W/2 + (Math.random()-0.5)*60, y: H/2 + (Math.random()-0.5)*60, vx:0, vy:0};
+    const n = {id: nodes.length, label, type: type||'concept', x: W/2 + (Math.random()-0.5)*60, y: H/2 + (Math.random()-0.5)*60, vx:0, vy:0, pulse: 0};
     nodes.push(n);
     return n;
   }
@@ -511,6 +554,7 @@
       n.x += n.vx; n.y += n.vy;
       n.x = Math.max(12, Math.min(W-12, n.x));
       n.y = Math.max(12, Math.min(H-12, n.y));
+      n.pulse = Math.max(0, (n.pulse||0) - 0.012);
     });
   }
   function draw(){
@@ -525,8 +569,15 @@
     });
     // nodes
     nodes.forEach(n=>{
+      const r = 6 + (n.pulse||0)*8;
+      if((n.pulse||0) > 0){
+        ctx.beginPath();
+        ctx.arc(n.x,n.y,r+6,0,Math.PI*2);
+        ctx.fillStyle = 'rgba(124,140,255,' + ((n.pulse||0)*0.25) + ')';
+        ctx.fill();
+      }
       ctx.beginPath();
-      ctx.arc(n.x,n.y,6,0,Math.PI*2);
+      ctx.arc(n.x,n.y,r,0,Math.PI*2);
       ctx.fillStyle = colors[n.type]||'#9aa3b2';
       ctx.fill();
       ctx.fillStyle = '#e8eaf0';
@@ -539,23 +590,54 @@
     step();
     draw();
     tick++;
-    // periodically ingest a new page
-    if(tick % 180 === 0){
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // periodically ingest a new page: connect it to several random existing pages
+    if(!reduceMotion && tick % 180 === 0){
       const types = ['concept','entity','source','synthesis'];
       const t = types[Math.floor(Math.random()*types.length)];
-      const n = addNode('wiki/'+t+'/'+(nodes.length), t);
-      const target = Math.floor(Math.random()* (nodes.length-1));
-      edges.push([target, n.id]);
+      const before = nodes.length;
+      const n = addNode('wiki/'+t+'/'+before, t); n.pulse = 1;
+      const count = 2 + Math.floor(Math.random()*3); // 2..4 random links
+      const used = new Set();
+      for(let k=0;k<count;k++){
+        const target = Math.floor(Math.random()*before);
+        if(target === n.id || used.has(target)) continue;
+        used.add(target);
+        edges.push([target, n.id]);
+      }
+      // occasionally add a random cross-link between two existing pages
+      if(Math.random() < 0.6 && nodes.length > 3){
+        const a = Math.floor(Math.random()*before);
+        const b = Math.floor(Math.random()*before);
+        if(a !== b) edges.push([a,b]);
+      }
     }
     requestAnimationFrame(loop);
   }
+  canvas.addEventListener('mousemove', (e)=>{
+    const r = canvas.getBoundingClientRect();
+    const x = (e.clientX - r.left) * (W/r.width);
+    const y = (e.clientY - r.top) * (H/r.height);
+    let nearest = null, best = 18;
+    nodes.forEach(n => { const d = Math.hypot(n.x-x, n.y-y); if(d < best){ best = d; nearest = n; } });
+    const tip = document.getElementById('gTip');
+    if(tip) tip.textContent = nearest ? (nearest.label + ' (' + nearest.type + ')') : 'Tip: click the canvas to add a new page node. The graph is a simulation, not your real wiki.';
+  });
   canvas.addEventListener('click', (e)=>{
     const r = canvas.getBoundingClientRect();
     const x = (e.clientX - r.left) * (W/r.width);
     const y = (e.clientY - r.top) * (H/r.height);
-    const n = addNode('new-page-'+nodes.length, 'concept');
+    const before = nodes.length;
+    const n = addNode('new-page-'+before, 'concept'); n.pulse = 1;
     n.x = x; n.y = y;
-    if(nodes.length>1) edges.push([Math.floor(Math.random()*(nodes.length-1)), n.id]);
+    const count = 1 + Math.floor(Math.random()*3);
+    const used = new Set();
+    for(let k=0;k<count;k++){
+      const target = Math.floor(Math.random()*before);
+      if(target === n.id || used.has(target)) continue;
+      used.add(target);
+      edges.push([target, n.id]);
+    }
   });
   loop();
 })();
