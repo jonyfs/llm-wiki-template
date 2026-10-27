@@ -17,7 +17,9 @@
 <meta name="twitter:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
 <meta name="theme-color" content="#7c8cff" media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content="#4f5bd5" media="(prefers-color-scheme: light)" />
-
+<meta name="color-scheme" content="dark light" />
+<meta property="og:locale" content="en_US" />
+<meta name="twitter:creator" content="@jonyfs" />
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM instructions for AI agents" />
 <link rel="alternate" hreflang="en" href="https://jonyfs.github.io/llm-wiki-template/" />
@@ -89,11 +91,12 @@
   .nav-links a:hover { color: var(--text); text-decoration: none; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 16px;
+    min-height: 44px; padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 16px;
     border: 1px solid var(--border); color: var(--text); background: var(--card);
     transition: transform .15s ease, border-color .15s ease;
+    touch-action: manipulation;
   }
-  .btn:hover { transform: translateY(-1px); border-color: var(--accent); text-decoration: none; }
+  .nav-links a { min-height: 44px; display: inline-flex; align-items: center; touch-action: manipulation; }  .btn:hover { transform: translateY(-1px); border-color: var(--accent); text-decoration: none; }
   .btn.primary { background: linear-gradient(135deg, var(--accent), #5b6cff); border: none; color: #fff; animation: ctaPulse 3s ease-in-out infinite; }
   @keyframes ctaPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(124,140,255,0.45); } 50% { box-shadow: 0 0 0 8px rgba(124,140,255,0); } }
   .theme-toggle { padding: 8px 12px; font-size: 16px; line-height: 1; }
@@ -193,9 +196,10 @@
   /* Section dividers */
   section + section { border-top: 1px solid var(--border); }
   /* Smooth scroll + anchor offset */
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
   section, header { scroll-margin-top: 80px; }
-  h1, h2, h3 { text-wrap: balance; }
+  p { text-wrap: pretty; }
+  .hero-sub { text-wrap: balance; }  h1, h2, h3 { text-wrap: balance; }
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -213,8 +217,13 @@
   }
   /* Back to top */
   #backToTop:hover { border-color: var(--accent); }
-  /* Light mode polish for hardcoded dark SVG diagrams */
-  :root[data-theme="light"] .flow-card svg rect[fill="#171a24"] { fill: #ffffff; }
+  #g:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }  /* High contrast */
+  @media (prefers-contrast: high) {
+    :root { --border: #ffffff; }
+    .card, .flow-card { border-width: 2px; }
+    a { text-decoration: underline; }
+  }
+  /* Light mode polish for hardcoded dark SVG diagrams */  :root[data-theme="light"] .flow-card svg rect[fill="#171a24"] { fill: #ffffff; }
   :root[data-theme="light"] .flow-card svg rect[stroke="#262a38"] { stroke: #d9dde8; }
   :root[data-theme="light"] .flow-card svg rect[stroke="#7c8cff"] { stroke: #4f5bd5; }
   :root[data-theme="light"] .flow-card svg text[fill="#e8eaf0"] { fill: #1a1d29; }
@@ -285,8 +294,7 @@
     <h2 class="section-title">Live wiki graph</h2>
     <p class="section-sub">A visual example of how a wiki grows. Each dot is a page in <code>wiki/</code> (source, entity, concept or synthesis), each line is a <code>[[wikilink]]</code> between two pages. The shape is a brain, not your real wiki: about 230 pages and 1,000 links, simulated, and it keeps growing as new sources are ingested.</p>
     <div class="flow-card">
-      <canvas id="g" width="900" height="900" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
-      <div style="display:flex;gap:8px;justify-content:center;margin:8px 0 0;">
+      <canvas id="g" width="900" height="900" tabindex="0" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks" aria-describedby="gTip" style="width:100%;height:auto;display:block;border-radius:8px;"></canvas>      <div style="display:flex;gap:8px;justify-content:center;margin:8px 0 0;">
         <button id="gZoomIn" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom in</button>
         <button id="gZoomOut" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom out</button>
         <button id="gZoomReset" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Reset</button>
@@ -296,10 +304,8 @@
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c8cff;margin-right:4px;"></span>concept</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
-        <span id="gStats" style="color:var(--muted);">230 pages · 1000 links</span>
-      </div>
-      <p id="gTip" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.</p>
-      <p style="text-align:center;color:var(--muted);font-size:15px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
+        <span id="gStats" aria-live="polite" style="color:var(--muted);font-variant-numeric:tabular-nums;">230 pages · 1000 links</span>      </div>
+      <p id="gTip" aria-live="polite" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Hover a dot to see its page. Click anywhere to add one. This is a simulation, not your actual wiki.</p>      <p style="text-align:center;color:var(--muted);font-size:15px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
     </div>
   </div>
 </section>
