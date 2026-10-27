@@ -1,0 +1,8 @@
+title: LLM Wiki Template
+description: Persistent, compounding markdown knowledge base maintained by an LLM assistant.
+url: https://jonyfs.github.io
+baseurl: /llm-wiki-template
+theme: jekyll-theme-cayman
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap

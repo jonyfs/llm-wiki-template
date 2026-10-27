@@ -8,6 +8,8 @@ This project is a template for that workflow. It follows the idea described in A
 
 ---
 
+**Live site:** [jonyfs.github.io/llm-wiki-template](https://jonyfs.github.io/llm-wiki-template/) (rendered from this README).
+
 ## Why this is different
 
 Most AI tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.

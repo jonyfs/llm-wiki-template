@@ -25,7 +25,11 @@ jobs:
           cp README.md _site/index.md
           cp llms.txt _site/llms.txt
           cp llms-full.txt _site/llms-full.txt
+          cp _config.yml _site/_config.yml 2>/dev/null || true
+          cp robots.txt _site/robots.txt 2>/dev/null || true
           cp -r docs _site/docs 2>/dev/null || true
+          cp -r examples _site/examples 2>/dev/null || true
+          cp -r assets _site/assets 2>/dev/null || true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
