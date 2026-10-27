@@ -67,6 +67,8 @@
     color: var(--text);
     line-height: 1.65;
     -webkit-font-smoothing: antialiased;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
@@ -173,7 +175,7 @@
     .hero-sub { font-size: 18px; }
     .section-sub { font-size: 17px; }
     .card h3 { font-size: 18px; }
-    .card p { font-size: 15px; }
+    .card p { font-size: 16px; }
   }
 
   @media (min-width: 1440px) {
@@ -396,7 +398,7 @@
     <h2 class="section-title">Quick start (60 seconds)</h2>
     <p class="section-sub">You need an AI coding assistant. No API keys, no database.</p>
     <div style="position:relative;">
-      <button id="copyQs" type="button" class="btn" style="position:absolute;right:8px;top:8px;font-size:12px;padding:6px 10px;">Copy</button>
+      <button id="copyQs" type="button" class="btn" style="position:absolute;right:8px;top:8px;font-size:14px;padding:6px 10px;">Copy</button>
       <div class="qs" id="quickStart">
       <span class="line"><span class="c"># 1. Create your own copy</span></span>
       <span class="line">git clone https://github.com/jonyfs/llm-wiki-template my-wiki</span>
@@ -412,7 +414,7 @@
       <span class="line"><span class="k">"What does the wiki say about X?"</span></span>
     </div>
     </div>
-    <p style="color: var(--muted); font-size: 14px; margin-top: 16px;">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
+    <p style="color: var(--muted); font-size: 16px; margin-top: 16px;">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
   </div>
 </section>
 
