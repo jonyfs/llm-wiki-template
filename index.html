@@ -471,6 +471,19 @@
   </div>
 </section>
 
+<section id="troubleshoot">
+  <div class="container">
+    <h2 class="section-title">Common pitfalls</h2>
+    <p class="section-sub">Things that trip people up the first time.</p>
+    <div class="grid">
+      <div class="card"><h3>Empty wiki after ingest</h3><p>Make sure the source is in <code>raw/</code> and you asked the assistant to ingest it. The wiki is not auto-populated.</p></div>
+      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It reports missing targets so you can fix or remove them.</p></div>
+      <div class="card"><h3>Stale claims</h3><p>Use refresh to detect drift between raw files and source pages.</p></div>
+      <div class="card"><h3>Too many pages</h3><p>That is fine. The index and search keep it navigable; compounding is the point.</p></div>
+    </div>
+  </div>
+</section>
+
 <section id="walkthrough">
   <div class="container">
     <h2 class="section-title">An ingest, step by step</h2>
