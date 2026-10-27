@@ -15,12 +15,9 @@
 <meta name="twitter:title" content="LLM Wiki Template" />
 <meta name="twitter:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
 <meta name="twitter:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
-<link rel="manifest" href="manifest.json" />
 <meta name="theme-color" content="#7c8cff" media="(prefers-color-scheme: dark)" />
 <meta name="theme-color" content="#4f5bd5" media="(prefers-color-scheme: light)" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<link rel="apple-touch-icon" href="assets/icon-192.png" />
+
 <meta name="robots" content="index,follow,max-image-preview:large" />
 <link rel="alternate" type="text/plain" href="llms.txt" title="LLM instructions for AI agents" />
 <link rel="alternate" hreflang="en" href="https://jonyfs.github.io/llm-wiki-template/" />
@@ -207,7 +204,7 @@
   .hero-sub { max-width: 64ch; }
   /* Print */
   @media print {
-    nav, #progress, #backToTop, #installBtn, .theme-toggle, #langSelect { display: none !important; }
+    nav, #progress, #backToTop, .theme-toggle, #langSelect { display: none !important; }
     body { background: #fff; color: #000; }
     .card, .flow-card { border: 1px solid #999; background: #fff; break-inside: avoid; }
     a { color: #000; text-decoration: underline; }
@@ -276,7 +273,6 @@
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">View on GitHub</a>
-      <button class="btn" id="installBtn" type="button" style="display:none;">Install app</button>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Read the docs</a>
     </div>
   </div>
@@ -909,7 +905,7 @@
     // nodes
     nodes.forEach((n, idx)=>{
       const p = projectNode(n);
-      const r = (4 + Math.min(9, (n.degree||0) * 0.18) + (n.pulse||0)*7) * Math.max(0.55, p.scale);
+      const r = (4 + Math.min(18, (n.degree||0) * 0.42) + (n.pulse||0)*7) * Math.max(0.55, p.scale);
       if((n.pulse||0) > 0){
         ctx.beginPath();
         ctx.arc(p.x,p.y,r+7,0,Math.PI*2);
@@ -1108,26 +1104,6 @@
       navigator.serviceWorker.register('./sw.js').catch(function(){});
     });
   }
-  let deferredPrompt = null;
-  const btn = document.getElementById('installBtn');
-  window.addEventListener('beforeinstallprompt', function(e){
-    e.preventDefault();
-    deferredPrompt = e;
-    if (btn) btn.style.display = '';
-  });
-  if (btn) {
-    btn.addEventListener('click', async function(){
-      if (!deferredPrompt) return;
-      deferredPrompt.prompt();
-      try { await deferredPrompt.userChoice; } catch(e){}
-      deferredPrompt = null;
-      btn.style.display = 'none';
-    });
-  }
-  window.addEventListener('appinstalled', function(){
-    if (btn) btn.style.display = 'none';
-  });
-
   // progress bar + back to top
   const progress = document.getElementById('progress');
   const backToTop = document.getElementById('backToTop');

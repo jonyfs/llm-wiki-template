@@ -2,7 +2,6 @@ const CACHE_NAME = 'llm-wiki-v1';
 const PRECACHE = [
   './',
   './index.html',
-  './manifest.json',
   './offline.html',
   './assets/favicon.svg',
   './assets/social-preview.png',
