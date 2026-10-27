@@ -31,6 +31,9 @@ jobs:
           cp -r assets _site/assets 2>/dev/null || true
           cp -r docs _site/docs 2>/dev/null || true
           cp README.md _site/README.md 2>/dev/null || true
+          cp DISCOVERABILITY.md _site/DISCOVERABILITY.md 2>/dev/null || true
+          cp PAGES_IMPROVEMENTS.md _site/PAGES_IMPROVEMENTS.md 2>/dev/null || true
+          cp DESIGN_SYSTEM.md _site/DESIGN_SYSTEM.md 2>/dev/null || true
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site

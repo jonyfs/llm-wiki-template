@@ -117,6 +117,14 @@ Create-vs-update and entity-vs-concept rules: `wiki-writing/references/page-deci
 - Add a `## Learning paths` section before the catalogs once there are enough pages. Keep each path to three to seven pages, in learning order.
 - `wiki/log.md` is chronological and append-only. Each entry starts with `## [YYYY-MM-DD] operation | title`.
 
+## GitHub Pages synchronization
+
+- The project publishes a static site from `index.html` via `.github/workflows/pages.yml`, which rebuilds on every push to `main`.
+- **Rule:** any change to documentation (`README.md`, `docs/`, `DISCOVERABILITY.md`, `PAGES_IMPROVEMENTS.md`, `DESIGN_SYSTEM.md`, `AGENTS.md` sections, or `wiki/` content surfaced on the site) MUST be evaluated for inclusion in the published site. If the change affects what visitors should see, update `index.html` (or add the file to the workflow's `_site` copy list) in the same change, so documentation and GitHub Pages never drift.
+- The workflow copies `README.md`, `docs/`, `assets/`, `llms.txt`, `llms-full.txt`, `robots.txt`, and `sitemap.xml` into `_site`. Add new documentation files to that copy list when they should be publicly readable.
+- After editing docs, verify the site still builds (workflow green) and that the live URL reflects the change. A doc change that is not reflected on the site is an incomplete change.
+- Derived wikis: if you fork this template, keep the same sync rule so your published docs stay current.
+
 ## On-demand references
 
 - Body templates, section headings, example frontmatter: `.agents/skills/wiki-writing/references/body-templates.md`
