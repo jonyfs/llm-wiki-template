@@ -22,23 +22,9 @@ jobs:
       - name: Prepare site
         run: |
           mkdir -p _site
-          cp index.html _site/index.html
-          cp .nojekyll _site/.nojekyll
-          cp robots.txt _site/robots.txt 2>/dev/null || true
-          cp sitemap.xml _site/sitemap.xml 2>/dev/null || true
-          cp manifest.json _site/manifest.json 2>/dev/null || true
-          cp sw.js _site/sw.js 2>/dev/null || true
-          cp offline.html _site/offline.html 2>/dev/null || true
-          cp 404.html _site/404.html 2>/dev/null || true
-          cp changelog.html _site/changelog.html 2>/dev/null || true
-          cp roadmap.html _site/roadmap.html 2>/dev/null || true
-          cp press-kit.html _site/press-kit.html 2>/dev/null || true
-          cp media.html _site/media.html 2>/dev/null || true
-          cp llms.txt _site/llms.txt 2>/dev/null || true
-          cp llms-full.txt _site/llms-full.txt 2>/dev/null || true
-          cp -r assets _site/assets 2>/dev/null || true
-          cp -r docs _site/docs 2>/dev/null || true
+          cp -r github-pages/. _site/
           cp README.md _site/README.md 2>/dev/null || true
+          cp -r docs _site/docs 2>/dev/null || true
           cp DISCOVERABILITY.md _site/DISCOVERABILITY.md 2>/dev/null || true
           cp PAGES_IMPROVEMENTS.md _site/PAGES_IMPROVEMENTS.md 2>/dev/null || true
           cp DESIGN_SYSTEM.md _site/DESIGN_SYSTEM.md 2>/dev/null || true
