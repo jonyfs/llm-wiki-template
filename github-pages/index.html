@@ -284,6 +284,11 @@
     <p class="section-sub">A brain-shaped force graph. Nodes are pages (source, entity, concept, synthesis) scattered across a procedural cerebrum, edges are <code>[[wikilinks]]</code>. Seeded with ~230 pages and ~1,000 links; watch it grow as new sources are ingested.</p>
     <div class="flow-card">
       <canvas id="g" width="900" height="900" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
+      <div style="display:flex;gap:8px;justify-content:center;margin:8px 0 0;">
+        <button id="gZoomIn" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom in</button>
+        <button id="gZoomOut" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Zoom out</button>
+        <button id="gZoomReset" type="button" style="padding:6px 12px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);cursor:pointer;">Reset</button>
+      </div>
       <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:16px;color:var(--muted);">
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
@@ -702,6 +707,17 @@
   }
   canvas.addEventListener('pointerup', endDrag);
   canvas.addEventListener('pointercancel', endDrag);
+  function applyZoom(z){ zoom = Math.max(0.5, Math.min(3, z)); }
+  canvas.addEventListener('wheel', (e)=>{
+    e.preventDefault();
+    applyZoom(zoom * (e.deltaY < 0 ? 1.12 : 0.89));
+  }, {passive:false});
+  const btnIn = document.getElementById('gZoomIn');
+  const btnOut = document.getElementById('gZoomOut');
+  const btnReset = document.getElementById('gZoomReset');
+  if(btnIn) btnIn.addEventListener('click', ()=>applyZoom(zoom*1.2));
+  if(btnOut) btnOut.addEventListener('click', ()=>applyZoom(zoom/1.2));
+  if(btnReset) btnReset.addEventListener('click', ()=>applyZoom(1));
 
   // Procedural brain: overlapping ellipsoids (lobes). Nodes scatter on surfaces.
   const LOBES = [
@@ -814,9 +830,10 @@
   function graphText(){ return isLightTheme() ? '#1a1d29' : '#e8eaf0'; }
   function graphEdge(hi){ return hi ? (isLightTheme() ? 'rgba(26,29,41,0.55)' : 'rgba(232,234,240,0.55)') : (isLightTheme() ? 'rgba(79,91,213,0.22)' : 'rgba(124,140,255,0.16)'); }
   const FOCAL = 1000;
+  let zoom = 1;
   function projectNode(n){
     const cx = W/2, cy = H/2;
-    const X = n.x - cx, Y = n.y - cy, Z = n.z;
+    const X = (n.x - cx) * zoom, Y = (n.y - cy) * zoom, Z = n.z * zoom;
     const ry = rotY * Math.PI / 180, rx = rotX * Math.PI / 180;
     const cosY = Math.cos(ry), sinY = Math.sin(ry);
     const cosX = Math.cos(rx), sinX = Math.sin(rx);
