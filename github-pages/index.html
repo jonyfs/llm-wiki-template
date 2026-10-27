@@ -65,14 +65,15 @@
   html, body { margin: 0; padding: 0; }
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    font-size: 18px;
     background: var(--bg);
     color: var(--text);
-    line-height: 1.6;
+    line-height: 1.65;
     -webkit-font-smoothing: antialiased;
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  .container { max-width: 1280px; margin: 0 auto; padding: 0 32px; }
 
   /* Nav */
   nav {
@@ -84,12 +85,12 @@
   nav .inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
   .brand { font-weight: 700; font-size: 18px; color: var(--text); display: flex; align-items: center; gap: 10px; }
   .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
-  .nav-links { display: flex; gap: 24px; font-size: 14px; color: var(--muted); }
+  .nav-links { display: flex; gap: 24px; font-size: 16px; color: var(--muted); }
   .nav-links a { color: var(--muted); }
   .nav-links a:hover { color: var(--text); text-decoration: none; }
   .btn {
     display: inline-flex; align-items: center; gap: 8px;
-    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px;
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 16px;
     border: 1px solid var(--border); color: var(--text); background: var(--card);
     transition: transform .15s ease, border-color .15s ease;
   }
@@ -102,7 +103,7 @@
   .reveal.in { opacity: 1; transform: none; }
 
   /* Hero */
-  .hero { padding: 96px 0 64px; text-align: center; position: relative; overflow: hidden; }
+  .hero { padding: 112px 0 72px; text-align: center; position: relative; overflow: hidden; }
   .hero::before {
     content: ""; position: absolute; inset: 0;
     background: radial-gradient(60% 50% at 50% 0%, rgba(124,140,255,0.18), transparent 70%);
@@ -111,11 +112,11 @@
   .badge {
     display: inline-block; padding: 6px 14px; border-radius: 999px;
     background: rgba(124,140,255,0.12); border: 1px solid rgba(124,140,255,0.3);
-    color: var(--accent); font-size: 13px; font-weight: 600; margin-bottom: 24px;
+    color: var(--accent); font-size: 15px; font-weight: 600; margin-bottom: 24px;
   }
-  h1.hero-title { font-size: clamp(36px, 6vw, 64px); line-height: 1.05; margin: 0 0 20px; letter-spacing: -0.02em; }
+  h1.hero-title { font-size: clamp(40px, 5.5vw, 72px); line-height: 1.05; margin: 0 0 20px; letter-spacing: -0.02em; }
   .hero-title .grad { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .hero-sub { font-size: 20px; color: var(--muted); max-width: 720px; margin: 0 auto 36px; }
+  .hero-sub { font-size: 22px; color: var(--muted); max-width: 760px; margin: 0 auto 36px; }
   .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
 
   /* Flow diagram */
@@ -127,20 +128,20 @@
   .flow svg { width: 100%; height: auto; display: block; }
 
   /* Sections */
-  section { padding: 80px 0; }
-  .section-title { font-size: 32px; margin: 0 0 12px; letter-spacing: -0.01em; }
-  .section-sub { color: var(--muted); font-size: 17px; max-width: 640px; margin: 0 0 48px; }
+  section { padding: 96px 0; }
+  .section-title { font-size: clamp(28px, 3.2vw, 40px); margin: 0 0 12px; letter-spacing: -0.01em; }
+  .section-sub { color: var(--muted); font-size: 20px; max-width: 760px; margin: 0 0 48px; }
 
   /* Feature grid */
-  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; transition: border-color .2s ease, transform .2s ease; }
   .card:hover { border-color: var(--accent); transform: translateY(-2px); }
   .card .icon { font-size: 24px; margin-bottom: 12px; }
-  .card h3 { margin: 0 0 8px; font-size: 17px; }
-  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+  .card h3 { margin: 0 0 8px; font-size: 20px; }
+  .card p { margin: 0; color: var(--muted); font-size: 16px; }
 
   /* Compare table */
-  .compare { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .compare { width: 100%; border-collapse: collapse; font-size: 16px; }
   .compare th, .compare td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
   .compare th { color: var(--muted); font-weight: 600; }
   .compare td:first-child { font-weight: 600; }
@@ -148,7 +149,7 @@
   .compare .no { color: #f87171; }
 
   /* Quick start */
-  .qs { background: var(--code); border: 1px solid var(--border); border-radius: 14px; padding: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; overflow-x: auto; }
+  .qs { background: var(--code); border: 1px solid var(--border); border-radius: 14px; padding: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 15px; overflow-x: auto; }
   .qs .line { display: block; white-space: pre; }
   .qs .c { color: #6b7280; }
   .qs .k { color: #93c5fd; }
@@ -156,15 +157,33 @@
 
   /* Compat */
   .compat { display: flex; flex-wrap: wrap; gap: 12px; }
-  .chip { padding: 8px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); font-size: 14px; }
+  .chip { padding: 8px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); font-size: 16px; }
 
   /* Footer */
-  footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 14px; }
+  footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 16px; }
   footer .inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 
   @media (max-width: 640px) {
+    .container { padding: 0 16px; }
+    body { font-size: 17px; }
+    nav .inner { flex-wrap: wrap; height: auto; gap: 8px; padding: 10px 0; }
+    .brand { width: 100%; }
+    #siteSearch, #langSelect { max-width: none; }
     .nav-links { display: none; }
-    .hero { padding: 64px 0 40px; }
+    .hero { padding: 64px 0 32px; }
+    h1.hero-title { font-size: clamp(32px, 9vw, 44px); }
+    .section-title { font-size: clamp(24px, 7vw, 32px); }
+    .hero-sub { font-size: 18px; }
+    .section-sub { font-size: 17px; }
+    .card h3 { font-size: 18px; }
+    .card p { font-size: 15px; }
+  }
+
+  @media (min-width: 1440px) {
+    .container { max-width: 1360px; padding: 0 40px; }
+    body { font-size: 19px; }
+    h1.hero-title { font-size: clamp(48px, 4vw, 76px); }
+    .section-title { font-size: clamp(34px, 2.8vw, 44px); }
   }
 
   /* Skip link */
@@ -184,8 +203,8 @@
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
   /* Paragraph measure */
-  p { max-width: 68ch; }
-  .hero-sub { max-width: 60ch; }
+  p { max-width: 72ch; }
+  .hero-sub { max-width: 64ch; }
   /* Print */
   @media print {
     nav, #progress, #backToTop, #installBtn, .theme-toggle, #langSelect { display: none !important; }
@@ -237,8 +256,8 @@
       <a href="#concepts">Concepts</a>
       <a href="#graph">Live graph</a>
     </div>
-    <input id="siteSearch" type="search" placeholder="Search" aria-label="Search page" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;width:120px;" />
-    <select id="langSelect" aria-label="Language" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:14px;">
+    <input id="siteSearch" type="search" placeholder="Search" aria-label="Search page" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;width:100%;max-width:160px;" />
+    <select id="langSelect" aria-label="Language" style="padding:8px 10px;border-radius:8px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;width:100%;max-width:160px;">
       <option value="en">EN</option>
       <option value="pt">PT</option>
       <option value="es">ES</option>
@@ -269,15 +288,15 @@
     <p class="section-sub">An Obsidian-style force graph. Nodes are pages (source, entity, concept, synthesis), edges are <code>[[wikilinks]]</code>. Seeded with ~230 pages and ~1,000 links; watch it grow as new sources are ingested.</p>
     <div class="flow-card">
       <canvas id="g" width="900" height="900" style="width:100%;height:auto;display:block;border-radius:8px;" role="img" aria-label="Animated force-directed graph of wiki pages and wikilinks"></canvas>
-      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:12px;color:var(--muted);">
+      <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin:12px 0 0;font-size:16px;color:var(--muted);">
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#5eead4;margin-right:4px;"></span>source</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#fbbf24;margin-right:4px;"></span>entity</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#7c8cff;margin-right:4px;"></span>concept</span>
         <span><span style="display:inline-block;width:10px;height:10px;border-radius:50%;background:#f472b6;margin-right:4px;"></span>synthesis</span>
         <span id="gStats" style="color:var(--muted);">230 pages · 1000 links</span>
       </div>
-      <p id="gTip" style="text-align:center;color:var(--muted);font-size:13px;margin:8px 0 0;">Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.</p>
-      <p style="text-align:center;color:var(--muted);font-size:13px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
+      <p id="gTip" style="text-align:center;color:var(--muted);font-size:15px;margin:8px 0 0;">Tip: hover a node to inspect it. Click the canvas to add a page. The graph is a simulation, not your real wiki.</p>
+      <p style="text-align:center;color:var(--muted);font-size:15px;margin:4px 0 0;">Drag the graph to rotate it in 3D.</p>
     </div>
   </div>
 </section>
@@ -296,28 +315,28 @@
         <!-- raw box -->
         <rect x="20" y="70" width="180" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
         <text x="110" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">raw/</text>
-        <text x="110" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">articles, papers,</text>
-        <text x="110" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">notes, data files</text>
-        <text x="110" y="175" text-anchor="middle" fill="#5eead4" font-size="11">you curate</text>
+        <text x="110" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">articles, papers,</text>
+        <text x="110" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">notes, data files</text>
+        <text x="110" y="175" text-anchor="middle" fill="#5eead4" font-size="12">you curate</text>
         <!-- arrow -->
         <path d="M210 130 L290 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
         <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
         <!-- llm box -->
         <rect x="300" y="70" width="200" height="120" rx="14" fill="#171a24" stroke="#7c8cff"/>
         <text x="400" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">LLM assistant</text>
-        <text x="400" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">reads once · writes pages</text>
-        <text x="400" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">links · revises · flags</text>
-        <text x="400" y="175" text-anchor="middle" fill="#7c8cff" font-size="11">via skills in .agents/</text>
+        <text x="400" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">reads once · writes pages</text>
+        <text x="400" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">links · revises · flags</text>
+        <text x="400" y="175" text-anchor="middle" fill="#7c8cff" font-size="12">via skills in .agents/</text>
         <!-- arrow -->
         <path d="M510 130 L590 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
         <!-- wiki box -->
         <rect x="600" y="70" width="240" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
         <text x="720" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">wiki/</text>
-        <text x="720" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">sources · entities · concepts</text>
-        <text x="720" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">syntheses · index · log</text>
-        <text x="720" y="175" text-anchor="middle" fill="#5eead4" font-size="11">compounds over time</text>
+        <text x="720" y="132" text-anchor="middle" fill="#9aa3b2" font-size="14">sources · entities · concepts</text>
+        <text x="720" y="150" text-anchor="middle" fill="#9aa3b2" font-size="14">syntheses · index · log</text>
+        <text x="720" y="175" text-anchor="middle" fill="#5eead4" font-size="12">compounds over time</text>
       </svg>
-      <p style="text-align:center; color: var(--muted); font-size: 13px; margin: 16px 0 0;">You ask questions against <code>wiki/</code>, not against the raw files. Each new source makes the notebook richer.</p>
+      <p style="text-align:center; color: var(--muted); font-size: 15px; margin: 16px 0 0;">You ask questions against <code>wiki/</code>, not against the raw files. Each new source makes the notebook richer.</p>
     </div>
   </div>
 </section>
@@ -347,7 +366,7 @@
       <div class="card"><h3>Students &amp; writers</h3><p>You need cross-references and citations that already exist when you start writing.</p></div>
       <div class="card"><h3>Teams</h3><p>You want a shared, version-controlled knowledge base that an assistant keeps current.</p></div>
     </div>
-    <p style="color:var(--muted);font-size:14px;margin-top:24px;">Not for you if you need real-time retrieval over millions of documents or a hosted SaaS. This is a local, compounding notebook.</p>
+    <p style="color:var(--muted);font-size:16px;margin-top:24px;">Not for you if you need real-time retrieval over millions of documents or a hosted SaaS. This is a local, compounding notebook.</p>
   </div>
 </section>
 
@@ -466,16 +485,16 @@
       <svg viewBox="0 0 760 200" style="width:100%;height:auto;display:block;margin:16px 0;" role="img" aria-label="Three layers: raw, wiki, schema">
         <rect x="20" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
         <text x="130" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">raw/</text>
-        <text x="130" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">immutable sources</text>
-        <text x="130" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">you curate, never edit</text>
+        <text x="130" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">immutable sources</text>
+        <text x="130" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">you curate, never edit</text>
         <rect x="270" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#7c8cff"/>
         <text x="380" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">wiki/</text>
-        <text x="380" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">LLM-maintained pages</text>
-        <text x="380" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">sources, entities, concepts, syntheses</text>
+        <text x="380" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">LLM-maintained pages</text>
+        <text x="380" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">sources, entities, concepts, syntheses</text>
         <rect x="520" y="40" width="220" height="120" rx="12" fill="#171a24" stroke="#262a38"/>
         <text x="630" y="75" text-anchor="middle" fill="#e8eaf0" font-weight="700">schema</text>
-        <text x="630" y="100" text-anchor="middle" fill="#9aa3b2" font-size="12">AGENTS.md + skills</text>
-        <text x="630" y="118" text-anchor="middle" fill="#9aa3b2" font-size="12">rules the assistant follows</text>
+        <text x="630" y="100" text-anchor="middle" fill="#9aa3b2" font-size="14">AGENTS.md + skills</text>
+        <text x="630" y="118" text-anchor="middle" fill="#9aa3b2" font-size="14">rules the assistant follows</text>
         <path d="M240 100 L270 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
         <path d="M490 100 L520 100" stroke="#7c8cff" stroke-width="2" marker-end="url(#a2)"/>
         <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
@@ -515,11 +534,11 @@
       <svg viewBox="0 0 860 180" style="width:100%;height:auto;display:block;" role="img" aria-label="Skills pipeline">
         <defs><marker id="a3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
         <g font-family="sans-serif" font-size="13" fill="#e8eaf0">
-          <rect x="20" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#5eead4"/><text x="95" y="85" text-anchor="middle" font-weight="700">Ingest</text><text x="95" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">read once, write pages</text>
-          <rect x="200" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#7c8cff"/><text x="275" y="85" text-anchor="middle" font-weight="700">Query</text><text x="275" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">answer from wiki</text>
-          <rect x="380" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#fbbf24"/><text x="455" y="85" text-anchor="middle" font-weight="700">Lint</text><text x="455" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">health checks</text>
-          <rect x="560" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#f472b6"/><text x="635" y="85" text-anchor="middle" font-weight="700">Refresh</text><text x="635" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">detect drift</text>
-          <rect x="720" y="55" width="120" height="70" rx="10" fill="#171a24" stroke="#262a38"/><text x="780" y="85" text-anchor="middle" font-weight="700">Synthesize</text><text x="780" y="105" text-anchor="middle" fill="#9aa3b2" font-size="11">file durable answers</text>
+          <rect x="20" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#5eead4"/><text x="95" y="85" text-anchor="middle" font-weight="700">Ingest</text><text x="95" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">read once, write pages</text>
+          <rect x="200" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#7c8cff"/><text x="275" y="85" text-anchor="middle" font-weight="700">Query</text><text x="275" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">answer from wiki</text>
+          <rect x="380" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#fbbf24"/><text x="455" y="85" text-anchor="middle" font-weight="700">Lint</text><text x="455" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">health checks</text>
+          <rect x="560" y="55" width="150" height="70" rx="10" fill="#171a24" stroke="#f472b6"/><text x="635" y="85" text-anchor="middle" font-weight="700">Refresh</text><text x="635" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">detect drift</text>
+          <rect x="720" y="55" width="120" height="70" rx="10" fill="#171a24" stroke="#262a38"/><text x="780" y="85" text-anchor="middle" font-weight="700">Synthesize</text><text x="780" y="105" text-anchor="middle" fill="#9aa3b2" font-size="12">file durable answers</text>
         </g>
         <path d="M170 90 L200 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
         <path d="M350 90 L380 90" stroke="#7c8cff" stroke-width="2" marker-end="url(#a3)"/>
@@ -903,7 +922,7 @@
       ctx.fill();
       if(idx === hovered || (n.degree||0) > 14){
         ctx.fillStyle = graphText();
-        ctx.font = '10px sans-serif';
+        ctx.font = '12px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText(n.label.length > 24 ? n.label.slice(0,22) + '…' : n.label, p.x, p.y - (r + 4));
       }
