@@ -33,8 +33,7 @@ class BenchmarkScriptTests(unittest.TestCase):
 
         self.assertEqual(result.returncode, 0, msg=result.stderr)
         self.assertIn("ncalls  tottime  percall  cumtime", result.stdout)
-        self.assertIn("discover_pages", result.stdout)
-
+        self.assertIn("lint.py", result.stdout)
 
 if __name__ == "__main__":
     unittest.main()
