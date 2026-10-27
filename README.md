@@ -1,82 +1,201 @@
 # LLM Wiki
 
-**A living notebook that an AI assistant writes and keeps up to date for you — a persistent, compounding alternative to RAG for developers using Claude Code, Cursor, GitHub Copilot, OpenCode, or Codex.**
+**Let your AI assistant write the wiki you never had time for.**
 
-You save articles, papers, notes, and data files. The assistant reads each one once, writes down what it learned, links related ideas, and keeps the notes current when new material arrives. Instead of searching through files every time you ask a question, it answers from notes it has already organized.
+Add files, links or pasted text. Your assistant reads them with its wiki skills, writes linked markdown pages, and answers your questions from those pages, citing them. The wiki is plain files in git: no database, no API keys. It works with Claude Code, Cursor, GitHub Copilot, OpenCode and Codex.
 
-This project is a template for that workflow. It follows the idea described in Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+[Live site](https://jonyfs.github.io/llm-wiki-template/) · [Use this template](https://github.com/jonyfs/llm-wiki-template/generate) · [Start in five minutes](#5-start) · [The original gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f)
+
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/images/graph-dark.jpg">
+    <img alt="A made-up wiki shaped like a brain: colored cells for pages, curved lines for links" src="docs/images/graph-light.jpg" width="820">
+  </picture>
+</p>
+
+<p align="center"><sub>A made-up wiki in the shape of a brain, captured from the live graph on the site. Each cell is a page, each line is a <code>[[wikilink]]</code>, and pages with more links grow bigger. GitHub does not run the animation, so this is a still.</sub></p>
+
+New here? Read the five parts in order, or jump to the one you need: [1 Understand the idea](#1-understand-the-idea) · [2 See it working](#2-see-it-working) · [3 Use it](#3-use-it) · [4 Why it pays off](#4-why-it-pays-off) · [5 Start](#5-start)
 
 ---
 
-**Live site:** [jonyfs.github.io/llm-wiki-template](https://jonyfs.github.io/llm-wiki-template/) (rendered from this README).
+## 1. Understand the idea
 
-## Why this is different
+Everything in this part paraphrases [Andrej Karpathy's gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f), using the names this template gives things.
 
-Most AI tools that work with documents use retrieval. You upload files, and at question time the model pulls the relevant pieces and writes an answer from them. That works, but the model starts over on every question. Nothing accumulates, and a subtle question that spans several documents means reassembling the same fragments again.
+### The problem: asking your documents a question
 
-An LLM wiki works the other way. The model reads each source once and writes what it learned into a folder of linked markdown pages. It updates topic pages, revises summaries, flags where new material contradicts older claims, and keeps a running synthesis. Knowledge is compiled once and then kept current, instead of being rebuilt on every query.
+Most tools that answer from documents work like the first picture. The gist puts NotebookLM, ChatGPT file uploads and most RAG setups in that group.
 
-The result is a persistent, compounding artifact: cross-references already exist, contradictions are already flagged, and each source you add or question you ask makes the notebook richer.
+| Retrieval, the usual way | An LLM wiki |
+|---|---|
+| <img src="docs/images/retrieval.svg" alt="Retrieval: documents are cut into pieces, the pieces become an answer, and every new question starts the loop again" width="400"> | <img src="docs/images/wiki.svg" alt="LLM wiki: documents are read once into linked pages, and answers draw on those pages and can be added back" width="400"> |
+| 1. You upload files.<br>2. When you ask, the tool pulls out the pieces that look relevant.<br>3. The model writes a fresh answer from those pieces.<br>4. The next question starts again at step 2. Nothing is kept. | 1. You add a source.<br>2. The assistant reads it once and writes or updates linked pages.<br>3. Later questions start from those pages, with links and flagged contradictions already there.<br>4. The pages stay, and every new source or answer adds to them. |
 
-```mermaid
-flowchart LR
-    S[New source] -->|read once| N[Notebook pages]
-    Q[Question] -->|answer from notes| N
-    N -->|answer| Q
-    Q -->|valuable answer filed back| N
-```
+Example: you save five papers about sleep. Ask how they disagree and a retrieval tool digs through fragments of all five again, every time. In a wiki, the page on sleep and memory already says where paper 2 and paper 4 disagree, and cites both.
 
-## How it works in plain terms
+### Who does what
 
-There are three layers between you and your sources:
-
-- `raw/` holds the documents you collect: articles, papers, images, and data files. These are **read-only**. The assistant reads them but never changes them.
-- `wiki/` holds the markdown pages the assistant owns: one page per source, plus pages for people, organizations, ideas, methods, comparisons, and durable answers.
-- `AGENTS.md` is the rulebook. It tells the assistant how the notebook is structured, what the conventions are, and what to do when adding a source, answering a question, or checking the notebook for problems.
-
-```mermaid
-flowchart TD
-    YOU[You] -->|collect| RAW[raw/ - your sources, read-only]
-    RAW -->|read| AI[AI assistant]
-    RULES[AGENTS.md - rules] -->|guides| AI
-    SKILLS[.agents/skills/ - step-by-step playbooks] -->|guides| AI
-    AI -->|writes and maintains| WIKI[wiki/ - your notebook]
-    WIKI -->|you read and browse| YOU
-```
-
-You rarely write the notebook yourself. You curate sources, explore, and ask questions; the assistant does the summarizing, cross-referencing, filing, and bookkeeping. Many people keep the assistant on one side of the screen and a markdown browser such as Obsidian on the other, watching the pages update as the assistant edits.
-
-## What you do vs. what the assistant does
+You decide what goes in and what to ask. The assistant does the upkeep.
 
 | You | The assistant |
 |---|---|
-| Collect and save source material into `raw/` | Reads each source and writes a summary page |
-| Ask questions and explore | Answers from the notebook and links related pages |
-| Decide what matters | Updates entity, concept, and synthesis pages |
-| Review the result | Flags contradictions and keeps the index and log current |
+| Pick the sources. | Summarizes each source. |
+| Ask the questions. | Links related pages. |
+| Read the pages and decide what it all means. | Files everything in the right place. |
+| | Keeps summaries current and flags contradictions. |
 
-## Quick start (60 seconds)
+Karpathy compares it to programming: Obsidian is the editor, the assistant is the programmer and the wiki is the codebase. Obsidian is optional here. Any markdown editor, or just your file browser, works.
 
-```bash
-git clone https://github.com/jonyfs/llm-wiki-template.git my-notebook
-cd my-notebook
-python3 -m unittest discover -s tests -t .   # sanity check
-python3 scripts/lint.py                        # empty notebook, should pass
+### Three layers
+
+Each layer has one owner. That keeps the sources trustworthy and the pages consistent.
+
+<p align="center"><img src="docs/images/layers.svg" alt="Three layers: instructions on top, linked wiki pages in the middle, read-only source files at the bottom" width="520"></p>
+
+- **The schema** is a short instruction file (here, `AGENTS.md` plus the skills in `.agents/skills/`) that says how the wiki is laid out and what to do for each kind of request. You and the assistant refine it as you learn what works.
+- **The wiki** is the markdown pages the assistant writes: summaries, entity and concept pages, comparisons, syntheses. You read them. The assistant owns them and keeps them consistent.
+- **Raw sources** are your articles, papers, images and data files. They never change. This is the source of truth.
+
+Example: reading a novel. The chapters you save are the raw layer. The wiki gets a page for each character and theme. The schema can say that every character page lists the chapters where that person appears.
+
+### Three operations
+
+Everything you do with the wiki is one of these.
+
+#### Ingest
+
+<img src="docs/images/ingest.svg" alt="One source on the left fans out to about eight pages: a source page, entity pages, concept pages, a synthesis, the index and the log" width="460" align="right">
+
+You add a source and ask the assistant to process it. It reads the source, talks through the main points with you if you like, writes a summary page, updates the index, updates the entity and concept pages the source touches, and adds a line to the log.
+
+One source can change 10 to 15 pages. The gist prefers ingesting one source at a time and staying involved: reading the summaries and steering what to emphasize. You can also ingest many at once with less supervision. Whichever you pick, write the workflow into the schema so the next session follows it.
+
+Example: you add a transcript of a podcast about sleep. The assistant writes a page for the episode, adds a paragraph to the page on melatonin, creates a page for the guest and links the three. In this template that is the `wiki-ingest` skill.
+
+<br clear="right">
+
+#### Query
+
+<img src="docs/images/query.svg" alt="A question reads wiki pages and produces an answer, and the answer can be filed back as a new page" width="460" align="right">
+
+You ask a question. The assistant searches the wiki, reads the relevant pages and answers with citations. The answer can be a page, a table, a slide deck or a chart, whatever fits the question.
+
+A good answer can also be filed back into the wiki as a new page. A comparison you asked for or a connection you found should not vanish into chat history.
+
+Example: you ask for a comparison of two note apps and like it, so the assistant saves it as a synthesis page. A month later you ask a follow-up and it starts from that page. In this template that is the `wiki-query` skill, or `wiki` when nothing may be written.
+
+<br clear="right">
+
+#### Lint
+
+<img src="docs/images/lint.svg" alt="A wiki graph with one orphan page circled, one stale page drawn dotted and one pair of pages that contradict each other" width="460" align="right">
+
+From time to time, ask the assistant to check the wiki's health. It looks for:
+
+- pages that contradict each other
+- claims that newer sources have replaced
+- orphan pages that nothing links to
+- ideas mentioned often but without a page of their own
+- missing cross-references between related pages
+- gaps that a web search could fill
+
+It is also good at suggesting what to read or ask next. In this template, lint and refresh live in the `wiki-maintenance` skill.
+
+<br clear="right">
+
+### Index and log
+
+Two plain files help both of you find your way as the wiki grows.
+
+`wiki/index.md` is a catalog of every page: a link, a one-line summary, grouped by category. The assistant updates it on every ingest and reads it first when you ask something. The gist says this works well up to roughly a hundred sources and a few hundred pages, with no search infrastructure.
+
+`wiki/log.md` records what happened and when: ingests, questions, lint passes. It only ever grows. Start every entry with the same prefix and simple tools can read it:
+
+```text
+## [2026-04-02] ingest | Sleep podcast transcript
+## [2026-04-03] query | How do the sleep papers disagree?
+## [2026-04-09] lint | 3 orphan pages found
 ```
 
-Then ask your assistant: "Ingest the file I just added to `raw/`." Watch `wiki/` populate.
+```bash
+grep "^## \[" wiki/log.md | tail -5    # the last five entries
+```
 
-## Getting started
+### The vocabulary
 
-1. **Add sources.** Put articles, papers, notes, or data files into `raw/`.
-2. **Ask the assistant to ingest them.** It creates or updates pages in `wiki/`.
-3. **Browse the notebook.** Open `wiki/index.md` to see the catalog and learning paths.
-4. **Ask questions.** The assistant answers from the notebook and can file durable answers as new pages.
-5. **Check health.** Run lint and refresh to find stale claims, broken links, and missing pages.
+| Term | Meaning |
+|---|---|
+| Source page | One page per raw file. It summarizes what the source says and numbers its claims so other pages can cite them, like `[[slug]] C1`. |
+| Entity page | A person, company, product or place that shows up in more than one source. |
+| Concept page | An idea, method or theme. It explains the thing and links to the sources behind it. |
+| Synthesis page | The saved answer to a question that needed several pages. |
+| Wikilink | A `[[slug]]` link from one page to another. Obsidian reads them too. |
+| Frontmatter | A small block of YAML at the top of each page with title, type, sources and dates. The lint script checks it. |
+| Skill | A markdown file in `.agents/skills/` that tells the assistant how to do one job, such as ingest, query or lint. |
 
-If you are new to the template, ask the assistant to walk you through a first source end to end.
+---
 
-## Folder map
+## 2. See it working
+
+The graph at the top of this page is simulated data in the shape of a brain, not a real wiki. On the [live site](https://jonyfs.github.io/llm-wiki-template/) it turns, and three buttons play the operations from part 1: adding a page is an ingest, asking the wiki is a query, and running lint is a lint. Cells have different shapes by page type, so the type reads without the color: pyramidal cells for sources, star-shaped ones for entities, branched ones for concepts and large ones for syntheses.
+
+---
+
+## 3. Use it
+
+### What you can add
+
+Start with what you already have. You choose the sources, and the assistant never edits them.
+
+| Source | How it works |
+|---|---|
+| Files on your computer | Notes, markdown, text, PDFs, images and data files such as CSV. Copy them into `raw/` and ask the assistant to ingest them. |
+| Links from the web | Paste a link and the assistant asks whether to save the page into `raw/` first. If you say yes, it keeps a clean copy and notes the date it was fetched. |
+| Text you paste | An email, a chat thread or a transcript. The assistant asks before saving it as a file in `raw/`, then ingests it like any other source. |
+| Screenshots and scans | Images count as sources too. The assistant separates what it can read in the image from what it is guessing, and says so when it can't read one reliably. |
+
+Whatever the format, the assistant needs a tool that can read it. If it can't, it tells you instead of guessing.
+
+### Every request goes through a skill
+
+When you ask the assistant to ingest, answer or remove something, `AGENTS.md` tells it to load the matching skill first. That is why every answer is built the same way: it starts from the index, uses your pages, cites them and logs any change it makes. These are instructions the assistant follows, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
+
+| You say | Skill | What happens |
+|---|---|---|
+| Ingest this file or link | `wiki-ingest` | Reads the source, writes or updates the pages it affects, then updates the index and log. A link or pasted text is saved to `raw/` first, and only after you say yes. |
+| What does the wiki say about X? | `wiki-query` | Starts from the index, reads the relevant pages, opens raw files only to verify, and cites what it used. It can save a useful answer as a synthesis page. |
+| Just tell me, don't change anything | `wiki` | The same lookup, but it cannot write, create or delete a file. |
+| Check the wiki | `wiki-maintenance` | Lint looks for broken links, missing fields and orphan pages. Refresh reports raw files that changed after their page was written. |
+| Remove everything about X | `wiki-delete` | Lists every mention, shows what would change and waits for your confirmation. It never touches raw files. |
+| Write or fix a page | `wiki-writing` | Sets the page type, headings, frontmatter and citation style before any wiki prose is written. |
+| Not sure what to ask | `wiki-router` | Picks exactly one of the skills above, or asks you one question. |
+
+Shortcut commands in `.agents/commands/` call the same skills: `/wiki-ingest`, `/wiki-query`, `/wiki` (read-only), `/wiki-lint` and `/wiki-refresh`.
+
+```mermaid
+flowchart TD
+    R[Request] --> ROUTER{wiki-router}
+    ROUTER -->|write prose| WW[wiki-writing]
+    ROUTER -->|add source| WI[wiki-ingest]
+    ROUTER -->|answer and file| WQ[wiki-query]
+    ROUTER -->|answer only| W[wiki]
+    ROUTER -->|refresh or lint| WM[wiki-maintenance]
+    ROUTER -->|remove subject| WD[wiki-delete]
+```
+
+### Examples from an ordinary week
+
+Made-up situations, but the steps are the real ones.
+
+- **Studying for an exam.** You keep lecture PDFs, your class notes and two articles you found online. You tell the assistant to ingest them, and the links are saved to `raw/` after you approve it. Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.
+- **Running a small business.** You drop in proposals, signed contracts, meeting notes and emails exported as text. Months later: "What did I promise this client about delivery, and did the scope change?" The assistant points to the proposal and to the later email, and says where they differ.
+- **Planning a trip.** You save a few blog posts as links, the booking confirmation as a PDF and screenshots of the map. You ask: "We land on Sunday night and the museum closes on Mondays. Which day works?" The answer comes from your saved sources, and each claim links to the page it came from.
+- **Keeping a team's decisions.** You add meeting notes, design docs and issue threads over a few months. A new teammate asks: "Why did we pick Postgres?" The assistant answers from the decision pages and can save the answer as a synthesis page, so the next person finds it already written.
+
+In each case, `wiki-query` handles the questions and `wiki-ingest` handles every source you add.
+
+### Folder map
 
 ```
 .
@@ -92,105 +211,133 @@ If you are new to the template, ask the assistant to walk you through a first so
 │   ├── entities/             # people, organizations, products, places
 │   ├── concepts/             # ideas, methods, theories
 │   └── syntheses/            # comparisons, maps, durable answers
-├── scripts/                  # helpers for lint, refresh, and search
+├── scripts/                  # lint, refresh, search and the new-llm-wiki.sh starter
 ├── tests/                    # checks that keep the template healthy
-└── docs/                     # migration notes for derived notebooks
+├── docs/                     # migration notes and the README images
+└── github-pages/             # the template's own site (the starter script removes it)
 ```
 
 Multi-agent entry points (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/`, `.opencode/`) are links to the same source of truth, so one edit reaches every assistant.
 
-## Skills and commands
+### Keeping the wiki healthy
 
-The assistant loads a playbook before doing substantive work. Each playbook is a folder under `.agents/skills/` with a `SKILL.md` file.
+- **refresh** detects when a source has changed and reports which pages to revisit: `python3 scripts/refresh.py`
+- **lint** checks structure, link integrity, stale claims and integration gaps: `python3 scripts/lint.py`
+- **search** finds pages by term: `python3 scripts/wiki_search.py "<terms>"`
+- **tests** keep the template itself healthy: `python3 -m unittest discover -s tests -t .`
 
-| Playbook | What it does |
-|---|---|
-| `wiki-writing` | Create or revise notebook prose for any page type, with templates and citation rules. |
-| `wiki-ingest` | Integrate curated material from `raw/` into `wiki/` and update related pages, index, and log. |
-| `wiki-query` | Answer from the notebook first, then file durable answers back as synthesis pages. |
-| `wiki` | Answer from the notebook in read-only mode, without changing any file. |
-| `wiki-maintenance` | Refresh source drift and run lint and health checks. |
-| `wiki-delete` | Remove a subject, page, or reference safely, with impact review and confirmation. |
-| `wiki-router` | Map an unclear request to exactly one of the playbooks above. |
+---
 
-Short commands in `.agents/commands/` invoke the matching playbook:
+## 4. Why it pays off
 
-| Command | Playbook | Use |
-|---|---|---|
-| `/wiki-ingest` | `wiki-ingest` | Ingest curated source material. |
-| `/wiki-query` | `wiki-query` | Answer a question and possibly file it. |
-| `/wiki` | `wiki` | Read-only answer. |
-| `/wiki-refresh` | `wiki-maintenance` | Run a refresh pass. |
-| `/wiki-lint` | `wiki-maintenance` | Run a lint and health check. |
+Plain files, a few scripts and instructions your assistant follows. Nothing runs in the background.
 
-```mermaid
-flowchart TD
-    R[Request] --> ROUTER{wiki-router}
-    ROUTER -->|write prose| WW[wiki-writing]
-    ROUTER -->|add source| WI[wiki-ingest]
-    ROUTER -->|answer and file| WQ[wiki-query]
-    ROUTER -->|answer only| W[wiki]
-    ROUTER -->|refresh or lint| WM[wiki-maintenance]
-    ROUTER -->|remove subject| WD[wiki-delete]
-```
+- **Answers you can check.** Claims in wiki pages carry a footnote that points at the raw file. When the assistant answers, it names the pages it used, so you can open them.
+- **Your sources stay untouched.** The assistant reads `raw/` but never edits it. Everything it writes goes into `wiki/`, and git keeps the history.
+- **A record of every change.** `wiki/index.md` lists every page. `wiki/log.md` records what the assistant did and when.
+- **Good answers get reused.** A useful answer can be saved as a synthesis page. The next similar question starts from that page instead of the raw files.
+- **Problems show up early.** Lint catches broken links and missing fields. Refresh tells you when a raw file changed after its page was written.
+- **Removing things is safe.** Removing a subject lists every mention first and waits for your yes. The raw files stay where they are.
 
-## Everyday workflow
+### Why this works
 
-1. Add curated source material to `raw/`.
-2. Follow `AGENTS.md` for the always-on contract and load the relevant playbooks from `.agents/skills/`.
-3. Create or update pages in `wiki/sources/`, `wiki/entities/`, `wiki/concepts/`, and `wiki/syntheses/`.
-4. Use synthesis pages for reusable questions, comparisons, and topic maps.
-5. Keep `wiki/index.md`, learning paths, and `wiki/log.md` up to date.
+Keeping a knowledge base up to date is mostly bookkeeping: fixing cross-references, rewriting summaries, noticing when new data contradicts old claims. People give up on wikis because that work grows faster than the value they get back. An assistant does not get bored, does not forget a link and can touch 15 files in one pass.
 
-```mermaid
-flowchart LR
-    INGEST[ingest] --> PAGES[wiki pages]
-    QUERY[query] --> PAGES
-    REFRESH[refresh] --> PAGES
-    LINT[lint] --> PAGES
-    PAGES --> INDEX[wiki/index.md]
-    PAGES --> LOG[wiki/log.md]
-```
+The gist ties this to the Memex, an idea Vannevar Bush described in 1945: a private, curated store of documents with trails of associations between them. What Bush could not solve was who would do the upkeep. That is the part the assistant takes on.
 
-## Keeping the notebook healthy
+### Who this is for
 
-- **refresh** detects when a source has changed and reports which pages should be revisited. Run with `python3 scripts/refresh.py`.
-- **lint** checks structure, link integrity, stale claims, and integration gaps. Run with `python3 scripts/lint.py`.
-- **search** finds pages by term. Run with `python3 scripts/wiki_search.py "<terms>"`.
+If one of these sounds like you, it is worth an afternoon.
 
-## Validation
+- **Readers and researchers** who save more papers and articles than they can keep in their heads, and want to ask questions across them.
+- **Builders and founders** who keep notes on competitors, customer calls and past decisions, and can never find the one they need.
+- **Students and writers** who want to start writing with the citations and cross-references already lined up.
+- **Teams** who want one shared notebook in git that stays up to date without someone owning it full time.
 
-- Run the test suite: `python3 -m unittest discover -s tests -t .`
-- Run lint on a notebook: `python3 scripts/lint.py`
-- Run refresh on a notebook: `python3 scripts/refresh.py`
-- Search a notebook: `python3 scripts/wiki_search.py "<terms>"`
+Skip it if you need search over millions of documents or a hosted service. This is a folder of markdown on your own machine.
 
-## LLM wiki vs. RAG vs. plain notes
+### LLM wiki vs. RAG vs. note apps
 
-| Approach | How it answers | What accumulates | Best for |
+The same question, answered three ways. Read the rows as rough generalizations.
+
+| | LLM wiki | RAG | Note apps |
 |---|---|---|---|
-| **LLM wiki (this template)** | From already-organized notes | Cross-references, contradictions, synthesis | Personal/team knowledge that compounds |
-| RAG / vector search | Reassembles fragments per question | Nothing; starts over each time | Large, fast-changing corpora |
-| Plain notes | You search and read | Whatever you manually write | Small, ad-hoc collections |
+| Answers get written down | Yes | No, rebuilt each time | Only if you write them |
+| Links between ideas exist before you ask | Yes | No | Manual |
+| Conflicting claims get flagged | On ingest and lint | Rarely | No |
+| Setup | Clone the repo | Embeddings and a vector store | Install an app |
+| Where the data lives | Local files | Usually a hosted index | Local or the app's cloud |
+| Who writes the notes | The assistant | Nobody, it indexes raw text | You |
 
-## Compatibility
+### Compatible agents
 
-| Harness | Entry point | Status |
+The instructions live in `AGENTS.md` and `.agents/skills/`. Any agent that reads markdown can follow them.
+
+| Agent | Entry point | Status |
 |---|---|---|
 | Claude Code | `CLAUDE.md` -> `AGENTS.md` | Supported |
 | Cursor / OpenCode | `.cursorrules` -> `AGENTS.md` | Supported |
 | GitHub Copilot | `.github/copilot-instructions.md` -> `AGENTS.md` | Supported |
 | Codex | `.agents/skills/` | Supported |
 
-Python 3.9+ on macOS, Linux, and Windows. Standard library only.
+Python 3.9+ on macOS, Linux and Windows. Standard library only.
 
-## Frequently asked questions
+### Common questions
 
-- **Why not RAG?** RAG reassembles fragments on every question; nothing accumulates. This template compiles knowledge once and keeps it current.
-- **Does it cost a lot of tokens?** `AGENTS.md` is under 8 KB and scripts print one-line summaries by default.
-- **Is my data sent anywhere?** No. Scripts are stdlib-only with no network calls; raw/ stays local.
-- **Does it work offline?** Yes, for everything except optional web ingestion.
-- **Am I locked to one model?** No. The contract is plain markdown plus Python; any agent that reads files works.
+- **Do I need an API key or database?** No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them.
+- **How is this different from RAG?** RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.
+- **What can I add to it?** Files you copy into `raw/`: notes, markdown, PDFs, images and data files. Links and pasted text work too, once you agree to save them there. The assistant still needs a tool that can read the format.
+- **Do I have to use the skills?** They are how the template works. `AGENTS.md` tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
+- **Does it cost a lot of tokens?** `AGENTS.md` is about 10 KB and the scripts print one-line summaries by default.
+- **Is my data sent anywhere?** The scripts have no network calls and `raw/` stays on your machine. Whatever your assistant sends to its model depends on which assistant you use.
+- **Does it work offline?** The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.
+- **Am I locked to one model?** No. The contract is plain markdown plus Python, so any agent that reads files works.
+
+### When something looks wrong
+
+- **Empty wiki after ingest.** Check that the file is in `raw/` and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.
+- **Broken wikilinks.** Run the lint skill. It lists links that point nowhere so you can fix or remove them.
+- **Stale claims.** Run refresh. It shows which raw files changed since their source pages were written.
+- **Too many pages.** That's normal. Use `wiki/index.md` and the search script to find your way around.
+- **The answer ignored the wiki.** Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.
+
+---
+
+## 5. Start
+
+Pick the path that fits. All three give you the same template.
+
+### On GitHub
+
+1. Open the repository and click **Use this template**, then **Create a new repository**. Or from a terminal with the [GitHub CLI](https://cli.github.com): `gh repo create my-notebook --template jonyfs/llm-wiki-template --private --clone`.
+2. Clone your new repository and open the folder with your assistant: Claude Code, Cursor, GitHub Copilot, OpenCode or Codex.
+3. The copy includes the template's own site in `github-pages/` and its workflows. You do not need them for a notebook. Delete `github-pages/`, `.github/workflows/pages.yml` and `.github/workflows/lighthouse.yml`, or use the script below and let it do that.
+4. Copy a file into `raw/` and ask: "Ingest `raw/<file>` into the wiki." Then ask a question about it.
+
+### With a local clone
+
+```bash
+git clone https://github.com/jonyfs/llm-wiki-template.git my-notebook
+cd my-notebook
+python3 -m unittest discover -s tests -t .   # sanity check
+python3 scripts/lint.py                      # an empty wiki should pass
+```
+
+To make it your own history instead of the template's, run `rm -rf .git && git init -b main` and commit.
+
+### With the starter script
+
+`scripts/new-llm-wiki.sh` does the whole clean start in one command. It clones the template (or creates a GitHub repo from it with `--github`), starts a fresh git history, removes the template's GitHub Pages site and workflows, drops the author's citation file and the internal catalogs, resets `wiki/log.md`, writes a short README for your notebook and runs the checks. It refuses to run if the target folder is not empty, and it checks that it is inside a template copy before it deletes anything.
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/new-llm-wiki.sh -o new-llm-wiki.sh
+bash new-llm-wiki.sh my-notebook                    # local folder
+bash new-llm-wiki.sh my-notebook --github           # private GitHub repo, cloned and pushed
+bash new-llm-wiki.sh my-notebook --github --public  # same, public
+bash new-llm-wiki.sh my-notebook --keep-pages       # keep the GitHub Pages site
+```
+
+It needs bash, git and python3, plus the GitHub CLI for `--github`. On Windows, use Git Bash or WSL. The full script is at the end of this README.
 
 ## Showcase
 
@@ -198,18 +345,153 @@ Built something with this template? Open a Discussion ("Show and tell") and it m
 
 ## Status
 
-Actively maintained. Last reviewed: 2026-10-26. CI runs on every push and pull request.
-
-## Get started
-
-Click **"Use this template"** on GitHub, then follow the [Quick start](#quick-start-60-seconds) above.
-
-## Advanced notes
-
-- Subject subfolders: each content directory may contain one optional level of subject subfolders, such as `wiki/sources/physics/`. This keeps large notebooks from accumulating hundreds of files in one folder.
-- Claims ledger: source pages may include an optional `## Claims ledger` section for claims that other pages cite precisely.
-- Multi-agent support: all agent entry points are links to the same source of truth, so changes propagate consistently.
+Actively maintained. Last reviewed: 2026-10-27. CI runs on every push and pull request.
 
 ## Credits
 
 This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on. The underlying idea comes from Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+
+## The starter script
+
+This is `scripts/new-llm-wiki.sh`, pasted in full so you can read it before you run it.
+
+````bash
+#!/usr/bin/env bash
+# Start a new notebook from the LLM Wiki Template.
+#
+#   new-llm-wiki.sh my-notebook                 clone the template into ./my-notebook and start a fresh git history
+#   new-llm-wiki.sh my-notebook --github        create a private GitHub repo from the template with the gh CLI, clone it, clean it, push
+#   new-llm-wiki.sh my-notebook --github --public
+#   new-llm-wiki.sh my-notebook --keep-pages    keep the GitHub Pages site and its workflows
+#
+# By default the copy loses the template's own GitHub Pages site, its workflows, its marketing docs and its
+# log history, so the notebook starts clean. Needs bash, git and python3 (plus gh for --github).
+# Environment: TEMPLATE_URL and TEMPLATE_BRANCH override the clone source; TEMPLATE_REPO overrides the --github source.
+set -euo pipefail
+
+TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/jonyfs/llm-wiki-template.git}"
+TEMPLATE_BRANCH="${TEMPLATE_BRANCH:-main}"
+TEMPLATE_REPO="${TEMPLATE_REPO:-jonyfs/llm-wiki-template}"
+
+name=""; use_github=0; visibility="--private"; keep_pages=0; run_checks=1
+
+usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
+die() { echo "error: $*" >&2; exit 1; }
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -h|--help) usage; exit 0 ;;
+    --github) use_github=1 ;;
+    --public) visibility="--public" ;;
+    --keep-pages) keep_pages=1 ;;
+    --no-check) run_checks=0 ;;
+    -*) die "unknown option: $1 (try --help)" ;;
+    *) [ -z "$name" ] || die "only one notebook name, got '$name' and '$1'"; name="$1" ;;
+  esac
+  shift
+done
+
+[ -n "$name" ] || { usage; exit 2; }
+command -v git >/dev/null || die "git is required"
+command -v python3 >/dev/null || die "python3 is required"
+if [ -e "$name" ] && [ -n "$(ls -A "$name" 2>/dev/null || true)" ]; then die "'$name' already exists and is not empty"; fi
+
+if [ "$use_github" -eq 1 ]; then
+  command -v gh >/dev/null || die "--github needs the GitHub CLI (https://cli.github.com) and 'gh auth login'"
+  case "$name" in */*) die "with --github the name must be a plain repo name, not a path" ;; esac
+  echo "Creating $name on GitHub from $TEMPLATE_REPO ..."
+  gh repo create "$name" --template "$TEMPLATE_REPO" "$visibility" --clone
+else
+  echo "Cloning $TEMPLATE_URL ($TEMPLATE_BRANCH) into $name ..."
+  git clone --quiet --depth 1 --branch "$TEMPLATE_BRANCH" "$TEMPLATE_URL" "$name"
+  rm -rf "$name/.git"
+fi
+
+cd "$name"
+# Everything below deletes files, so make sure this really is a template copy before touching anything.
+[ -f AGENTS.md ] && [ -d .agents/skills ] && [ -d wiki ] || die "this does not look like the LLM Wiki Template, stopping before any cleanup"
+
+# Template-only files: the author's citation file and the internal improvement catalog.
+rm -rf CITATION.cff IMPROVEMENTS.md docs/images
+
+if [ "$keep_pages" -eq 0 ]; then
+  echo "Removing the template's GitHub Pages site and its workflows ..."
+  rm -rf github-pages \
+    .github/workflows/pages.yml .github/workflows/lighthouse.yml \
+    PAGES_IMPROVEMENTS.md PAGES_GROWTH_200.md DISCOVERABILITY.md DESIGN_SYSTEM.md \
+    tests/test_github_pages.py
+fi
+
+NAME="$name" KEEP_PAGES="$keep_pages" python3 - <<'PY'
+import datetime, os, re, pathlib
+
+today = datetime.date.today().isoformat()
+name = os.path.basename(os.environ["NAME"].rstrip("/"))
+
+# AGENTS.md: drop the rules about keeping the template's site in sync, which no longer apply.
+if os.environ["KEEP_PAGES"] == "0":
+    p = pathlib.Path("AGENTS.md")
+    s = p.read_text(encoding="utf-8")
+    s = re.sub(r"\n## GitHub Pages synchronization\n.*?(?=\n## )", "", s, flags=re.S)
+    s = s.replace(", the GitHub Pages copy in `github-pages/`,", ",")
+    s = re.sub(r" Pages with translations \(`github-pages/assets/i18n\.js`\) need the same pass in every language\.", "", s)
+    p.write_text(s, encoding="utf-8")
+
+# wiki/log.md: keep the header, start a fresh history.
+log = pathlib.Path("wiki/log.md")
+text = log.read_text(encoding="utf-8")
+head = text.split("\n## [", 1)[0].rstrip() + "\n"
+log.write_text(head + f"\n## [{today}] bootstrap | Start {name} from llm-wiki-template\n\nCreated from the LLM Wiki Template. Add sources to `raw/`, then ask the assistant to ingest them.\n", encoding="utf-8")
+
+# README.md: a short one for the new notebook.
+pathlib.Path("README.md").write_text(f"""# {name}
+
+A notebook that an AI assistant writes and keeps up to date, built from the
+[LLM Wiki Template](https://github.com/jonyfs/llm-wiki-template).
+
+- `raw/` holds your sources. The assistant reads them and never edits them.
+- `wiki/` holds the linked markdown pages the assistant writes. Start at `wiki/index.md`.
+- `AGENTS.md` and `.agents/skills/` tell the assistant how to ingest, answer, check and clean up.
+
+## First steps
+
+1. Copy a file into `raw/`, or paste a link and let the assistant ask before saving it there.
+2. Ask your assistant: "Ingest raw/<file> into the wiki."
+3. Ask a question: "What does the wiki say about ...?"
+4. Now and then: "Run lint on the wiki."
+
+Checks you can run yourself:
+
+```bash
+python3 -m unittest discover -s tests -t .
+python3 scripts/lint.py
+python3 scripts/wiki_search.py "<terms>"
+```
+""", encoding="utf-8")
+PY
+
+if [ "$use_github" -eq 0 ]; then
+  git init -q -b main
+fi
+git add -A
+git commit -q -m "Start notebook from llm-wiki-template" || echo "note: could not commit (set git user.name and user.email, then commit yourself)"
+if [ "$use_github" -eq 1 ]; then git push -q -u origin HEAD; fi
+
+if [ "$run_checks" -eq 1 ]; then
+  echo "Running the template's checks ..."
+  if python3 -m unittest discover -s tests -t . >/dev/null 2>&1 && python3 scripts/lint.py >/dev/null 2>&1; then
+    echo "Checks passed."
+  else
+    echo "warning: a check failed. Run 'python3 -m unittest discover -s tests -t .' and 'python3 scripts/lint.py' inside $name to see why."
+  fi
+fi
+
+cat <<EOF
+
+Done. Your notebook is in ./$name
+  cd $name
+  1. Copy a file into raw/ (or paste a link to your assistant).
+  2. Ask your assistant: "Ingest raw/<file> into the wiki."
+  3. Ask it a question about what you added.
+EOF
+````
