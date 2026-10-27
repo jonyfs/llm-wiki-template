@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LLM Wiki Template — a compounding knowledge base for AI agents</title>
+<meta name="description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant. Turn curated raw/ sources into a linked wiki. Template for Claude Code, Cursor, Copilot, OpenCode, Codex." />
+<meta property="og:title" content="LLM Wiki Template" />
+<meta property="og:description" content="A persistent, compounding markdown knowledge base maintained by an LLM assistant." />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="assets/social-preview.png" />
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+<style>
+  :root {
+    --bg: #0b0d12;
+    --bg-soft: #12151d;
+    --card: #171a24;
+    --border: #262a38;
+    --text: #e8eaf0;
+    --muted: #9aa3b2;
+    --accent: #7c8cff;
+    --accent-2: #5eead4;
+    --code: #0f1117;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .container { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+  /* Nav */
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(12px);
+    background: rgba(11,13,18,0.75);
+    border-bottom: 1px solid var(--border);
+  }
+  nav .inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+  .brand { font-weight: 700; font-size: 18px; color: var(--text); display: flex; align-items: center; gap: 10px; }
+  .brand .dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); }
+  .nav-links { display: flex; gap: 24px; font-size: 14px; color: var(--muted); }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--text); text-decoration: none; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 18px; border-radius: 10px; font-weight: 600; font-size: 14px;
+    border: 1px solid var(--border); color: var(--text); background: var(--card);
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); text-decoration: none; }
+  .btn.primary { background: linear-gradient(135deg, var(--accent), #5b6cff); border: none; color: #fff; }
+
+  /* Hero */
+  .hero { padding: 96px 0 64px; text-align: center; position: relative; overflow: hidden; }
+  .hero::before {
+    content: ""; position: absolute; inset: 0;
+    background: radial-gradient(60% 50% at 50% 0%, rgba(124,140,255,0.18), transparent 70%);
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-block; padding: 6px 14px; border-radius: 999px;
+    background: rgba(124,140,255,0.12); border: 1px solid rgba(124,140,255,0.3);
+    color: var(--accent); font-size: 13px; font-weight: 600; margin-bottom: 24px;
+  }
+  h1.hero-title { font-size: clamp(36px, 6vw, 64px); line-height: 1.05; margin: 0 0 20px; letter-spacing: -0.02em; }
+  .hero-title .grad { background: linear-gradient(135deg, var(--accent), var(--accent-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero-sub { font-size: 20px; color: var(--muted); max-width: 720px; margin: 0 auto 36px; }
+  .hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* Flow diagram */
+  .flow { padding: 32px 0 80px; }
+  .flow-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+    padding: 32px; max-width: 900px; margin: 0 auto;
+  }
+  .flow svg { width: 100%; height: auto; display: block; }
+
+  /* Sections */
+  section { padding: 80px 0; }
+  .section-title { font-size: 32px; margin: 0 0 12px; letter-spacing: -0.01em; }
+  .section-sub { color: var(--muted); font-size: 17px; max-width: 640px; margin: 0 0 48px; }
+
+  /* Feature grid */
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .card .icon { font-size: 24px; margin-bottom: 12px; }
+  .card h3 { margin: 0 0 8px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14px; }
+
+  /* Compare table */
+  .compare { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .compare th, .compare td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
+  .compare th { color: var(--muted); font-weight: 600; }
+  .compare td:first-child { font-weight: 600; }
+  .compare .yes { color: var(--accent-2); }
+  .compare .no { color: #f87171; }
+
+  /* Quick start */
+  .qs { background: var(--code); border: 1px solid var(--border); border-radius: 14px; padding: 24px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 14px; overflow-x: auto; }
+  .qs .line { display: block; white-space: pre; }
+  .qs .c { color: #6b7280; }
+  .qs .k { color: #93c5fd; }
+  .qs .s { color: #fca5a5; }
+
+  /* Compat */
+  .compat { display: flex; flex-wrap: wrap; gap: 12px; }
+  .chip { padding: 8px 14px; border-radius: 8px; background: var(--card); border: 1px solid var(--border); font-size: 14px; }
+
+  /* Footer */
+  footer { border-top: 1px solid var(--border); padding: 40px 0; color: var(--muted); font-size: 14px; }
+  footer .inner { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 640px) {
+    .nav-links { display: none; }
+    .hero { padding: 64px 0 40px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <div class="container inner">
+    <div class="brand"><span class="dot"></span>LLM Wiki</div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#compare">vs RAG</a>
+      <a href="#start">Quick start</a>
+    </div>
+    <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use template</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="badge">Persistent · Compounding · No vector DB</span>
+    <h1 class="hero-title">A living notebook your <span class="grad">AI assistant</span><br/>writes and keeps current</h1>
+    <p class="hero-sub">Drop in articles, papers, notes, and data. The assistant reads each source once, writes linked pages into a <code>wiki/</code> folder, and keeps them current when new material arrives. Knowledge is compiled once, then kept current — not rebuilt on every question.</p>
+    <div class="hero-cta">
+      <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
+      <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">View on GitHub</a>
+      <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Read the docs</a>
+    </div>
+  </div>
+</header>
+
+<section class="flow" id="how">
+  <div class="container">
+    <h2 class="section-title">How it works</h2>
+    <p class="section-sub">Three folders. One loop. The assistant does the bookkeeping; you curate and ask.</p>
+    <div class="flow-card">
+      <svg viewBox="0 0 860 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow from raw sources to wiki to answers">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#7c8cff"/><stop offset="1" stop-color="#5eead4"/>
+          </linearGradient>
+        </defs>
+        <!-- raw box -->
+        <rect x="20" y="70" width="180" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
+        <text x="110" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">raw/</text>
+        <text x="110" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">articles, papers,</text>
+        <text x="110" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">notes, data files</text>
+        <text x="110" y="175" text-anchor="middle" fill="#5eead4" font-size="11">you curate</text>
+        <!-- arrow -->
+        <path d="M210 130 L290 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#7c8cff"/></marker></defs>
+        <!-- llm box -->
+        <rect x="300" y="70" width="200" height="120" rx="14" fill="#171a24" stroke="#7c8cff"/>
+        <text x="400" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">LLM assistant</text>
+        <text x="400" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">reads once · writes pages</text>
+        <text x="400" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">links · revises · flags</text>
+        <text x="400" y="175" text-anchor="middle" fill="#7c8cff" font-size="11">via skills in .agents/</text>
+        <!-- arrow -->
+        <path d="M510 130 L590 130" stroke="url(#g1)" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+        <!-- wiki box -->
+        <rect x="600" y="70" width="240" height="120" rx="14" fill="#171a24" stroke="#262a38"/>
+        <text x="720" y="105" text-anchor="middle" fill="#e8eaf0" font-size="16" font-weight="700">wiki/</text>
+        <text x="720" y="132" text-anchor="middle" fill="#9aa3b2" font-size="12">sources · entities · concepts</text>
+        <text x="720" y="150" text-anchor="middle" fill="#9aa3b2" font-size="12">syntheses · index · log</text>
+        <text x="720" y="175" text-anchor="middle" fill="#5eead4" font-size="11">compounds over time</text>
+      </svg>
+      <p style="text-align:center; color: var(--muted); font-size: 13px; margin: 16px 0 0;">You ask questions against <code>wiki/</code>, not against the raw files. Each new source makes the notebook richer.</p>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="container">
+    <h2 class="section-title">What you get</h2>
+    <p class="section-sub">A template you clone once. The assistant maintains the structure; you never hand-edit wiki pages.</p>
+    <div class="grid">
+      <div class="card"><div class="icon">📁</div><h3>Three-folder layout</h3><p><code>raw/</code> for sources, <code>wiki/</code> for pages, <code>.agents/skills/</code> for the rules. Narrow, predictable, git-friendly.</p></div>
+      <div class="card"><div class="icon">🔗</div><h3>Wikilinks &amp; citations</h3><p>Bare <code>[[slug]]</code> links plus numbered footnotes to raw files. Cross-references already exist when you ask.</p></div>
+      <div class="card"><div class="icon">📋</div><h3>Typed pages</h3><p>Source, entity, concept, synthesis — each with a required section shape and frontmatter schema.</p></div>
+      <div class="card"><div class="icon">🧠</div><h3>Agent skills</h3><p>Ingest, query, lint, refresh. The assistant follows them instead of improvising.</p></div>
+      <div class="card"><div class="icon">🔍</div><h3>Searchable index</h3><p><code>wiki/index.md</code> is the catalog; <code>wiki/log.md</code> is the append-only history of every operation.</p></div>
+      <div class="card"><div class="icon">✅</div><h3>Validation &amp; tests</h3><p>Structural checks and a test suite keep the notebook honest as it grows.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="compare">
+  <div class="container">
+    <h2 class="section-title">LLM wiki vs. RAG vs. note apps</h2>
+    <p class="section-sub">Different tools answer the same question differently. Pick the shape that fits your work.</p>
+    <div style="overflow-x:auto;">
+      <table class="compare">
+        <thead><tr><th>Capability</th><th>LLM Wiki</th><th>RAG</th><th>Note apps</th></tr></thead>
+        <tbody>
+          <tr><td>Knowledge persists across questions</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Yes</td></tr>
+          <tr><td>Cross-references pre-built</td><td class="yes">Yes</td><td class="no">No</td><td class="yes">Manual</td></tr>
+          <tr><td>Contradictions flagged</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+          <tr><td>Setup cost</td><td class="yes">Clone template</td><td class="no">Infra + embeddings</td><td class="yes">Install app</td></tr>
+          <tr><td>Works offline / local files</td><td class="yes">Yes</td><td class="no">Often no</td><td class="yes">Yes</td></tr>
+          <tr><td>AI maintains the notes</td><td class="yes">Yes</td><td class="no">No</td><td class="no">No</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="start">
+  <div class="container">
+    <h2 class="section-title">Quick start (60 seconds)</h2>
+    <p class="section-sub">You need an AI coding assistant. No API keys, no database.</p>
+    <div class="qs">
+      <span class="line"><span class="c"># 1. Create your own copy</span></span>
+      <span class="line">git clone https://github.com/jonyfs/llm-wiki-template my-wiki</span>
+      <span class="line">cd my-wiki</span>
+      <span class="line"></span>
+      <span class="line"><span class="c"># 2. Drop a source into raw/</span></span>
+      <span class="line">cp ~/Downloads/article.md raw/</span>
+      <span class="line"></span>
+      <span class="line"><span class="c"># 3. Ask your assistant to ingest it</span></span>
+      <span class="line"><span class="k">"Ingest raw/article.md into the wiki."</span></span>
+      <span class="line"></span>
+      <span class="line"><span class="c"># 4. Ask questions against the wiki</span></span>
+      <span class="line"><span class="k">"What does the wiki say about X?"</span></span>
+    </div>
+    <p style="color: var(--muted); font-size: 14px; margin-top: 16px;">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <h2 class="section-title">Compatible agents</h2>
+    <p class="section-sub">The rules live in <code>AGENTS.md</code> and <code>.agents/skills/</code>, so any agent that reads markdown can use them.</p>
+    <div class="compat">
+      <span class="chip">Claude Code</span>
+      <span class="chip">Cursor</span>
+      <span class="chip">GitHub Copilot</span>
+      <span class="chip">OpenCode</span>
+      <span class="chip">Codex</span>
+      <span class="chip">Windsurf</span>
+      <span class="chip">Cline</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container inner">
+    <div>LLM Wiki Template · MIT license</div>
+    <div>
+      <a href="https://github.com/jonyfs/llm-wiki-template">GitHub</a> ·
+      <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">Docs</a> ·
+      <a href="https://github.com/jonyfs/llm-wiki-template/issues">Issues</a> ·
+      <a href="https://github.com/jonyfs/llm-wiki-template/discussions">Discussions</a>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
