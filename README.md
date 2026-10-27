@@ -150,9 +150,9 @@ Start with what you already have. You choose the sources, and the assistant neve
 
 | Source | How it works |
 |---|---|
-| Files on your computer | Notes, markdown, text, PDFs, images and data files such as CSV. Copy them into `raw/` and ask the assistant to ingest them. |
-| Links from the web | Paste a link and the assistant asks whether to save the page into `raw/` first. If you say yes, it keeps a clean copy and notes the date it was fetched. |
-| Text you paste | An email, a chat thread or a transcript. The assistant asks before saving it as a file in `raw/`, then ingests it like any other source. |
+| Files on your computer | Notes, markdown, text, PDFs, images and data files such as CSV. Give the path to `wiki-ingest`. It asks before saving a copy in `raw/`, then ingests it. |
+| Links from the web | Hand `wiki-ingest` a link and it asks whether to save the page into `raw/` first. If you say yes, it keeps a clean copy and notes the date it was fetched. |
+| Text you paste | An email, a chat thread or a transcript, pasted into `wiki-ingest`. It asks before saving it as a file in `raw/`, then ingests it like any other source. |
 | Screenshots and scans | Images count as sources too. The assistant separates what it can read in the image from what it is guessing, and says so when it can't read one reliably. |
 
 Whatever the format, the assistant needs a tool that can read it. If it can't, it tells you instead of guessing.
@@ -190,7 +190,7 @@ flowchart TD
 
 Made-up situations, but the steps are the real ones.
 
-- **Studying for an exam.** You keep lecture PDFs, your class notes and two articles you found online. You tell the assistant to ingest them, and the links are saved to `raw/` after you approve it. Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.
+- **Studying for an exam.** You keep lecture PDFs, your class notes and two articles you found online. You run `wiki-ingest` on all of it, and it saves the links into `raw/` after you approve. Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.
 - **Running a small business.** You drop in proposals, signed contracts, meeting notes and emails exported as text. Months later: "What did I promise this client about delivery, and did the scope change?" The assistant points to the proposal and to the later email, and says where they differ.
 - **Planning a trip.** You save a few blog posts as links, the booking confirmation as a PDF and screenshots of the map. You ask: "We land on Sunday night and the museum closes on Mondays. Which day works?" The answer comes from your saved sources, and each claim links to the page it came from.
 - **Keeping a team's decisions.** You add meeting notes, design docs and issue threads over a few months. A new teammate asks: "Why did we pick Postgres?" The assistant answers from the decision pages and can save the answer as a synthesis page, so the next person finds it already written.
@@ -223,10 +223,10 @@ Multi-agent entry points (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instruct
 
 ### Keeping the wiki healthy
 
-- **refresh** detects when a source has changed and reports which pages to revisit: `python3 scripts/refresh.py`
-- **lint** checks structure, link integrity, stale claims and integration gaps: `python3 scripts/lint.py`
-- **search** finds pages by term: `python3 scripts/wiki_search.py "<terms>"`
-- **tests** keep the template itself healthy: `python3 -m unittest discover -s tests -t .`
+- **refresh** (`/wiki-refresh`) detects when a source has changed and reports which pages to revisit.
+- **lint** (`/wiki-lint`) checks structure, link integrity, stale claims and integration gaps.
+- **search** is a script, `scripts/wiki_search.py`, that `wiki-query` runs when the wiki is large. You ask the question and the skill does the lookup.
+- **tests** keep the template itself healthy, for people who change it: `python3 -m unittest discover -s tests -t .`
 
 ---
 
@@ -288,7 +288,7 @@ Python 3.9+ on macOS, Linux and Windows. Standard library only.
 
 - **Do I need an API key or database?** No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them.
 - **How is this different from RAG?** RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.
-- **What can I add to it?** Files you copy into `raw/`: notes, markdown, PDFs, images and data files. Links and pasted text work too, once you agree to save them there. The assistant still needs a tool that can read the format.
+- **What can I add to it?** Files, links and pasted text, all through `wiki-ingest`: notes, markdown, PDFs, images and data files. It asks before saving a copy in `raw/`. The assistant still needs a tool that can read the format.
 - **Do I have to use the skills?** They are how the template works. `AGENTS.md` tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
 - **Does it cost a lot of tokens?** `AGENTS.md` is about 10 KB and the scripts print one-line summaries by default.
 - **Is my data sent anywhere?** The scripts have no network calls and `raw/` stays on your machine. Whatever your assistant sends to its model depends on which assistant you use.
@@ -297,11 +297,11 @@ Python 3.9+ on macOS, Linux and Windows. Standard library only.
 
 ### When something looks wrong
 
-- **Empty wiki after ingest.** Check that the file is in `raw/` and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.
-- **Broken wikilinks.** Run the lint skill. It lists links that point nowhere so you can fix or remove them.
-- **Stale claims.** Run refresh. It shows which raw files changed since their source pages were written.
+- **Empty wiki after ingest.** Check that you ran `wiki-ingest` (for example `/wiki-ingest <file>`) and that the source ended up in `raw/`. Nothing fills the wiki by itself.
+- **Broken wikilinks.** Run `/wiki-lint`. It lists links that point nowhere so you can fix or remove them.
+- **Stale claims.** Run `/wiki-refresh`. It shows which raw files changed since their source pages were written.
 - **Too many pages.** That's normal. Use `wiki/index.md` and the search script to find your way around.
-- **The answer ignored the wiki.** Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.
+- **The answer ignored the wiki.** Ask it to answer with `wiki-query` and cite the pages it read. If the pages are not there yet, run `wiki-ingest` on the source first.
 
 ---
 
@@ -314,16 +314,24 @@ Pick the path that fits. All three give you the same template.
 1. Open the repository and click **Use this template**, then **Create a new repository**. Or from a terminal with the [GitHub CLI](https://cli.github.com): `gh repo create my-notebook --template jonyfs/llm-wiki-template --private --clone`.
 2. Clone your new repository and open the folder with your assistant: Claude Code, Cursor, GitHub Copilot, OpenCode or Codex.
 3. The copy includes the template's own site in `github-pages/` and its workflows. You do not need them for a notebook. Delete `github-pages/`, `.github/workflows/pages.yml` and `.github/workflows/lighthouse.yml`, or use the script below and let it do that.
-4. Copy a file into `raw/` and ask: "Ingest `raw/<file>` into the wiki." Then ask a question about it.
+4. In your assistant, run `/wiki-ingest <path or link>` on a first source. It asks before saving a copy in `raw/`. Then ask a question with `/wiki-query`.
 
 ### With a local clone
 
 ```bash
 git clone https://github.com/jonyfs/llm-wiki-template.git my-notebook
 cd my-notebook
-python3 -m unittest discover -s tests -t .   # sanity check
-python3 scripts/lint.py                      # an empty wiki should pass
 ```
+
+Open the folder with your assistant and use the skills from its prompt:
+
+```text
+/wiki-ingest ~/Downloads/lecture.pdf              add a source, a file path or a link
+/wiki-query What does the wiki say about X?       ask a question
+/wiki-lint                                        check the wiki now and then
+```
+
+If your assistant has no slash commands, name the skill in a sentence: "Use wiki-ingest on ~/Downloads/lecture.pdf." The file can live anywhere, and `wiki-ingest` asks before it saves a copy in `raw/`. Lint and search are scripts those skills run for you.
 
 To make it your own history instead of the template's, run `rm -rf .git && git init -b main` and commit.
 
@@ -339,7 +347,7 @@ bash new-llm-wiki.sh my-notebook --github --public  # same, public
 bash new-llm-wiki.sh my-notebook --keep-pages       # keep the GitHub Pages site
 ```
 
-It also records which template commit your copy started from in `.agents/template.lock`, so the updater below knows its base later. It needs bash, git and python3, plus the GitHub CLI for `--github`. On Windows, use Git Bash or WSL. The full script is at the end of this README.
+It also records which template commit your copy started from in `.agents/template.lock`, so the updater below knows its base later. It needs bash, git and python3, plus the GitHub CLI for `--github`. On Windows, use Git Bash or WSL. Read [`scripts/new-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh) before you run it.
 
 ### Updating a copy or fork
 
@@ -363,7 +371,7 @@ The template says which files it owns in `.agents/template-manifest`. For each o
 | Both changed the same lines | Yours is kept. `FILE.template-new` and `FILE.template-base` appear next to it for you or your assistant to merge |
 | `raw/`, `wiki/`, `README.md`, `LICENSE`, your site | Never touched. The only write is one line appended to `wiki/log.md` |
 
-It is a dry run unless you pass `--apply`, and `--apply` needs a clean git tree. The base version lives in `.agents/template.lock`, which `new-llm-wiki.sh` writes for new notebooks. An older copy without it still works: files that match one of the template's past versions count as unmodified. `--prune` also deletes files the template dropped, but only if you never changed them. Afterwards read `docs/migration.md` for changes that affect existing wiki pages, and run `python3 scripts/lint.py`. The full script is at the end of this README.
+It is a dry run unless you pass `--apply`, and `--apply` needs a clean git tree. The base version lives in `.agents/template.lock`, which `new-llm-wiki.sh` writes for new notebooks. An older copy without it still works: files that match one of the template's past versions count as unmodified. `--prune` also deletes files the template dropped, but only if you never changed them. Afterwards read `docs/migration.md` for changes that affect existing wiki pages, and run `/wiki-lint`. Read [`scripts/update-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/update-llm-wiki.sh) before you run it.
 
 ## Showcase
 
@@ -376,428 +384,3 @@ Actively maintained. Last reviewed: 2026-10-27. CI runs on every push and pull r
 ## Credits
 
 This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on. The underlying idea comes from Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
-
-## The starter script
-
-This is `scripts/new-llm-wiki.sh`, pasted in full so you can read it before you run it.
-
-````bash
-#!/usr/bin/env bash
-# Start a new notebook from the LLM Wiki Template.
-#
-#   new-llm-wiki.sh my-notebook                 clone the template into ./my-notebook and start a fresh git history
-#   new-llm-wiki.sh my-notebook --github        create a private GitHub repo from the template with the gh CLI, clone it, clean it, push
-#   new-llm-wiki.sh my-notebook --github --public
-#   new-llm-wiki.sh my-notebook --keep-pages    keep the GitHub Pages site and its workflows
-#
-# By default the copy loses the template's own GitHub Pages site, its workflows, its marketing docs and its
-# log history, so the notebook starts clean. Needs bash, git and python3 (plus gh for --github).
-# Environment: TEMPLATE_URL and TEMPLATE_BRANCH override the clone source; TEMPLATE_REPO overrides the --github source.
-set -euo pipefail
-
-TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/jonyfs/llm-wiki-template.git}"
-TEMPLATE_BRANCH="${TEMPLATE_BRANCH:-main}"
-TEMPLATE_REPO="${TEMPLATE_REPO:-jonyfs/llm-wiki-template}"
-
-name=""; use_github=0; visibility="--private"; keep_pages=0; run_checks=1
-
-usage() { sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'; }
-die() { echo "error: $*" >&2; exit 1; }
-
-while [ $# -gt 0 ]; do
-  case "$1" in
-    -h|--help) usage; exit 0 ;;
-    --github) use_github=1 ;;
-    --public) visibility="--public" ;;
-    --keep-pages) keep_pages=1 ;;
-    --no-check) run_checks=0 ;;
-    -*) die "unknown option: $1 (try --help)" ;;
-    *) [ -z "$name" ] || die "only one notebook name, got '$name' and '$1'"; name="$1" ;;
-  esac
-  shift
-done
-
-[ -n "$name" ] || { usage; exit 2; }
-command -v git >/dev/null || die "git is required"
-command -v python3 >/dev/null || die "python3 is required"
-if [ -e "$name" ] && [ -n "$(ls -A "$name" 2>/dev/null || true)" ]; then die "'$name' already exists and is not empty"; fi
-
-# The exact template commit the copy starts from, so scripts/update-llm-wiki.sh knows its base later.
-template_ref="$(git ls-remote "$TEMPLATE_URL" "refs/heads/$TEMPLATE_BRANCH" 2>/dev/null | cut -f1 | head -1 || true)"
-
-if [ "$use_github" -eq 1 ]; then
-  command -v gh >/dev/null || die "--github needs the GitHub CLI (https://cli.github.com) and 'gh auth login'"
-  case "$name" in */*) die "with --github the name must be a plain repo name, not a path" ;; esac
-  echo "Creating $name on GitHub from $TEMPLATE_REPO ..."
-  gh repo create "$name" --template "$TEMPLATE_REPO" "$visibility" --clone
-else
-  echo "Cloning $TEMPLATE_URL ($TEMPLATE_BRANCH) into $name ..."
-  git clone --quiet --depth 1 --branch "$TEMPLATE_BRANCH" "$TEMPLATE_URL" "$name"
-  rm -rf "$name/.git"
-fi
-
-cd "$name"
-# Everything below deletes files, so make sure this really is a template copy before touching anything.
-[ -f AGENTS.md ] && [ -d .agents/skills ] && [ -d wiki ] || die "this does not look like the LLM Wiki Template, stopping before any cleanup"
-
-# Template-only files: the author's citation file and the internal improvement catalog.
-rm -rf CITATION.cff IMPROVEMENTS.md docs/images tests/test_readme.py
-
-if [ -n "$template_ref" ]; then
-  printf 'template=%s\nref=%s\nupdated=%s\n' "$TEMPLATE_URL" "$template_ref" "$(date +%Y-%m-%d)" > .agents/template.lock
-fi
-
-if [ "$keep_pages" -eq 0 ]; then
-  echo "Removing the template's GitHub Pages site and its workflows ..."
-  rm -rf github-pages \
-    .github/workflows/pages.yml .github/workflows/lighthouse.yml \
-    PAGES_IMPROVEMENTS.md PAGES_GROWTH_200.md DISCOVERABILITY.md DESIGN_SYSTEM.md \
-    tests/test_github_pages.py
-fi
-
-NAME="$name" KEEP_PAGES="$keep_pages" python3 - <<'PY'
-import datetime, os, re, pathlib
-
-today = datetime.date.today().isoformat()
-name = os.path.basename(os.environ["NAME"].rstrip("/"))
-
-# AGENTS.md: drop the rules about keeping the template's site in sync, which no longer apply.
-if os.environ["KEEP_PAGES"] == "0":
-    p = pathlib.Path("AGENTS.md")
-    s = p.read_text(encoding="utf-8")
-    s = re.sub(r"\n## GitHub Pages synchronization\n.*?(?=\n## )", "", s, flags=re.S)
-    s = s.replace(", the GitHub Pages copy in `github-pages/`,", ",")
-    s = re.sub(r" Pages with translations \(`github-pages/assets/i18n\.js`\) need the same pass in every language\.", "", s)
-    p.write_text(s, encoding="utf-8")
-
-# wiki/log.md: keep the header, start a fresh history.
-log = pathlib.Path("wiki/log.md")
-text = log.read_text(encoding="utf-8")
-head = text.split("\n## [", 1)[0].rstrip() + "\n"
-log.write_text(head + f"\n## [{today}] bootstrap | Start {name} from llm-wiki-template\n\nCreated from the LLM Wiki Template. Add sources to `raw/`, then ask the assistant to ingest them.\n", encoding="utf-8")
-
-# README.md: a short one for the new notebook.
-pathlib.Path("README.md").write_text(f"""# {name}
-
-A notebook that an AI assistant writes and keeps up to date, built from the
-[LLM Wiki Template](https://github.com/jonyfs/llm-wiki-template).
-
-- `raw/` holds your sources. The assistant reads them and never edits them.
-- `wiki/` holds the linked markdown pages the assistant writes. Start at `wiki/index.md`.
-- `AGENTS.md` and `.agents/skills/` tell the assistant how to ingest, answer, check and clean up.
-
-## First steps
-
-1. Copy a file into `raw/`, or paste a link and let the assistant ask before saving it there.
-2. Ask your assistant: "Ingest raw/<file> into the wiki."
-3. Ask a question: "What does the wiki say about ...?"
-4. Now and then: "Run lint on the wiki."
-5. To get the template's newer skills and scripts later: ask your assistant to run `/wiki-update`, or run `bash scripts/update-llm-wiki.sh`.
-
-Checks you can run yourself:
-
-```bash
-python3 -m unittest discover -s tests -t .
-python3 scripts/lint.py
-python3 scripts/wiki_search.py "<terms>"
-```
-""", encoding="utf-8")
-PY
-
-if [ "$use_github" -eq 0 ]; then
-  git init -q -b main
-fi
-git add -A
-git commit -q -m "Start notebook from llm-wiki-template" || echo "note: could not commit (set git user.name and user.email, then commit yourself)"
-if [ "$use_github" -eq 1 ]; then git push -q -u origin HEAD; fi
-
-if [ "$run_checks" -eq 1 ]; then
-  echo "Running the template's checks ..."
-  if python3 -m unittest discover -s tests -t . >/dev/null 2>&1 && python3 scripts/lint.py >/dev/null 2>&1; then
-    echo "Checks passed."
-  else
-    echo "warning: a check failed. Run 'python3 -m unittest discover -s tests -t .' and 'python3 scripts/lint.py' inside $name to see why."
-  fi
-fi
-
-cat <<EOF
-
-Done. Your notebook is in ./$name
-  cd $name
-  1. Copy a file into raw/ (or paste a link to your assistant).
-  2. Ask your assistant: "Ingest raw/<file> into the wiki."
-  3. Ask it a question about what you added.
-EOF
-````
-
-## The update script
-
-This is `scripts/update-llm-wiki.sh`, pasted in full for the same reason.
-
-````bash
-#!/usr/bin/env bash
-# Update a notebook that was made from, or forked from, the LLM Wiki Template.
-#
-#   update-llm-wiki.sh                       dry run: show what the template would change here
-#   update-llm-wiki.sh --apply               apply it (needs a clean git tree)
-#   update-llm-wiki.sh --apply --branch NAME create a branch first, then apply
-#   update-llm-wiki.sh --finish              after resolving every *.template-new file, record the new base
-#   Options: --ref REF (template branch, tag or commit), --prune (delete files the template dropped, only when
-#   you never changed them), --allow-dirty, --no-log, --no-check, --force-self, -h.
-#
-# It only touches files the template owns, as listed in .agents/template-manifest. It never touches raw/ or wiki/
-# (apart from one line appended to wiki/log.md), README.md, or the files you customized: where both sides changed
-# a file it merges cleanly or, if it cannot, leaves your file alone and writes FILE.template-new and
-# FILE.template-base next to it so you or your assistant can resolve it. Needs bash, git and python3.
-# Environment: TEMPLATE_URL and TEMPLATE_BRANCH override where the template comes from.
-set -euo pipefail
-
-TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/jonyfs/llm-wiki-template.git}"
-TEMPLATE_BRANCH="${TEMPLATE_BRANCH:-main}"
-LOCK=".agents/template.lock"
-PENDING=".agents/template.pending"
-
-die() { echo "error: $*" >&2; exit 1; }
-usage() { sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//'; }
-
-# Everything lives in a function and the call is on one line, so bash has read the whole script before this file
-# can be replaced by the update it is applying.
-main() {
-  local apply=0 ref="" branch="" allow_dirty=0 prune=0 write_log=1 run_checks=1 finish=0 force_self=0
-  while [ $# -gt 0 ]; do
-    case "$1" in
-      -h|--help) usage; return 0 ;;
-      --apply) apply=1 ;;
-      --finish) finish=1 ;;
-      --prune) prune=1 ;;
-      --allow-dirty) allow_dirty=1 ;;
-      --no-log) write_log=0 ;;
-      --no-check) run_checks=0 ;;
-      --force-self) force_self=1 ;;
-      --ref) shift; [ $# -gt 0 ] || die "--ref needs a value"; ref="$1" ;;
-      --branch) shift; [ $# -gt 0 ] || die "--branch needs a name"; branch="$1" ;;
-      *) die "unknown option: $1 (try --help)" ;;
-    esac
-    shift
-  done
-
-  command -v git >/dev/null || die "git is required"
-  local root; root=$(git rev-parse --show-toplevel 2>/dev/null) || die "run this inside your notebook's git repository"
-  cd "$root"
-  [ -f AGENTS.md ] && [ -d .agents/skills ] && [ -d wiki ] || die "this does not look like an LLM wiki notebook (AGENTS.md, .agents/skills/ and wiki/ are expected)"
-  if [ "$force_self" -eq 0 ] && git remote get-url origin 2>/dev/null | grep -q "jonyfs/llm-wiki-template"; then
-    die "this is the template repository itself, not a copy of it (use --force-self to run anyway)"
-  fi
-
-  if [ "$finish" -eq 1 ]; then
-    [ -f "$PENDING" ] || die "nothing to finish: there is no $PENDING"
-    local left; left=$(find . \( -name '*.template-new' -o -name '*.template-base' \) -not -path './.git/*' | sort)
-    if [ -n "$left" ]; then echo "Still unresolved:"; echo "$left" | sed 's/^/  /'; return 2; fi
-    local pref; pref=$(sed -n 's/^ref=//p' "$PENDING" | head -1)
-    write_lock "$pref"; rm -f "$PENDING"
-    echo "Recorded template base ${pref:0:7} in $LOCK. Review the changes and commit them."
-    return 0
-  fi
-
-  if [ "$apply" -eq 1 ] && [ "$allow_dirty" -eq 0 ] && [ -n "$(git status --porcelain)" ]; then
-    die "the working tree has uncommitted changes. Commit or stash them first (or pass --allow-dirty)"
-  fi
-  if [ "$apply" -eq 1 ] && [ -n "$branch" ]; then git switch -c "$branch" || die "could not create branch '$branch'"; fi
-
-  tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
-  echo "Fetching $TEMPLATE_URL ..."
-  git clone --quiet --no-checkout --filter=blob:none "$TEMPLATE_URL" "$tmp/t" 2>/dev/null \
-    || git clone --quiet --no-checkout "$TEMPLATE_URL" "$tmp/t" || die "could not clone the template"
-
-  local target new base=""
-  target="${ref:-origin/$TEMPLATE_BRANCH}"
-  new=$(tg rev-parse --verify --quiet "$target^{commit}") || new=$(tg rev-parse --verify --quiet "origin/$target^{commit}") || die "unknown template ref '$target'"
-  if [ -f "$LOCK" ]; then
-    local b; b=$(sed -n 's/^ref=//p' "$LOCK" | head -1)
-    if [ -n "$b" ] && tg cat-file -e "$b^{commit}" 2>/dev/null; then base="$b"; fi
-  fi
-  tg show "$new:.agents/template-manifest" > "$tmp/manifest" 2>/dev/null || die "that template version has no .agents/template-manifest, so it cannot be applied safely"
-
-  if [ -n "$base" ]; then echo "Your copy is based on template ${base:0:7}; updating to ${new:0:7}."
-  else echo "No $LOCK here, so the base version is unknown. Files are matched against the template's history instead."; fi
-  if [ "$base" = "$new" ] && [ ! -f "$PENDING" ]; then echo "Already up to date."; return 0; fi
-
-  tg ls-tree -r "$new" > "$tmp/tree"
-  cut -f2 "$tmp/tree" > "$tmp/newtree"
-  : > "$tmp/plan"
-
-  local meta path mode pol status hasbase h
-  while IFS=$'\t' read -r meta path; do
-    mode="${meta%% *}"
-    [ "$mode" = 120000 ] && continue
-    pol=$(policy_of "$path")
-    case "$pol" in managed|merge|once) ;; *) continue ;; esac
-    tg show "$new:$path" > "$tmp/new" || die "could not read $path from the template"
-    hasbase=0
-    if [ ! -e "$path" ] && [ ! -L "$path" ]; then status=ADD
-    elif cmp -s "$path" "$tmp/new"; then status=SAME
-    elif [ "$pol" = once ]; then status=KEEP_ONCE
-    else
-      status=CONFLICT
-      if [ -n "$base" ] && tg show "$base:$path" > "$tmp/base" 2>/dev/null; then
-        hasbase=1
-        if cmp -s "$path" "$tmp/base"; then status=UPDATE
-        elif cmp -s "$tmp/new" "$tmp/base"; then status=KEEP_LOCAL
-        elif git merge-file -p "$path" "$tmp/base" "$tmp/new" > "$tmp/merged" 2>/dev/null; then status=MERGE
-        fi
-      else
-        h=$(git hash-object "$path")
-        if history_has "$new" "$path" "$h"; then status=UPDATE; fi
-      fi
-    fi
-    [ "$status" = SAME ] && continue
-    printf '%s\t%s\n' "$status" "$path" >> "$tmp/plan"
-    [ "$apply" -eq 1 ] || continue
-    case "$status" in
-      ADD|UPDATE) install_file "$tmp/new" "$path" "$mode" ;;
-      MERGE) install_file "$tmp/merged" "$path" "$mode" ;;
-      CONFLICT)
-        install_file "$tmp/new" "$path.template-new" "$mode"
-        if [ "$hasbase" -eq 1 ]; then install_file "$tmp/base" "$path.template-base" 100644; fi ;;
-    esac
-  done < "$tmp/tree"
-
-  # Files the template dropped since your base. Only a file you never changed is deleted, and only with --prune.
-  if [ -n "$base" ]; then
-    tg ls-tree -r --name-only "$base" > "$tmp/basetree"
-    while IFS= read -r path; do
-      grep -qxF -- "$path" "$tmp/newtree" && continue
-      [ "$(policy_of "$path")" = managed ] || continue
-      [ -f "$path" ] || continue
-      if tg show "$base:$path" 2>/dev/null | cmp -s - "$path"; then
-        printf '%s\t%s\n' DROPPED "$path" >> "$tmp/plan"
-        if [ "$apply" -eq 1 ] && [ "$prune" -eq 1 ]; then rm -f "$path"; fi
-      else
-        printf '%s\t%s\n' DROPPED_EDITED "$path" >> "$tmp/plan"
-      fi
-    done < "$tmp/basetree"
-  fi
-
-  local lpol lpath ltarget lcur
-  while IFS=$'\t' read -r lpol lpath ltarget; do
-    [ "$lpol" = link ] || continue
-    if [ -L "$lpath" ]; then
-      lcur=$(readlink "$lpath")
-      if [ "$lcur" = "$ltarget" ]; then continue; else printf '%s\t%s\n' LINK_DIFFERENT "$lpath" >> "$tmp/plan"; fi
-    elif [ -e "$lpath" ]; then printf '%s\t%s\n' LINK_BLOCKED "$lpath" >> "$tmp/plan"
-    else
-      printf '%s\t%s\n' LINK_ADD "$lpath" >> "$tmp/plan"
-      if [ "$apply" -eq 1 ]; then mkdir -p "$(dirname "$lpath")"; ln -s "$ltarget" "$lpath"; fi
-    fi
-  done < "$tmp/manifest"
-
-  report "$apply"
-  echo
-  echo "What changed in the template since then (commits touching skills, scripts, tests and rules):"
-  if [ -n "$base" ]; then
-    tg log --no-merges --format='  %h %s' "$base..$new" -- .agents scripts tests AGENTS.md docs/migration.md | head -40
-  else
-    tg log --no-merges -n 25 --format='  %h %s' "$new" -- .agents scripts tests AGENTS.md docs/migration.md
-  fi
-
-  local changes conflicts
-  changes=$(grep -cE "^(ADD|UPDATE|MERGE|CONFLICT|LINK_ADD)"$'\t'  "$tmp/plan" || true)
-  conflicts=$(grep -c "^CONFLICT"$'\t'  "$tmp/plan" || true)
-
-  if [ "$apply" -eq 0 ]; then
-    echo
-    echo "Nothing was changed (dry run). To apply: bash scripts/update-llm-wiki.sh --apply [--branch NAME]"
-    return 0
-  fi
-
-  if [ "$conflicts" -gt 0 ]; then
-    printf 'ref=%s\n' "$new" > "$PENDING"
-  else
-    write_lock "$new"; rm -f "$PENDING"
-  fi
-
-  if [ "$write_log" -eq 1 ] && [ "$changes" -gt 0 ] && [ -f wiki/log.md ]; then
-    [ -n "$(tail -c1 wiki/log.md)" ] && echo >> wiki/log.md
-    printf '\n## [%s] maintenance | Update template files to %s\n\nApplied %s template changes (%s need a manual merge). Source: %s.\n' \
-      "$(date +%Y-%m-%d)" "${new:0:7}" "$changes" "$conflicts" "$TEMPLATE_URL" >> wiki/log.md
-  fi
-
-  if [ "$run_checks" -eq 1 ]; then
-    echo
-    echo "Running the notebook's checks ..."
-    if command -v python3 >/dev/null && python3 -m unittest discover -s tests -t . >/dev/null 2>&1 && python3 scripts/lint.py >/dev/null 2>&1; then
-      echo "Checks passed."
-    else
-      echo "A check failed (expected while conflicts or old wiki pages remain). Run 'python3 -m unittest discover -s tests -t .' and 'python3 scripts/lint.py' to see why."
-    fi
-  fi
-
-  echo
-  if [ "$conflicts" -gt 0 ]; then
-    echo "$conflicts file(s) need a manual merge. For each FILE, merge FILE.template-new into FILE (keep your customizations, adopt the template's changes),"
-    echo "then delete FILE.template-new and FILE.template-base. When none are left, run: bash scripts/update-llm-wiki.sh --finish"
-    echo "Also read docs/migration.md for changes that affect existing wiki pages, then run: python3 scripts/lint.py"
-    return 2
-  fi
-  echo "Applied. Read docs/migration.md for changes that affect existing wiki pages, run python3 scripts/lint.py, then review and commit."
-}
-
-tg() { git -C "$tmp/t" "$@"; }
-
-policy_of() { # print the manifest policy for a template path
-  local p="$1" pol pat rest
-  while IFS=$'\t' read -r pol pat rest; do
-    case "$pol" in ''|'#'*) continue ;; esac
-    # shellcheck disable=SC2254
-    case "$p" in $pat) echo "$pol"; return 0 ;; esac
-  done < "$tmp/manifest"
-  echo none
-}
-
-history_has() { # is this exact file content one of the template's past versions?
-  local new="$1" p="$2" h="$3" c
-  for c in $(tg log --format=%H "$new" -- "$p"); do
-    [ "$(tg rev-parse "$c:$p" 2>/dev/null)" = "$h" ] && return 0
-  done
-  return 1
-}
-
-install_file() { # src dest mode: replace through a temp file so the old inode is never half-written
-  local src="$1" dest="$2" mode="$3" t
-  mkdir -p "$(dirname "$dest")"
-  t="$dest.tmp.$$"
-  cp "$src" "$t"
-  if [ "$mode" = 100755 ]; then chmod 755 "$t"; fi
-  mv -f "$t" "$dest"
-}
-
-write_lock() { printf 'template=%s\nref=%s\nupdated=%s\n' "$TEMPLATE_URL" "$1" "$(date +%Y-%m-%d)" > "$LOCK"; }
-
-report() {
-  local applied="$1" st label n
-  echo
-  for st in ADD UPDATE MERGE CONFLICT KEEP_LOCAL KEEP_ONCE DROPPED DROPPED_EDITED LINK_ADD LINK_DIFFERENT LINK_BLOCKED; do
-    n=$(grep -c "^$st"$'\t' "$tmp/plan" || true)
-    [ "$n" -gt 0 ] || continue
-    case "$st" in
-      ADD) label="new in the template (added)" ;;
-      UPDATE) label="you never changed it, the template did (updated)" ;;
-      MERGE) label="both sides changed it, merged cleanly" ;;
-      CONFLICT) label="both sides changed it and it could not be merged (yours is kept; FILE.template-new has the template's)" ;;
-      KEEP_LOCAL) label="you customized it and the template did not change it (kept)" ;;
-      KEEP_ONCE) label="differs from the template but is only ever copied when missing (kept)" ;;
-      DROPPED) label="removed from the template, you never changed it (deleted only with --prune)" ;;
-      DROPPED_EDITED) label="removed from the template but you changed it (kept)" ;;
-      LINK_ADD) label="missing agent entry point (symlink added)" ;;
-      LINK_DIFFERENT) label="symlink points somewhere else (kept)" ;;
-      LINK_BLOCKED) label="a real file sits where the template has a symlink (kept)" ;;
-    esac
-    echo "$st: $n  $label"
-    grep "^$st"$'\t' "$tmp/plan" | cut -f2 | sed 's/^/    /'
-  done
-  if [ ! -s "$tmp/plan" ]; then echo "Every managed file already matches the template."; fi
-  [ "$applied" -eq 1 ] || true
-}
-
-main "$@"; exit $?
-````

@@ -1,5 +1,5 @@
 /* Service worker. Bump CACHE when the precache list changes; every path below must exist or install fails. */
-const CACHE = 'llm-wiki-v4';
+const CACHE = 'llm-wiki-v5';
 const PRECACHE = [
   './',
   './index.html',

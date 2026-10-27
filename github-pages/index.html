@@ -11,7 +11,7 @@
 <link rel="dns-prefetch" href="https://api.github.com" />
 <title>LLM Wiki Template: a markdown wiki your AI assistant maintains</title>
 <meta name="description" content="Add files, links or notes and your AI assistant turns them into a linked markdown wiki through its wiki skills. Ask questions later and get answers that cite their pages. Works with Claude Code, Cursor, Copilot, OpenCode and Codex." />
-<meta name="abstract" content="LLM Wiki Template: clone the repo, drop sources into raw/, and ask an AI assistant to turn them into linked markdown pages under wiki/. No vector database, no API keys." />
+<meta name="abstract" content="LLM Wiki Template: clone the repo, hand sources to your assistant's wiki skills, and get linked markdown pages under wiki/. No vector database, no API keys." />
 <link rel="canonical" href="https://jonyfs.github.io/llm-wiki-template/" />
 <link rel="sitemap" type="application/xml" href="sitemap.xml" /><meta property="og:url" content="https://jonyfs.github.io/llm-wiki-template/" />
 <meta property="og:image" content="https://jonyfs.github.io/llm-wiki-template/assets/social-preview.png" />
@@ -260,9 +260,9 @@
     <h2 class="section-title">Give it almost anything</h2>
     <p class="section-sub">Start with what you already have. You choose the sources, and the assistant never edits them.</p>
     <div class="grid">
-      <div class="card"><h3>Files on your computer</h3><p>Notes, markdown, text, PDFs, images and data files such as CSV. Copy them into <code>raw/</code> and ask the assistant to ingest them.</p></div>
-      <div class="card"><h3>Links from the web</h3><p>Paste a link and the assistant asks whether to save the page into <code>raw/</code> first. If you say yes, it keeps a clean copy and notes the date it was fetched.</p></div>
-      <div class="card"><h3>Text you paste</h3><p>Paste an email, a chat thread or a transcript. The assistant asks before saving it as a file in <code>raw/</code>, then ingests it like any other source.</p></div>
+      <div class="card"><h3>Files on your computer</h3><p>Notes, markdown, text, PDFs, images and data files such as CSV. Give the path to <code>wiki-ingest</code>. It asks before saving a copy in <code>raw/</code>, then ingests it.</p></div>
+      <div class="card"><h3>Links from the web</h3><p>Hand <code>wiki-ingest</code> a link and it asks whether to save the page into <code>raw/</code> first. If you say yes, it keeps a clean copy and notes the date it was fetched.</p></div>
+      <div class="card"><h3>Text you paste</h3><p>Paste an email, a chat thread or a transcript into <code>wiki-ingest</code>. It asks before saving it as a file in <code>raw/</code>, then ingests it like any other source.</p></div>
       <div class="card"><h3>Screenshots and scans</h3><p>Images count as sources too. The assistant separates what it can read in the image from what it is guessing, and says so when it can't read one reliably.</p></div>
     </div>
     <p class="hint">Whatever the format, the assistant needs a tool that can read it. If it can't, it tells you instead of guessing.</p>
@@ -326,7 +326,7 @@
     <h2 class="section-title">Examples from an ordinary week</h2>
     <p class="section-sub">Made-up situations, but the steps are the real ones.</p>
     <div class="grid two">
-      <div class="card"><h3>Studying for an exam</h3><p>You keep lecture PDFs, your class notes and two articles you found online. You tell the assistant to ingest them, and the links are saved to raw/ after you approve it.</p><p>Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.</p></div>
+      <div class="card"><h3>Studying for an exam</h3><p>You keep lecture PDFs, your class notes and two articles you found online. You run <code>wiki-ingest</code> on all of it, and it saves the links into <code>raw/</code> after you approve.</p><p>Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.</p></div>
       <div class="card"><h3>Running a small business</h3><p>You drop in proposals, signed contracts, meeting notes and emails exported as text. Each one is ingested the same way.</p><p>Months later: "What did I promise this client about delivery, and did the scope change?" The assistant points to the proposal and to the later email, and says where they differ.</p></div>
       <div class="card"><h3>Planning a trip</h3><p>You save a few blog posts as links, the booking confirmation as a PDF and screenshots of the map.</p><p>You ask: "We land on Sunday night and the museum closes on Mondays. Which day works?" The answer comes from your saved sources, and each claim links to the page it came from.</p></div>
       <div class="card"><h3>Keeping a team's decisions</h3><p>You add meeting notes, design docs and issue threads over a few months.</p><p>A new teammate asks: "Why did we pick Postgres?" The assistant answers from the decision pages and can save the answer as a synthesis page, so the next person finds it already written.</p></div>
@@ -400,27 +400,32 @@
   <div class="container">
     <p class="eyebrow"><span class="num">5</span>Start</p>
     <h2 class="section-title">Quick start</h2>
-    <p class="section-sub">You need an AI coding assistant that can read your files. No API keys, no database.</p>
+    <p class="section-sub">You need an AI coding assistant that can read your files. After the clone, every source and every question goes through its wiki skills. No API keys, no database.</p>
     <div class="code-box">
       <button id="copyQs" type="button" class="btn">Copy</button>
       <div class="qs" id="quickStart">
-      <span class="line"><span class="c"># 1. Create your own copy</span></span>
+      <span class="line"><span class="c"># Create your own copy and open it with your assistant</span></span>
       <span class="line">git clone https://github.com/jonyfs/llm-wiki-template my-wiki</span>
       <span class="line">cd my-wiki</span>
-      <span class="line"></span>
-      <span class="line"><span class="c"># 2. Add sources: copy files into raw/</span></span>
-      <span class="line">cp ~/Downloads/lecture.pdf raw/</span>
-      <span class="line"></span>
-      <span class="line"><span class="c"># 3. Ask your assistant to ingest them (it loads wiki-ingest)</span></span>
-      <span class="line"><span class="k">"Ingest raw/lecture.pdf into the wiki."</span></span>
-      <span class="line"><span class="k">"Save https://example.com/article into raw/ and ingest it."</span></span>
-      <span class="line"></span>
-      <span class="line"><span class="c"># 4. Ask questions (it loads wiki-query)</span></span>
-      <span class="line"><span class="k">"What does the wiki say about X?"</span></span>
+      </div>
     </div>
+    <p class="hint">Then type these in your assistant's prompt. Each one loads the skill named next to it.</p>
+    <div class="code-box">
+      <div class="qs" data-label="Assistant prompt">
+      <span class="line"><span class="c"># 1. Add a source: a file path or a link (loads wiki-ingest)</span></span>
+      <span class="line"><span class="k">/wiki-ingest ~/Downloads/lecture.pdf</span></span>
+      <span class="line"><span class="k">/wiki-ingest https://example.com/article</span></span>
+      <span class="line"></span>
+      <span class="line"><span class="c"># 2. Ask a question (loads wiki-query)</span></span>
+      <span class="line"><span class="k">/wiki-query What does the wiki say about X?</span></span>
+      <span class="line"></span>
+      <span class="line"><span class="c"># 3. Check the wiki now and then (loads wiki-maintenance)</span></span>
+      <span class="line"><span class="k">/wiki-lint</span></span>
+      </div>
     </div>
+    <p class="hint">No slash commands in your assistant? Name the skill in a sentence: "Use wiki-ingest on ~/Downloads/lecture.pdf." The file can live anywhere. <code>wiki-ingest</code> asks before it saves a copy in <code>raw/</code>. Lint and search are scripts those skills run for you, so you never call them yourself.</p>
     <p class="hint">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
-    <p class="hint">Prefer one command? The <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md#the-starter-script">starter script</a> in the README creates a clean local notebook without the template's site.</p>
+    <p class="hint">Prefer one command? The <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh">starter script</a> creates a clean local notebook without the template's site.</p>
   </div>
 </section>
 
@@ -445,8 +450,8 @@
     <h2 class="section-title">Make it yours</h2>
     <p class="section-sub">The gist is deliberately abstract. Everything in it is optional, so take what helps.</p>
     <div class="grid">
-      <div class="card"><h3>Search for a big wiki</h3><p>Past a few hundred pages the index stops being enough. The gist suggests a local search engine for markdown, such as qmd. This template ships a small script, <code>scripts/wiki_search.py</code>.</p></div>
-      <div class="card"><h3>Clip web pages</h3><p>The gist uses the Obsidian Web Clipper, a browser extension that turns articles into markdown. Save the result in <code>raw/</code> or paste the link and let the assistant ask before saving it.</p></div>
+      <div class="card"><h3>Search for a big wiki</h3><p>Past a few hundred pages the index stops being enough. The gist suggests a local search engine for markdown, such as qmd. This template ships a small script, <code>scripts/wiki_search.py</code>, which <code>wiki-query</code> runs when the wiki is large.</p></div>
+      <div class="card"><h3>Clip web pages</h3><p>The gist uses the Obsidian Web Clipper, a browser extension that turns articles into markdown. Hand the clipped file to <code>wiki-ingest</code>, or give it the link. It asks before saving anything in <code>raw/</code>.</p></div>
       <div class="card"><h3>Keep images local</h3><p>Download an article's images next to it, so the assistant can look at them without relying on links that may break. It reads the text first, then views the images it needs.</p></div>
       <div class="card"><h3>See the shape</h3><p>Obsidian's graph view shows what connects to what, which pages are hubs and which are orphans. The graph on the home page imitates it.</p></div>
       <div class="card"><h3>Slides and tables</h3><p>Marp turns markdown into slide decks, and Dataview builds tables from page frontmatter. Both are Obsidian plugins from the gist's tips. Every page here has frontmatter, so Dataview has something to read.</p></div>
@@ -462,7 +467,7 @@
     <div class="grid">
       <div class="card"><h3>Do I need an API key or database?</h3><p>No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them.</p></div>
       <div class="card"><h3>How is this different from RAG?</h3><p>RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.</p></div>
-      <div class="card"><h3>What can I add to it?</h3><p>Files you copy into <code>raw/</code>: notes, markdown, PDFs, images and data files. Links and pasted text work too, once you agree to save them there. The assistant still needs a tool that can read the format.</p></div>
+      <div class="card"><h3>What can I add to it?</h3><p>Files, links and pasted text, all through <code>wiki-ingest</code>: notes, markdown, PDFs, images and data files. It asks before saving a copy in <code>raw/</code>. The assistant still needs a tool that can read the format.</p></div>
       <div class="card"><h3>Do I have to use the skills?</h3><p>They are how the template works. <code>AGENTS.md</code> tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.</p></div>
       <div class="card"><h3>How do I get the template's newer features?</h3><p>Ask your assistant to run <code>/wiki-update</code>. It shows what changed, applies it on a branch and never touches your sources or your wiki pages.</p></div>
       <div class="card"><h3>Does it work offline?</h3><p>The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.</p></div>
@@ -475,11 +480,11 @@
   <div class="container">
     <h2 class="section-title">When something looks wrong</h2>
     <div class="grid">
-      <div class="card"><h3>Empty wiki after ingest</h3><p>Check that the file is in <code>raw/</code> and that you actually asked the assistant to ingest it. Nothing fills the wiki by itself.</p></div>
-      <div class="card"><h3>Broken wikilinks</h3><p>Run the lint skill. It lists links that point nowhere so you can fix or remove them.</p></div>
-      <div class="card"><h3>Stale claims</h3><p>Run refresh. It shows which raw files changed since their source pages were written.</p></div>
-      <div class="card"><h3>Too many pages</h3><p>That's normal. Use <code>wiki/index.md</code> and the search script to find your way around.</p></div>
-      <div class="card"><h3>The answer ignored the wiki</h3><p>Ask the assistant to use the wiki skill and cite the pages it read. If the pages are not there yet, ingest the source first.</p></div>
+      <div class="card"><h3>Empty wiki after ingest</h3><p>Check that you ran <code>wiki-ingest</code> (for example <code>/wiki-ingest &lt;file&gt;</code>) and that the source ended up in <code>raw/</code>. Nothing fills the wiki by itself.</p></div>
+      <div class="card"><h3>Broken wikilinks</h3><p>Run <code>/wiki-lint</code>. It lists links that point nowhere so you can fix or remove them.</p></div>
+      <div class="card"><h3>Stale claims</h3><p>Run <code>/wiki-refresh</code>. It shows which raw files changed since their source pages were written.</p></div>
+      <div class="card"><h3>Too many pages</h3><p>That's normal. Read <code>wiki/index.md</code>, or ask <code>wiki-query</code>, which searches for you.</p></div>
+      <div class="card"><h3>The answer ignored the wiki</h3><p>Ask it to answer with <code>wiki-query</code> and cite the pages it read. If the pages are not there yet, run <code>wiki-ingest</code> on the source first.</p></div>
     </div>
   </div>
 </section>
@@ -487,7 +492,7 @@
 <section class="center">
   <div class="container">
     <h2 class="section-title">Start with one source</h2>
-    <p class="section-sub mx">Clone the template, put one article in <code>raw/</code> and ask your assistant to ingest it. You'll quickly see whether it fits how you work.</p>
+    <p class="section-sub mx">Clone the template, open it with your assistant and run <code>/wiki-ingest</code> on one article. You'll quickly see whether it fits how you work.</p>
     <div class="hero-cta">
       <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/generate">Use this template</a>
       <a class="btn" href="https://github.com/jonyfs/llm-wiki-template">Star on GitHub</a>
