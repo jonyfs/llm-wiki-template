@@ -9,11 +9,11 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/images/graph-dark.jpg">
-    <img alt="A made-up wiki shaped like a brain: colored cells for pages, curved lines for links" src="docs/images/graph-light.jpg" width="820">
+    <img alt="The LLM Wiki Brain graph on a made-up wiki about sleep: type chips, replay controls and a search box on top, then a brain of colored cells for pages and curved lines for links" src="docs/images/graph-light.jpg" width="820">
   </picture>
 </p>
 
-<p align="center"><sub>A made-up wiki in the shape of a brain, captured from the live graph on the site. Each cell is a page, each line is a <code>[[wikilink]]</code>, and pages with more links grow bigger. GitHub does not run the animation, so this is a still.</sub></p>
+<p align="center"><sub>A made-up wiki about sleep and memory in the LLM Wiki Brain, captured from the live graph on the site. The search <code>tag:#sleep</code> lights 19 pages and the answer spreads along their links. Each cell is a page, each line is a <code>[[wikilink]]</code>, and pages with more links grow bigger. GitHub does not run the animation, so this is a still.</sub></p>
 
 ## In short
 
@@ -146,7 +146,18 @@ grep "^## \[" wiki/log.md | tail -5    # the last five entries
 
 ## 2. See it working
 
-The graph at the top of this page is simulated data in the shape of a brain, not a real wiki. On the [live site](https://jonyfs.github.io/llm-wiki-template/) it turns, and three buttons play the operations from part 1: adding a page is an ingest, asking the wiki is a query, and running lint is a lint. Cells have different shapes by page type, so the type reads without the color: pyramidal cells for sources, star-shaped ones for entities, branched ones for concepts and large ones for syntheses.
+The graph on the [live site](https://jonyfs.github.io/llm-wiki-template/) is [LLM Wiki Brain](https://github.com/jonyfs/llm-wiki-brain), a plugin that draws your wiki as a brain inside Obsidian, here running on made-up data about sleep and memory. The data is invented, but it has the shape of a real wiki: an index, a log, the four page types, tags, orphan pages, broken links and a few contradictions. Try these:
+
+- **Flow** sends a signal from the index to the newest page, which is what an ingest does.
+- **Search** understands `type:`, `tag:`, `path:`, `links:>3`, `edited:<7d`, `is:orphan`, `or` and `-` to exclude. Press Enter to ask, and the answer spreads along the links. That is a query.
+- **Lint** rings orphan pages, pages with broken links and pages without a type, with a list you can click.
+- **Filters** narrow the picture by type, folder, tag, number of links, dates, orphans, log operation or the neighborhood of one page. You can save a view and come back to it.
+- **Replay** grows the wiki back in the order it was written, with a caption of what `wiki/log.md` says happened that day.
+- Click a cell to see its type, dates, links and neighbors. Pin it in place, or ask for Attention to see the similar pages it does not link to.
+
+Cells have different shapes by page type, so the type reads without the color: pyramidal cells for sources, star-shaped ones for entities, branched ones for concepts and large ones for syntheses. Ctrl or Cmd plus scroll zooms, so a plain scroll still moves the page. To get the same view on your own wiki, install the plugin in Obsidian: it reads your `wiki/` folder as it is.
+
+The site's graph is the plugin's own view, bundled by `github-pages/brain/build.sh` from a pinned release and committed as `assets/brain.js` and `assets/brain.css`, so the site needs no build step.
 
 ---
 
@@ -391,4 +402,4 @@ Actively maintained. Last reviewed: 2026-10-27. CI runs on every push and pull r
 
 ## Credits
 
-This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on. The underlying idea comes from Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).
+This template began from [caelaxie/llm-wiki-template](https://github.com/caelaxie/llm-wiki-template), which laid the foundation for the `raw/ -> wiki/` model this repo builds on. The graph on the site is the [LLM Wiki Brain](https://github.com/jonyfs/llm-wiki-brain) plugin by the same author. The underlying idea comes from Andrej Karpathy's [LLM Wiki gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f).

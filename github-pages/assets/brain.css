@@ -1,0 +1,361 @@
+/* LLM Wiki Brain 0.5.2 (25795c6) styles, then the page adapter. Built by github-pages/brain/build.sh. */
+.llm-wiki-brain {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 0;
+	overflow: hidden;
+}
+.llm-wiki-brain-stage {
+	position: relative;
+	flex: 1 1 auto;
+	min-height: 0;
+}
+.llm-wiki-brain-stage canvas {
+	display: block;
+	cursor: grab;
+	touch-action: none;
+}
+.llm-wiki-brain-stage canvas:active {
+	cursor: grabbing;
+}
+.llm-wiki-brain-bar {
+	position: absolute;
+	top: var(--size-4-2);
+	left: var(--size-4-2);
+	z-index: 1;
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-1);
+}
+.llm-wiki-brain-chip {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--size-4-1);
+	font-size: var(--font-ui-smaller);
+}
+.llm-wiki-brain-chip[aria-pressed="false"] {
+	opacity: 0.45;
+}
+.llm-wiki-brain-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: var(--c, var(--interactive-accent));
+}
+.llm-wiki-brain-n {
+	color: var(--text-muted);
+}
+.llm-wiki-brain-tip {
+	position: absolute;
+	left: var(--size-4-2);
+	bottom: var(--size-4-2);
+	max-width: calc(100% - var(--size-4-4));
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	pointer-events: none;
+}
+.llm-wiki-brain-tools {
+	position: absolute;
+	top: var(--size-4-2);
+	right: var(--size-4-2);
+	z-index: 1;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--size-4-1);
+}
+.llm-wiki-brain-tools button[aria-pressed="true"] {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+.llm-wiki-brain-search {
+	position: absolute;
+	top: 44px;
+	left: var(--size-4-2);
+	z-index: 1;
+	display: flex;
+	gap: var(--size-4-1);
+	width: min(420px, calc(100% - var(--size-4-4)));
+}
+.llm-wiki-brain-search input[type="search"] {
+	flex: 1 1 auto;
+}
+.llm-wiki-brain-panel {
+	position: absolute;
+	top: 80px;
+	left: var(--size-4-2);
+	z-index: 1;
+	display: none;
+	flex-direction: column;
+	gap: var(--size-4-1);
+	padding: var(--size-4-2);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	font-size: var(--font-ui-smaller);
+	max-width: 260px;
+}
+.llm-wiki-brain-panel.is-open {
+	display: flex;
+}
+.llm-wiki-brain-field {
+	display: flex;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+.llm-wiki-brain-field label {
+	min-width: 56px;
+	color: var(--text-muted);
+}
+.llm-wiki-brain-info,
+.llm-wiki-brain-lint {
+	position: absolute;
+	right: var(--size-4-2);
+	z-index: 1;
+	width: min(300px, calc(100% - var(--size-4-4)));
+	max-height: 45%;
+	overflow: auto;
+	padding: var(--size-4-2);
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: var(--radius-m);
+	font-size: var(--font-ui-smaller);
+}
+.llm-wiki-brain-info {
+	bottom: 36px;
+}
+.llm-wiki-brain-lint {
+	top: 44px;
+}
+.llm-wiki-brain-info-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: var(--size-4-2);
+}
+.llm-wiki-brain-meta {
+	color: var(--text-muted);
+	margin: var(--size-4-1) 0;
+	word-break: break-word;
+}
+.llm-wiki-brain-actions,
+.llm-wiki-brain-neighbors {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--size-4-1);
+	margin-top: var(--size-4-1);
+}
+.llm-wiki-brain-neighbors button {
+	font-size: var(--font-ui-smaller);
+	height: auto;
+	padding: 2px 8px;
+}
+.llm-wiki-brain-foot {
+	position: absolute;
+	left: var(--size-4-2);
+	right: var(--size-4-2);
+	bottom: var(--size-4-2);
+	display: flex;
+	justify-content: space-between;
+	gap: var(--size-4-2);
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+	pointer-events: none;
+}
+.llm-wiki-brain-foot .llm-wiki-brain-tip {
+	position: static;
+	max-width: 50%;
+}
+.llm-wiki-brain-status {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+	.llm-wiki-brain * {
+		transition: none;
+	}
+}
+
+.llm-wiki-brain-replaybar {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 4px 8px;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+.llm-wiki-brain-tools select {
+	max-width: 7.5em;
+}
+
+.llm-wiki-brain-side {
+	margin-top: 6px;
+	font-size: var(--font-ui-smaller);
+	color: var(--text-muted);
+}
+
+.llm-wiki-brain-views {
+	flex-wrap: wrap;
+	gap: 4px;
+}
+.llm-wiki-brain-views input[type="text"] {
+	flex: 1 1 8em;
+	min-width: 0;
+}
+
+.llm-wiki-brain-stage {
+	position: relative;
+}
+.llm-wiki-brain-wizard {
+	position: absolute;
+	left: 12px;
+	top: 12px;
+	max-width: 24em;
+	padding: 10px 14px;
+	border-radius: 8px;
+	background: var(--background-secondary);
+	border: 1px solid var(--background-modifier-border);
+	box-shadow: var(--shadow-s);
+	font-size: var(--font-ui-small);
+}
+.llm-wiki-brain-wizard p {
+	margin: 4px 0;
+	color: var(--text-muted);
+}
+
+/* The plugin was made for Obsidian's variables and a full-size pane. Here: the site's own tokens, and the toolbars in the page flow. */
+.llm-wiki-brain {
+	--text-normal: var(--text);
+	--text-muted: var(--muted);
+	--text-on-accent: var(--on-primary);
+	--background-primary: var(--g-bg);
+	--background-secondary: var(--card);
+	--background-modifier-border: var(--border);
+	--interactive-accent: var(--primary);
+	--size-4-1: 4px;
+	--size-4-2: 8px;
+	--size-4-4: 16px;
+	--font-ui-smaller: .78rem;
+	--font-ui-small: .85rem;
+	--radius-m: 10px;
+	--shadow-s: var(--shadow-md);
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	height: clamp(640px, 90svh, 940px);
+	padding: 10px;
+	color: var(--text);
+	font: .85rem/1.4 var(--font);
+	background: var(--g-bg);
+	border: 1px solid var(--glass-border);
+	border-radius: var(--radius-lg);
+	overflow: hidden;
+	box-shadow: var(--shadow-md);
+}
+.llm-wiki-brain button,
+.llm-wiki-brain select,
+.llm-wiki-brain input[type="search"],
+.llm-wiki-brain input[type="text"],
+.llm-wiki-brain input[type="date"] {
+	font: inherit;
+	color: var(--text);
+	background: var(--glass);
+	border: 1px solid var(--glass-border);
+	border-radius: 8px;
+	min-height: 34px;
+	padding: 3px 10px;
+}
+.llm-wiki-brain button { cursor: pointer; }
+.llm-wiki-brain button:hover:not(:disabled) { border-color: var(--accent); }
+.llm-wiki-brain button:disabled { opacity: .45; cursor: default; }
+.llm-wiki-brain :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.llm-wiki-brain input[type="range"] { accent-color: var(--primary); }
+.llm-wiki-brain input[type="checkbox"] { accent-color: var(--primary); width: 18px; height: 18px; }
+
+/* Reserve the room before the script runs, so mounting the graph does not shift the page. */
+#brain { min-height: clamp(640px, 90svh, 940px); }
+.brain-loading { padding: 2rem 1rem; text-align: center; }
+@media (max-width: 720px) { #brain { min-height: 900px; } }
+
+/* Toolbars flow above the canvas instead of floating over it. */
+.llm-wiki-brain-bar,
+.llm-wiki-brain-tools,
+.llm-wiki-brain-search {
+	position: static;
+	width: auto;
+	justify-content: flex-start;
+	flex: none;
+}
+.llm-wiki-brain-search { flex-wrap: wrap; }
+.llm-wiki-brain-search input[type="search"] { flex: 1 1 12em; min-width: 0; }
+.llm-wiki-brain-chip { min-height: 34px; }
+.llm-wiki-brain-chip .llm-wiki-brain-dot { box-shadow: 0 0 8px var(--c); }
+.llm-wiki-brain-tools select { max-width: 8.5em; }
+.llm-wiki-brain-panel {
+	position: static;
+	max-width: none;
+	flex: none;
+	flex-direction: row;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 6px 16px;
+	background: var(--glass);
+	border-color: var(--glass-border);
+}
+.llm-wiki-brain-field label { min-width: 0; }
+.llm-wiki-brain-replaybar { flex: none; padding: 0 4px; }
+
+.llm-wiki-brain-stage { flex: 1 1 auto; min-height: 260px; border-radius: 12px; overflow: hidden; }
+.llm-wiki-brain-stage canvas { width: 100%; height: 100%; touch-action: pan-y; }
+.graph-wrap.is-full .llm-wiki-brain-stage canvas { touch-action: none; }
+
+/* Panels sit on the canvas, bottom right and bottom left. */
+.llm-wiki-brain-info,
+.llm-wiki-brain-lint {
+	top: auto;
+	bottom: 40px;
+	background: var(--glass);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	border-color: var(--glass-border);
+}
+.llm-wiki-brain-lint { right: auto; left: 10px; }
+.llm-wiki-brain-foot { left: 14px; right: 14px; bottom: 12px; }
+.llm-wiki-brain-neighbors button { min-height: 0; }
+
+.llm-wiki-brain-wizard { background: var(--glass); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-color: var(--glass-border); }
+.llm-wiki-brain-notice {
+	position: absolute;
+	left: 50%;
+	top: 12px;
+	transform: translateX(-50%);
+	z-index: 5;
+	max-width: calc(100% - 32px);
+	padding: 8px 14px;
+	border-radius: 10px;
+	background: var(--glass);
+	border: 1px solid var(--glass-border);
+	-webkit-backdrop-filter: blur(10px);
+	backdrop-filter: blur(10px);
+	box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 720px) {
+	/* The controls wrap into several rows on a phone, so the graph gets its own height and the box grows around it. */
+	.llm-wiki-brain { height: auto; padding: 8px; }
+	.llm-wiki-brain-stage { flex: none; height: min(68svh, 560px); }
+	.llm-wiki-brain button, .llm-wiki-brain select, .llm-wiki-brain input[type="search"], .llm-wiki-brain input[type="text"], .llm-wiki-brain input[type="date"] { min-height: 32px; font-size: .8rem; }
+	.llm-wiki-brain-info, .llm-wiki-brain-lint { max-height: 60%; }
+	.llm-wiki-brain-foot .llm-wiki-brain-tip { display: none; }
+}
+
+/* Full screen: the section's wrapper fills the screen, the graph takes what is left. */
+.graph-wrap.is-full #brain { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.graph-wrap.is-full .llm-wiki-brain { flex: 1; height: auto; min-height: 0; border: 0; border-radius: 0; box-shadow: none; }
+.graph-wrap.is-full .llm-wiki-brain-stage { border-radius: 0; }
