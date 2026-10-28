@@ -62,6 +62,7 @@
 <meta name="apple-mobile-web-app-title" content="LLM Wiki" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="stylesheet" href="assets/site.css" />
+<link rel="stylesheet" href="assets/brain.css" />
 </head>
 <body>
 <script>(function(){var d=document.documentElement,t='dark';try{t=localStorage.getItem('theme')||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');}catch(e){}d.setAttribute('data-theme',t);if('IntersectionObserver' in window)d.classList.add('js');})();</script>
@@ -235,35 +236,12 @@
   <div class="container">
     <p class="eyebrow"><span class="num">2</span>See it working</p>
     <h2 class="section-title">What a grown wiki looks like</h2>
-    <p class="section-sub">This is made-up data in the shape of a brain, not a real vault. Each cell is a page in <code>wiki/</code>, and each connection is a <code>[[wikilink]]</code> between two pages. Pages that get more links grow bigger, same as in Obsidian.</p>
+    <p class="section-sub">This is the LLM Wiki Brain, a plugin that draws your wiki inside Obsidian, here running on made-up data about sleep and memory. Each cell is a page in <code>wiki/</code>, each line is a <code>[[wikilink]]</code>, and pages with more links grow bigger.</p>
     <div class="graph-wrap" id="graphWrap">
-    <div class="graph">
-      <canvas id="g" tabindex="0" role="group" aria-roledescription="interactive graph" aria-label="Interactive 3D graph of wiki pages and wikilinks. Drag to rotate, arrow keys to orbit, plus and minus to zoom." data-i18n-aria="Interactive 3D graph of wiki pages and wikilinks. Drag to rotate, arrow keys to orbit, plus and minus to zoom." aria-describedby="gTip"></canvas>
-      <div class="graph-bar tl" role="group" aria-label="Filter page types" data-i18n-aria="Filter page types">
-        <button class="ctl type" type="button" data-type="source" aria-pressed="true"><i aria-hidden="true"></i><span>source</span><span class="n"></span></button>
-        <button class="ctl type" type="button" data-type="entity" aria-pressed="true"><i aria-hidden="true"></i><span>entity</span><span class="n"></span></button>
-        <button class="ctl type" type="button" data-type="concept" aria-pressed="true"><i aria-hidden="true"></i><span>concept</span><span class="n"></span></button>
-        <button class="ctl type" type="button" data-type="synthesis" aria-pressed="true"><i aria-hidden="true"></i><span>synthesis</span><span class="n"></span></button>
-      </div>
-      <div class="graph-bar br" role="group" aria-label="Graph controls" data-i18n-aria="Graph controls">
-        <button class="ctl" id="gZoomIn" type="button" aria-label="Zoom in" data-i18n-aria="Zoom in" data-i18n-title title="Zoom in"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg></button>
-        <button class="ctl" id="gZoomOut" type="button" aria-label="Zoom out" data-i18n-aria="Zoom out" data-i18n-title title="Zoom out"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M5 12h14"/></svg></button>
-        <button class="ctl" id="gZoomReset" type="button" aria-label="Reset view" data-i18n-aria="Reset view" data-i18n-title title="Reset view"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg></button>
-        <button class="ctl" id="gRotate" type="button" aria-pressed="true" aria-label="Auto-rotate" data-i18n-aria="Auto-rotate" data-i18n-title title="Auto-rotate"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>
-        <button class="ctl" id="gOrbit" type="button" aria-pressed="false" aria-label="Orbit mode (drag in any direction)" data-i18n-aria="Orbit mode (drag in any direction)" data-i18n-title title="Orbit mode (drag in any direction)"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><ellipse cx="12" cy="12" rx="10" ry="4.5" transform="rotate(-25 12 12)"/><circle cx="12" cy="12" r="2.2"/></svg></button>
-        <button class="ctl" id="gFull" type="button" aria-pressed="false" aria-label="Full screen" data-i18n-aria="Full screen" data-i18n-title title="Full screen"><svg class="fs-in" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><svg class="fs-out" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg></button>
-      </div>
-      <div class="graph-info" id="gInfo" hidden aria-hidden="true"></div>
+      <div id="brain" role="region" aria-label="Interactive 3D graph of wiki pages and wikilinks" data-i18n-aria="Interactive 3D graph of wiki pages and wikilinks"><p class="hint brain-loading">Loading the graph…</p></div>
     </div>
-    <div class="graph-actions" role="group" aria-label="Wiki actions" data-i18n-aria="Wiki actions">
-      <button class="btn" id="gAdd" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14h6"/></svg>Add a page</button>
-      <button class="btn" id="gAsk" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Ask the wiki</button>
-      <button class="btn" id="gLint" type="button"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6h11M9 12h11M9 18h11M3.5 6l1.5 1.5L7 5M3.5 12l1.5 1.5L7 11M3.5 18l1.5 1.5L7 17"/></svg>Run lint</button>
-    </div>
-    <div class="graph-meta"><p id="gTip"></p><p id="gStats"></p></div>
-    <p class="sr-only" id="gStatus" role="status"></p>
-    </div>
-    <p class="hint">The buttons below the graph play the three operations: adding a page is an ingest, asking the wiki is a query, and running lint is a lint.</p>
+    <p class="hint">Try it. Flow sends information from the index to the newest page, which is what an ingest does. Type in the search box and press Enter to ask the wiki, which is a query. Lint rings the orphan pages and the broken links. Filters narrow the picture by type, folder, tag, links and dates, and Replay grows the wiki back in the order it was written.</p>
+    <p class="hint">Want it on your own wiki? The plugin <a href="https://github.com/jonyfs/llm-wiki-brain">LLM Wiki Brain</a> runs inside Obsidian on your real <code>wiki/</code> folder.</p>
     <details class="graph-list"><summary>Most connected pages</summary><ul id="gList"></ul></details>
   </div>
 </section>
@@ -552,7 +530,7 @@
 </footer>
 
 <script src="assets/i18n.js" defer></script>
-<script src="assets/graph.js" defer></script>
+<script src="assets/brain.js" defer></script>
 <script src="assets/app.js" defer></script>
 </body>
 </html>

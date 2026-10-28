@@ -23,6 +23,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r github-pages/. _site/
+          rm -rf _site/brain  # build sources (see github-pages/brain/build.sh); only assets/brain.js and brain.css are published
           cp README.md _site/README.md 2>/dev/null || true
           cp -r docs _site/docs 2>/dev/null || true
           cp DISCOVERABILITY.md _site/DISCOVERABILITY.md 2>/dev/null || true

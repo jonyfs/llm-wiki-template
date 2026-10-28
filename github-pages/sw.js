@@ -1,13 +1,14 @@
 /* Service worker. Bump CACHE when the precache list changes; every path below must exist or install fails. */
-const CACHE = 'llm-wiki-v7';
+const CACHE = 'llm-wiki-v8';
 const PRECACHE = [
   './',
   './index.html',
   './offline.html',
   './manifest.webmanifest',
   './assets/site.css',
+  './assets/brain.css',
   './assets/i18n.js',
-  './assets/graph.js',
+  './assets/brain.js',
   './assets/app.js',
   './assets/favicon.svg',
   './assets/icon-192.png',

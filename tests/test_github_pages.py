@@ -81,7 +81,7 @@ class PwaTest(unittest.TestCase):
             self.assertTrue((SITE / (path or "index.html")).is_file(), path)
 
     def test_page_links_manifest_and_assets(self):
-        for ref in ("manifest.webmanifest", "assets/site.css", "assets/i18n.js", "assets/graph.js", "assets/app.js"):
+        for ref in ("manifest.webmanifest", "assets/site.css", "assets/i18n.js", "assets/brain.css", "assets/brain.js", "assets/app.js"):
             self.assertIn(ref, INDEX)
             self.assertTrue((SITE / ref).is_file(), ref)
 
@@ -89,10 +89,37 @@ class PwaTest(unittest.TestCase):
 class GraphWiringTest(unittest.TestCase):
     def test_every_element_id_the_scripts_use_exists(self):
         ids = set(re.findall(r'id="([^"]+)"', INDEX))
-        for name in ("graph.js", "app.js"):
-            src = (SITE / "assets" / name).read_text(encoding="utf-8")
-            used = set(re.findall(r"(?:\$|getElementById)\('([A-Za-z0-9_-]+)'\)", src)) | set(re.findall(r"\bon\('([A-Za-z0-9_-]+)'", src))
-            self.assertFalse(used - ids, f"{name} uses ids missing from index.html: {sorted(used - ids)}")
+        for path in (SITE / "assets" / "app.js", SITE / "brain" / "site.ts"):
+            src = path.read_text(encoding="utf-8")
+            used = set(re.findall(r"(?:\$|getElementById)\(['\"]([A-Za-z0-9_-]+)['\"]\)", src)) | set(re.findall(r"\bon\('([A-Za-z0-9_-]+)'", src))
+            self.assertFalse(used - ids, f"{path.name} uses ids missing from index.html: {sorted(used - ids)}")
+
+
+class BrainGraphTest(unittest.TestCase):
+    """The graph is the LLM Wiki Brain plugin, bundled by github-pages/brain/build.sh and committed."""
+
+    def test_bundle_and_styles_come_from_the_pinned_release(self):
+        ref = re.search(r'BRAIN_REF="\$\{BRAIN_REF:-([^}]+)\}"', (SITE / "brain" / "build.sh").read_text(encoding="utf-8")).group(1)
+        for name in ("brain.js", "brain.css"):
+            head = (SITE / "assets" / name).read_text(encoding="utf-8")[:200]
+            self.assertIn(f"LLM Wiki Brain {ref} (", head, f"{name} was not built from {ref}: run github-pages/brain/build.sh")
+
+    def test_page_mounts_the_graph_and_no_old_graph_script_is_left(self):
+        self.assertIn('id="brain"', INDEX)
+        self.assertFalse((SITE / "assets" / "graph.js").exists())
+        for text in (INDEX, (SITE / "sw.js").read_text(encoding="utf-8")):
+            self.assertNotIn("graph.js", text)
+
+    def test_build_sources_are_not_published(self):
+        workflow = (SITE.parent / ".github" / "workflows" / "pages.yml").read_text(encoding="utf-8")
+        self.assertIn("rm -rf _site/brain", workflow)
+        for name in ("build.sh", "obsidian-shim.ts", "demo.ts", "site.ts", "adapter.css"):
+            self.assertTrue((SITE / "brain" / name).is_file(), name)
+
+    def test_demo_wiki_has_what_the_filters_need(self):
+        demo = (SITE / "brain" / "demo.ts").read_text(encoding="utf-8")
+        for needle in ("contradicts", "tags", "broken", "ingest", "lint"):
+            self.assertIn(needle, demo)
 
 
 class SkillNamesTest(unittest.TestCase):
