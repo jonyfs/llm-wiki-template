@@ -53,16 +53,24 @@
   onScroll();
   if (top) top.addEventListener('click', function () { scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); });
 
-  /* Scroll-spy for nav links */
+  /* Scroll-spy for nav links: every section lights the link of the part it belongs to (the last link at or before it). */
   var links = [].slice.call(d.querySelectorAll('.nav-links a[href^="#"]'));
   if ('IntersectionObserver' in window && links.length) {
+    var secs = [].slice.call(d.querySelectorAll('main section[id]'));
+    var owner = {};
+    var current = null;
+    secs.forEach(function (s) {
+      links.forEach(function (a) { if (a.getAttribute('href') === '#' + s.id) current = a; });
+      owner[s.id] = current;
+    });
     var spy = new IntersectionObserver(function (en) {
       en.forEach(function (e) {
         if (!e.isIntersecting) return;
-        links.forEach(function (a) { if (a.getAttribute('href') === '#' + e.target.id) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
+        var own = owner[e.target.id];
+        links.forEach(function (a) { if (a === own) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current'); });
       });
     }, { rootMargin: '-40% 0px -55% 0px' });
-    links.forEach(function (a) { var s = d.querySelector(a.getAttribute('href')); if (s) spy.observe(s); });
+    secs.forEach(function (s) { spy.observe(s); });
   }
 
   /* Reveal on scroll (only when the head script added html.js) */
