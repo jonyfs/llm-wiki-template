@@ -68,6 +68,19 @@ class EveryPageTest(unittest.TestCase):
         self.assertLess(order.index("graph"), order.index("inputs"))
 
 
+class NavTest(unittest.TestCase):
+    def test_menu_follows_the_page(self):
+        nav = re.search(r'<div class="nav-links">(.*?)</div>', INDEX, re.S).group(1)
+        targets = re.findall(r'href="#([a-z-]+)"', nav)
+        sections = re.findall(r'<section[^>]*id="([^"]+)"', INDEX)
+        self.assertFalse(set(targets) - set(sections), "menu links to a section that does not exist")
+        self.assertEqual([sections.index(t) for t in targets], sorted(sections.index(t) for t in targets), "menu items must follow the page order")
+        for part_start in ("problem", "graph", "inputs", "features", "start"):
+            self.assertIn(part_start, targets, f"the menu has no entry for the part that starts at #{part_start}")
+        self.assertIn("skills", targets)
+        self.assertIn("faq", targets)
+
+
 class PwaTest(unittest.TestCase):
     def test_manifest_icons_exist(self):
         manifest = json.loads((SITE / "manifest.webmanifest").read_text(encoding="utf-8"))
