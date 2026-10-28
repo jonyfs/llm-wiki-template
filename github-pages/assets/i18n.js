@@ -66,6 +66,7 @@
     const sel = document.getElementById('langSelect');
     if (sel) sel.value = lang;
     document.dispatchEvent(new CustomEvent('llmw:lang', {detail: lang}));
+    document.documentElement.classList.add('i18n-ready'); // reveals main (see site.css)
   }
   const sel = document.getElementById('langSelect');
   if (sel){
