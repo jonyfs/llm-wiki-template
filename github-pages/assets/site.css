@@ -318,3 +318,8 @@ html.graph-full { scrollbar-gutter: auto; }
 .eyebrow .num { margin-right: 0; }
 .hero .toc { margin-top: 1rem; }
 .hero .hint { margin-top: 1.25rem; text-align: center; margin-inline: auto; }
+
+/* The page is translated by script. Showing English first and then swapping the text reflows the hero (a layout shift on every
+   Portuguese or Spanish visit), so main stays hidden until the language is applied. If the script never runs, a CSS timer reveals it. */
+html.js:not(.i18n-ready) main { visibility: hidden; animation: i18n-fallback 0s 1.5s forwards; }
+@keyframes i18n-fallback { to { visibility: visible; } }
