@@ -32,7 +32,10 @@ def template_v1(base: Path):
     write(base, ".agents/skills/wiki-a/SKILL.md", "skill a v1\n")
     write(base, ".agents/skills/wiki-b/SKILL.md", "skill b v1\n")
     write(base, ".agents/skills/wiki-old/SKILL.md", "old skill\n")
+    write(base, ".agents/commands/wiki.md", "command\n")
     write(base, "scripts/lint.py", "print('lint v1')\n")
+    (base / "scripts").mkdir(parents=True, exist_ok=True)
+    shutil.copy(ROOT / "scripts" / "sync_agent_files.py", base / "scripts" / "sync_agent_files.py")
     write(base, "scripts/tool.sh", "#!/bin/sh\necho v1\n", 0o755)
     write(base, ".github/workflows/test.yml", "name: v1\n")
     write(base, "wiki/log.md", "# Log\n\nHeader.\n")
@@ -46,6 +49,7 @@ def template_v2(base: Path):
     shutil.rmtree(base / ".agents/skills/wiki-old")
     write(base, ".agents/skills/wiki-new/SKILL.md", "new skill\n")
     write(base, "scripts/lint.py", "print('lint v2')\n")
+    shutil.copy(ROOT / "scripts" / "sync_agent_files.py", base / "scripts" / "sync_agent_files.py")
     write(base, ".github/workflows/test.yml", "name: v2\n")
     write(base, "wiki/index.md", "template index changed\n")
     write(base, "README.md", "template readme\n")
@@ -176,16 +180,24 @@ class UpdateScriptTest(unittest.TestCase):
         self.run_script(d, "--apply", "--branch", "update-llm-wiki", "--no-check")
         self.assertEqual(git(d, "branch", "--show-current"), "update-llm-wiki")
 
-    def test_missing_symlinks_are_added_and_real_files_are_left_alone(self):
+    def test_missing_mirrors_are_copied_and_never_symlinked(self):
         d = self.downstream()
-        write(d, "CLAUDE.md", "a real file\n")
-        git(d, "add", "-A")
-        git(d, "commit", "-qm", "real CLAUDE.md")
         r = self.run_script(d, "--apply", "--no-check")
-        self.assertTrue((d / ".cursorrules").is_symlink())
-        self.assertEqual(os.readlink(d / ".cursorrules"), "AGENTS.md")
-        self.assertFalse((d / "CLAUDE.md").is_symlink())
-        self.assertIn("LINK_BLOCKED", r.stdout)
+        self.assertFalse((d / ".cursorrules").is_symlink())
+        self.assertEqual((d / ".cursorrules").read_text(encoding="utf-8"), (d / "AGENTS.md").read_text(encoding="utf-8"))
+        self.assertTrue((d / ".claude/skills/wiki-a/SKILL.md").is_file())
+        self.assertFalse((d / ".claude/skills").is_symlink())
+        self.assertIn("MIRROR_ADD", r.stdout)
+
+    def test_symlinked_mirror_is_replaced_with_a_real_copy(self):
+        d = self.downstream()
+        (d / ".cursorrules").parent.mkdir(parents=True, exist_ok=True)
+        os.symlink("AGENTS.md", d / ".cursorrules")
+        git(d, "add", "-A")
+        git(d, "commit", "-qm", "old symlink layout")
+        r = self.run_script(d, "--apply", "--no-check")
+        self.assertFalse((d / ".cursorrules").is_symlink())
+        self.assertIn("MIRROR_REPLACE_SYMLINK", r.stdout)
 
     def test_refuses_to_run_outside_a_notebook(self):
         empty = self.tmp / "empty"
@@ -216,12 +228,12 @@ class ManifestTest(unittest.TestCase):
             self.assertEqual(self.policy(path), "managed", path)
         self.assertEqual(self.policy(".github/workflows/test.yml"), "once")
 
-    def test_every_link_in_the_manifest_exists_with_that_target(self):
+    def test_every_mirror_in_the_manifest_is_a_real_copy(self):
         for line in MANIFEST.read_text(encoding="utf-8").splitlines():
-            if line.startswith("link\t"):
-                _, path, target = line.split("\t")
-                self.assertTrue((ROOT / path).is_symlink(), path)
-                self.assertEqual(os.readlink(ROOT / path), target, path)
+            if line.startswith("mirror\t"):
+                _, path, source = line.split("\t")
+                self.assertFalse((ROOT / path).is_symlink(), path)
+                self.assertTrue((ROOT / path).exists(), path)
 
 
 if __name__ == "__main__":

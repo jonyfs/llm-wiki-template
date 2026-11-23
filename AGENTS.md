@@ -12,7 +12,7 @@ Source of truth: [jonyfs/llm-wiki-template](https://github.com/jonyfs/llm-wiki-t
 
 ## Multi-agent configuration
 
-Every agent reads this file through a symlink. Edit `AGENTS.md` only.
+Every agent reads this file through a real copy. Edit `AGENTS.md` only; `python3 scripts/sync_agent_files.py` refreshes the copies.
 
 | File | Agent | Points to |
 |------|-------|-----------|
@@ -24,8 +24,8 @@ Every agent reads this file through a symlink. Edit `AGENTS.md` only.
 
 | Path | Agent | Type |
 |------|-------|------|
-| `.claude/skills`, `.claude/commands` | Claude Code | symlink to `.agents/` |
-| `.opencode/skills`, `.opencode/commands` | OpenCode | symlink to `.agents/` |
+| `.claude/skills`, `.claude/commands` | Claude Code | copy of `.agents/` |
+| `.opencode/skills`, `.opencode/commands` | OpenCode | copy of `.agents/` |
 | `.agents/skills`, `.agents/commands` | Codex, Cursor, Copilot | native |
 
 ## Required repo-local skills

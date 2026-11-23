@@ -141,18 +141,19 @@ main() {
     done < "$tmp/basetree"
   fi
 
-  local lpol lpath ltarget lcur
-  while IFS=$'\t' read -r lpol lpath ltarget; do
-    [ "$lpol" = link ] || continue
-    if [ -L "$lpath" ]; then
-      lcur=$(readlink "$lpath")
-      if [ "$lcur" = "$ltarget" ]; then continue; else printf '%s\t%s\n' LINK_DIFFERENT "$lpath" >> "$tmp/plan"; fi
-    elif [ -e "$lpath" ]; then printf '%s\t%s\n' LINK_BLOCKED "$lpath" >> "$tmp/plan"
-    else
-      printf '%s\t%s\n' LINK_ADD "$lpath" >> "$tmp/plan"
-      if [ "$apply" -eq 1 ]; then mkdir -p "$(dirname "$lpath")"; ln -s "$ltarget" "$lpath"; fi
+  # Agent entry points (CLAUDE.md, .claude/skills, ...) are real copies of their sources, never symlinks,
+  # because Windows checkouts turn symlinks into text files. scripts/sync_agent_files.py makes the copies.
+  local lpol lpath lsrc mirror_stale=0
+  while IFS=$'\t' read -r lpol lpath lsrc; do
+    [ "$lpol" = mirror ] || continue
+    if [ -L "$lpath" ]; then printf '%s\t%s\n' MIRROR_REPLACE_SYMLINK "$lpath" >> "$tmp/plan"; mirror_stale=1
+    elif [ ! -e "$lpath" ]; then printf '%s\t%s\n' MIRROR_ADD "$lpath" >> "$tmp/plan"; mirror_stale=1
+    elif ! diff -rq "$lsrc" "$lpath" >/dev/null 2>&1; then printf '%s\t%s\n' MIRROR_UPDATE "$lpath" >> "$tmp/plan"; mirror_stale=1
     fi
   done < "$tmp/manifest"
+  if [ "$apply" -eq 1 ] && [ "$mirror_stale" -eq 1 ]; then
+    python3 scripts/sync_agent_files.py || die "could not sync the agent entry points (scripts/sync_agent_files.py)"
+  fi
 
   report "$apply"
   echo
@@ -164,7 +165,7 @@ main() {
   fi
 
   local changes conflicts
-  changes=$(grep -cE "^(ADD|UPDATE|MERGE|CONFLICT|LINK_ADD)"$'\t'  "$tmp/plan" || true)
+  changes=$(grep -cE "^(ADD|UPDATE|MERGE|CONFLICT|MIRROR_ADD|MIRROR_UPDATE|MIRROR_REPLACE_SYMLINK)"$'\t'  "$tmp/plan" || true)
   conflicts=$(grep -c "^CONFLICT"$'\t'  "$tmp/plan" || true)
 
   if [ "$apply" -eq 0 ]; then
@@ -239,7 +240,7 @@ write_lock() { printf 'template=%s\nref=%s\nupdated=%s\n' "$TEMPLATE_URL" "$1" "
 report() {
   local applied="$1" st label n
   echo
-  for st in ADD UPDATE MERGE CONFLICT KEEP_LOCAL KEEP_ONCE DROPPED DROPPED_EDITED LINK_ADD LINK_DIFFERENT LINK_BLOCKED; do
+  for st in ADD UPDATE MERGE CONFLICT KEEP_LOCAL KEEP_ONCE DROPPED DROPPED_EDITED MIRROR_ADD MIRROR_UPDATE MIRROR_REPLACE_SYMLINK; do
     n=$(grep -c "^$st"$'\t' "$tmp/plan" || true)
     [ "$n" -gt 0 ] || continue
     case "$st" in
@@ -251,9 +252,9 @@ report() {
       KEEP_ONCE) label="differs from the template but is only ever copied when missing (kept)" ;;
       DROPPED) label="removed from the template, you never changed it (deleted only with --prune)" ;;
       DROPPED_EDITED) label="removed from the template but you changed it (kept)" ;;
-      LINK_ADD) label="missing agent entry point (symlink added)" ;;
-      LINK_DIFFERENT) label="symlink points somewhere else (kept)" ;;
-      LINK_BLOCKED) label="a real file sits where the template has a symlink (kept)" ;;
+      MIRROR_ADD) label="agent entry point missing (copied from its source)" ;;
+      MIRROR_UPDATE) label="agent entry point out of date (re-copied from its source)" ;;
+      MIRROR_REPLACE_SYMLINK) label="agent entry point was a symlink (replaced with a real copy)" ;;
     esac
     echo "$st: $n  $label"
     grep "^$st"$'\t' "$tmp/plan" | cut -f2 | sed 's/^/    /'

@@ -33,7 +33,7 @@
 
 ## Compatibility
 
-Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex via symlinks to the same `AGENTS.md` and `.agents/` source of truth. Python 3.9+; stdlib only; no dependencies.
+Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex via real copies of the same `AGENTS.md` and `.agents/` source of truth, so they work on Windows too. Python 3.9+; stdlib only; no dependencies.
 
 ## Optional
 
