@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-import os
 import re
+import subprocess
+import sys
 import unittest
 from pathlib import Path
 
@@ -42,25 +43,43 @@ class SkillFrontmatterTests(unittest.TestCase):
                 self.assertTrue(fields.get("description"), "frontmatter description missing")
 
 
-class SymlinkTests(unittest.TestCase):
-    def assert_symlink_to(self, link: str, target: Path) -> None:
-        path = REPO_ROOT / link
-        self.assertTrue(path.is_symlink(), f"{link} is not a symlink")
-        self.assertEqual(Path(os.path.realpath(path)), target.resolve(), f"{link} does not resolve to {target}")
+class AgentMirrorTests(unittest.TestCase):
+    """Agent entry points must be real copies, never symlinks, so Windows checkouts keep working."""
 
-    def test_skill_folders_resolve_to_agents_skills(self) -> None:
-        self.assert_symlink_to(".claude/skills", SKILLS_DIR)
-        self.assert_symlink_to(".opencode/skills", SKILLS_DIR)
+    MIRRORS = {
+        "CLAUDE.md": "AGENTS.md",
+        ".cursorrules": "AGENTS.md",
+        ".github/copilot-instructions.md": "AGENTS.md",
+        ".claude/skills": ".agents/skills",
+        ".claude/commands": ".agents/commands",
+        ".opencode/skills": ".agents/skills",
+        ".opencode/commands": ".agents/commands",
+    }
 
-    def test_command_folders_resolve_to_agents_commands(self) -> None:
-        self.assert_symlink_to(".claude/commands", COMMANDS_DIR)
-        self.assert_symlink_to(".opencode/commands", COMMANDS_DIR)
+    def test_mirrors_are_real_files_and_folders_not_symlinks(self) -> None:
+        for target in self.MIRRORS:
+            with self.subTest(target=target):
+                path = REPO_ROOT / target
+                self.assertFalse(path.is_symlink(), f"{target} must not be a symlink")
+                self.assertTrue(path.exists(), f"{target} is missing")
 
-    def test_agent_instruction_files_resolve_to_agents_md(self) -> None:
-        agents_md = REPO_ROOT / "AGENTS.md"
-        for link in ("CLAUDE.md", ".cursorrules", ".github/copilot-instructions.md"):
-            with self.subTest(link=link):
-                self.assert_symlink_to(link, agents_md)
+    def test_mirrors_match_their_sources(self) -> None:
+        result = subprocess.run(
+            [sys.executable, str(REPO_ROOT / "scripts" / "sync_agent_files.py"), "--check"],
+            capture_output=True,
+            text=True,
+            cwd=REPO_ROOT,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_manifest_mirror_lines_cover_every_mirror(self) -> None:
+        manifest = (REPO_ROOT / ".agents" / "template-manifest").read_text(encoding="utf-8")
+        declared = {
+            parts[1]: parts[2]
+            for parts in (line.split("\t") for line in manifest.splitlines())
+            if len(parts) == 3 and parts[0] == "mirror"
+        }
+        self.assertEqual(declared, self.MIRRORS)
 
 
 if __name__ == "__main__":
