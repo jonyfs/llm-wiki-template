@@ -87,6 +87,9 @@ if os.environ["KEEP_PAGES"] == "0":
     s = s.replace(", the GitHub Pages copy in `github-pages/`,", ",")
     s = re.sub(r" Pages with translations \(`github-pages/assets/i18n\.js`\) need the same pass in every language\.", "", s)
     p.write_text(s, encoding="utf-8")
+    # The agent copies must match AGENTS.md byte for byte (the template's mirror check), so refresh them now.
+    for copy in ("CLAUDE.md", ".cursorrules", ".github/copilot-instructions.md"):
+        pathlib.Path(copy).write_text(s, encoding="utf-8")
 
 # wiki/log.md: keep the header, start a fresh history.
 log = pathlib.Path("wiki/log.md")

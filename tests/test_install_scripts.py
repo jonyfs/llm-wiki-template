@@ -9,8 +9,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
-BASH_FILES = [SCRIPTS / "install-macos.command", SCRIPTS / "install-linux.sh", SCRIPTS / "new-llm-wiki.sh"]
-POWERSHELL_FILES = [SCRIPTS / "install-windows.ps1", SCRIPTS / "new-llm-wiki.ps1"]
+BASH_FILES = [
+    SCRIPTS / "bootstrap.sh",
+    SCRIPTS / "install-macos.command",
+    SCRIPTS / "install-linux.sh",
+    SCRIPTS / "new-llm-wiki.sh",
+]
+POWERSHELL_FILES = [SCRIPTS / "bootstrap.ps1", SCRIPTS / "install-windows.ps1", SCRIPTS / "new-llm-wiki.ps1"]
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
 
 

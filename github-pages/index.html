@@ -425,6 +425,19 @@
         <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/archive/refs/heads/main.zip">Download the ZIP</a>
         <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md">Read the step-by-step guide</a>
       </div>
+      <p class="install-sub">Or paste one command. It checks for git, installs what is missing, downloads the template from GitHub and starts the installer.</p>
+      <div class="code-box">
+        <button type="button" class="btn" data-copy-target="installMac">Copy</button>
+        <div class="qs" id="installMac" data-label="macOS or Linux">
+        <span class="line">bash -c "$(curl -fsSL https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.sh)"</span>
+        </div>
+      </div>
+      <div class="code-box">
+        <button type="button" class="btn" data-copy-target="installWin">Copy</button>
+        <div class="qs" id="installWin" data-label="Windows PowerShell">
+        <span class="line">irm https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.ps1 | iex</span>
+        </div>
+      </div>
       <div class="grid">
         <div class="card"><h3>macOS</h3><p>Double-click the installer in the scripts folder. If Apple's developer tools are missing, macOS installs them first, and you run the file again.</p><a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-macos.command">See the macOS installer</a></div>
         <div class="card"><h3>Windows</h3><p>Double-click the installer in the scripts folder. It uses PowerShell, which Windows already has, and installs git if it is missing.</p><a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd">See the Windows installer</a></div>

@@ -98,6 +98,16 @@
     p.then(function () { flash(copy, 'app.copied', 'app.copy'); }, function () { flash(copy, 'app.failed', 'app.copy'); });
   });
 
+  /* Copy any block marked with data-copy-target */
+  Array.prototype.forEach.call(d.querySelectorAll('[data-copy-target]'), function (btn) {
+    var src = $(btn.getAttribute('data-copy-target'));
+    if (!src) return;
+    btn.addEventListener('click', function () {
+      var p = navigator.clipboard ? navigator.clipboard.writeText(src.innerText) : Promise.reject();
+      p.then(function () { flash(btn, 'app.copied', 'app.copy'); }, function () { flash(btn, 'app.failed', 'app.copy'); });
+    });
+  });
+
   /* Share */
   var share = $('shareBtn');
   if (share) share.addEventListener('click', function () {
