@@ -35,7 +35,9 @@ try {
 
   Write-Host 'Folder name for your wiki (letters, numbers, dot, dash or underscore, no spaces).'
   $name = Read-Host 'Name'
-  if ($name -notmatch '^[A-Za-z0-9._-]+$' -or $name -match '^\.+$') { throw 'use only letters, numbers, dot, dash or underscore, for example my-wiki.' }
+  if ($name -notmatch '^[A-Za-z0-9._-]+$' -or $name -match '^[.-]' -or $name -match '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$') {
+    throw 'use letters, numbers, dot, dash or underscore, for example my-wiki. The name cannot start with - or ., or be a Windows device name such as CON.'
+  }
 
   $documents = [Environment]::GetFolderPath('MyDocuments')
   $target = Join-Path $documents $name

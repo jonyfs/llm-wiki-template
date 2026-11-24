@@ -24,7 +24,7 @@ install_packages() {
   elif command -v dnf >/dev/null 2>&1; then
     $SUDO dnf install -y git python3
   elif command -v pacman >/dev/null 2>&1; then
-    $SUDO pacman -S --needed --noconfirm git python
+    $SUDO pacman -Sy --needed --noconfirm git python
   elif command -v zypper >/dev/null 2>&1; then
     $SUDO zypper --non-interactive install git python3
   else
@@ -48,7 +48,7 @@ command -v python3 >/dev/null 2>&1 || { echo "note: python3 is missing, so the t
 echo "Folder name for your wiki (letters, numbers, dot, dash or underscore, no spaces)."
 read -r -p "Name: " NAME || fail "no name given."
 case "$NAME" in
-  ""|.|..|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki." ;;
+  ""|.|..|-*|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki. The name cannot start with a dash." ;;
 esac
 
 TARGET="$HOME/Documents/$NAME"

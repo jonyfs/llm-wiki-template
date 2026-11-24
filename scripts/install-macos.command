@@ -44,7 +44,7 @@ fi
 echo "Folder name for your wiki (letters, numbers, dot, dash or underscore, no spaces)."
 read -r -p "Name: " NAME || fail "no name given."
 case "$NAME" in
-  ""|.|..|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki." ;;
+  ""|.|..|-*|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki. The name cannot start with a dash." ;;
 esac
 
 TARGET="$HOME/Documents/$NAME"

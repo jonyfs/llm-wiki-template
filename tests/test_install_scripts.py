@@ -14,6 +14,16 @@ POWERSHELL_FILES = [SCRIPTS / "install-windows.ps1", SCRIPTS / "new-llm-wiki.ps1
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
 
 
+def require_tool(name: str) -> str:
+    """Return the tool's path. Skip locally when it is missing; fail in CI, where a silent skip would hide a broken check."""
+    path = shutil.which(name)
+    if path:
+        return path
+    if os.environ.get("CI"):
+        raise AssertionError(f"{name} is required in CI but is not installed")
+    raise unittest.SkipTest(f"{name} not installed")
+
+
 def tree_files(root: Path) -> dict[str, bytes]:
     """Every file under root except .git, mapped to its bytes, for comparing two generated notebooks."""
     return {
@@ -48,16 +58,12 @@ class InstallerSyntaxTest(unittest.TestCase):
                 self.assertEqual(subprocess.run([bash, "-n", str(path)]).returncode, 0)
 
     def test_bash_installers_pass_shellcheck(self):
-        shellcheck = shutil.which("shellcheck")
-        if not shellcheck:
-            self.skipTest("shellcheck not installed")
+        shellcheck = require_tool("shellcheck")
         result = subprocess.run([shellcheck, *map(str, BASH_FILES)], capture_output=True, text=True)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
 
     def test_powershell_installers_parse(self):
-        pwsh = shutil.which("pwsh")
-        if not pwsh:
-            self.skipTest("pwsh not installed")
+        pwsh = require_tool("pwsh")
         for path in POWERSHELL_FILES:
             with self.subTest(path=path.name):
                 script = (
@@ -114,9 +120,7 @@ class StarterScriptEndToEndTest(unittest.TestCase):
         self.assertEqual((self.tmp / "taken" / "keep.txt").read_text(encoding="utf-8"), "mine")
 
     def test_powershell_starter_produces_the_same_tree_as_bash(self):
-        pwsh = shutil.which("pwsh")
-        if not pwsh:
-            self.skipTest("pwsh not installed")
+        pwsh = require_tool("pwsh")
         # Same name in two separate parent folders, so the README (which names the folder) matches byte for byte.
         bash_parent, ps_parent = self.tmp / "bash-side", self.tmp / "ps-side"
         bash_parent.mkdir()
@@ -156,7 +160,7 @@ class LinuxInstallerTest(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("use only letters", result.stdout + result.stderr)
-        self.assertFalse((home / "Documents").exists() and any((home / "Documents").iterdir()))
+        self.assertFalse((home / "Documents").exists(), "nothing is created before the name is accepted")
 
 
 if __name__ == "__main__":

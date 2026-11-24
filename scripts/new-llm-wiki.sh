@@ -36,7 +36,8 @@ done
 [ -n "$name" ] || { usage; exit 2; }
 command -v git >/dev/null || die "git is required"
 command -v python3 >/dev/null || die "python3 is required"
-case "$name" in .|..) die "use a real folder name, not . or .." ;; esac
+case "$name" in .|..|-*) die "use a real folder name: not . or .., and not starting with a dash" ;; esac
+if printf '%s\n' "$name" | grep -Eiq '^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$'; then die "$name is a reserved Windows device name; choose another"; fi
 if [ -e "$name" ] && [ -n "$(ls -A "$name" 2>/dev/null || true)" ]; then die "'$name' already exists and is not empty"; fi
 
 # The exact template commit the copy starts from, so scripts/update-llm-wiki.sh knows its base later.
@@ -124,7 +125,7 @@ git commit -q -m "Start notebook from llm-wiki-template" || echo "note: could no
 if [ "$use_github" -eq 1 ]; then git push -q -u origin HEAD; fi
 
 if [ "$run_checks" -eq 1 ]; then
-  echo "Running the template's checks ..."
+  echo "Running the template's checks. They run code from the template you just downloaded ..."
   if python3 -m unittest discover -s tests -t . >/dev/null 2>&1 && python3 scripts/lint.py >/dev/null 2>&1; then
     echo "Checks passed."
   else
