@@ -48,14 +48,14 @@ command -v python3 >/dev/null 2>&1 || { echo "note: python3 is missing, so the t
 echo "Folder name for your wiki (letters, numbers, dot, dash or underscore, no spaces)."
 read -r -p "Name: " NAME || fail "no name given."
 case "$NAME" in
-  ""|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki." ;;
+  ""|.|..|*[!A-Za-z0-9._-]*) fail "use only letters, numbers, dot, dash or underscore, for example my-wiki." ;;
 esac
 
 TARGET="$HOME/Documents/$NAME"
 [ -e "$TARGET" ] && fail "$TARGET already exists. Choose another name."
 
-mkdir -p "$HOME/Documents"
-cd "$HOME/Documents"
+mkdir -p "$HOME/Documents" || fail "could not create $HOME/Documents."
+cd "$HOME/Documents" || fail "could not open $HOME/Documents."
 
 echo
 echo "Creating your wiki in $TARGET ..."

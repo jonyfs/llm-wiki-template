@@ -36,6 +36,7 @@ done
 [ -n "$name" ] || { usage; exit 2; }
 command -v git >/dev/null || die "git is required"
 command -v python3 >/dev/null || die "python3 is required"
+case "$name" in .|..) die "use a real folder name, not . or .." ;; esac
 if [ -e "$name" ] && [ -n "$(ls -A "$name" 2>/dev/null || true)" ]; then die "'$name' already exists and is not empty"; fi
 
 # The exact template commit the copy starts from, so scripts/update-llm-wiki.sh knows its base later.

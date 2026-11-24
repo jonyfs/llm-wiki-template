@@ -1,5 +1,6 @@
 """The guided installers: syntax, lint, and end-to-end runs of the starter scripts against a local copy of the template."""
 import os
+import re
 import shutil
 import subprocess
 import tempfile
@@ -11,6 +12,15 @@ SCRIPTS = ROOT / "scripts"
 BASH_FILES = [SCRIPTS / "install-macos.command", SCRIPTS / "install-linux.sh", SCRIPTS / "new-llm-wiki.sh"]
 POWERSHELL_FILES = [SCRIPTS / "install-windows.ps1", SCRIPTS / "new-llm-wiki.ps1"]
 GIT_ENV = {**os.environ, "GIT_AUTHOR_NAME": "t", "GIT_AUTHOR_EMAIL": "t@t", "GIT_COMMITTER_NAME": "t", "GIT_COMMITTER_EMAIL": "t@t"}
+
+
+def tree_files(root: Path) -> dict[str, bytes]:
+    """Every file under root except .git, mapped to its bytes, for comparing two generated notebooks."""
+    return {
+        str(p.relative_to(root)): p.read_bytes()
+        for p in sorted(root.rglob("*"))
+        if p.is_file() and ".git" not in p.relative_to(root).parts
+    }
 
 
 def make_local_template(dest: Path) -> Path:
@@ -79,7 +89,7 @@ class StarterScriptEndToEndTest(unittest.TestCase):
         self.assertIn(f"# {name}", (notebook / "README.md").read_text(encoding="utf-8"))
         log = (notebook / "wiki/log.md").read_text(encoding="utf-8")
         self.assertIn("bootstrap | Start", log)
-        self.assertNotIn("## [2026-04-02] ingest", log, "the template's history must be reset")
+        self.assertEqual(len(re.findall(r"^## \[", log, re.M)), 1, "the template's history must be reset to one entry")
         self.assertIn("template=file://", (notebook / ".agents/template.lock").read_text(encoding="utf-8"))
         log_out = subprocess.run(["git", "log", "--oneline"], cwd=notebook, capture_output=True, text=True, env=GIT_ENV)
         self.assertEqual(log_out.returncode, 0)
@@ -103,16 +113,50 @@ class StarterScriptEndToEndTest(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertEqual((self.tmp / "taken" / "keep.txt").read_text(encoding="utf-8"), "mine")
 
-    def test_powershell_starter_matches_the_bash_result(self):
+    def test_powershell_starter_produces_the_same_tree_as_bash(self):
         pwsh = shutil.which("pwsh")
         if not pwsh:
             self.skipTest("pwsh not installed")
-        result = subprocess.run(
-            [pwsh, "-NoProfile", "-File", str(ROOT / "scripts" / "new-llm-wiki.ps1"), "-Name", "demo-ps", "-NoCheck"],
-            cwd=self.tmp, capture_output=True, text=True, env=self.env,
+        # Same name in two separate parent folders, so the README (which names the folder) matches byte for byte.
+        bash_parent, ps_parent = self.tmp / "bash-side", self.tmp / "ps-side"
+        bash_parent.mkdir()
+        ps_parent.mkdir()
+        bash_run = subprocess.run(
+            ["bash", str(ROOT / "scripts" / "new-llm-wiki.sh"), "same", "--no-check"],
+            cwd=bash_parent, capture_output=True, text=True, env=self.env,
         )
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assert_clean_notebook(self.tmp / "demo-ps", "demo-ps")
+        self.assertEqual(bash_run.returncode, 0, bash_run.stdout + bash_run.stderr)
+        ps_run = subprocess.run(
+            [pwsh, "-NoProfile", "-File", str(ROOT / "scripts" / "new-llm-wiki.ps1"), "-Name", "same", "-NoCheck"],
+            cwd=ps_parent, capture_output=True, text=True, env=self.env,
+        )
+        self.assertEqual(ps_run.returncode, 0, ps_run.stdout + ps_run.stderr)
+        self.assert_clean_notebook(ps_parent / "same", "same")
+        self.assertEqual(tree_files(bash_parent / "same"), tree_files(ps_parent / "same"))
+
+    def test_bash_starter_rejects_dot_names(self):
+        for name in (".", ".."):
+            with self.subTest(name=name):
+                result = subprocess.run(
+                    ["bash", str(ROOT / "scripts" / "new-llm-wiki.sh"), name, "--no-check"],
+                    cwd=self.tmp, capture_output=True, text=True, env=self.env,
+                )
+                self.assertNotEqual(result.returncode, 0)
+
+
+@unittest.skipUnless(shutil.which("bash") and shutil.which("git") and shutil.which("python3"), "needs bash, git and python3")
+class LinuxInstallerTest(unittest.TestCase):
+    def test_refuses_a_name_with_spaces_and_creates_nothing(self):
+        home = Path(tempfile.mkdtemp())
+        self.addCleanup(shutil.rmtree, home, True)
+        result = subprocess.run(
+            ["bash", str(SCRIPTS / "install-linux.sh")],
+            input="bad name\n", capture_output=True, text=True,
+            env={**os.environ, "HOME": str(home)}, cwd=home,
+        )
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("use only letters", result.stdout + result.stderr)
+        self.assertFalse((home / "Documents").exists() and any((home / "Documents").iterdir()))
 
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ try {
 
   Write-Host 'Folder name for your wiki (letters, numbers, dot, dash or underscore, no spaces).'
   $name = Read-Host 'Name'
-  if ($name -notmatch '^[A-Za-z0-9._-]+$') { throw 'use only letters, numbers, dot, dash or underscore, for example my-wiki.' }
+  if ($name -notmatch '^[A-Za-z0-9._-]+$' -or $name -match '^\.+$') { throw 'use only letters, numbers, dot, dash or underscore, for example my-wiki.' }
 
   $documents = [Environment]::GetFolderPath('MyDocuments')
   $target = Join-Path $documents $name
@@ -46,13 +46,15 @@ try {
 
   Write-Host ''
   Write-Host "Creating your wiki in $target ..."
-  & (Join-Path $PSScriptRoot 'new-llm-wiki.ps1') -Name $name
+  # A separate process: its checks cannot change this script's exit status, and its exit code is trustworthy.
+  $generator = Join-Path $PSScriptRoot 'new-llm-wiki.ps1'
+  powershell.exe -NoProfile -ExecutionPolicy Bypass -File $generator -Name $name
   if ($LASTEXITCODE -ne 0) { throw 'the wiki could not be created. The messages above say why.' }
 
   Write-Host ''
   Write-Host "Your wiki is ready in: $target"
   Write-Host 'Open that folder with your assistant and start with /wiki-ingest.'
-  Start-Process explorer.exe -ArgumentList $target
+  Invoke-Item -LiteralPath $target
 }
 catch {
   Write-Host ''

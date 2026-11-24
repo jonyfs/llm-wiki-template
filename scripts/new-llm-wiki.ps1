@@ -12,14 +12,15 @@ param(
   [switch]$NoCheck
 )
 
-$ErrorActionPreference = 'Stop'
+# 'Continue': Windows PowerShell 5.1 turns native stderr into errors under 'Stop'. Failures still stop via Fail (throw).
+$ErrorActionPreference = 'Continue'
 $TemplateUrl = if ($env:TEMPLATE_URL) { $env:TEMPLATE_URL } else { 'https://github.com/jonyfs/llm-wiki-template.git' }
 $TemplateBranch = if ($env:TEMPLATE_BRANCH) { $env:TEMPLATE_BRANCH } else { 'main' }
 $Utf8 = New-Object System.Text.UTF8Encoding($false)
 
 function Fail([string]$Message) { throw "Stopped: $Message" }
 
-if ($Name -notmatch '^[A-Za-z0-9._-]+$') { Fail 'use only letters, numbers, dot, dash or underscore in the name.' }
+if ($Name -notmatch '^[A-Za-z0-9._-]+$' -or $Name -match '^\.+$') { Fail 'use only letters, numbers, dot, dash or underscore in the name.' }
 if (Test-Path -LiteralPath $Name) {
   if ((Get-ChildItem -LiteralPath $Name -Force | Measure-Object).Count -gt 0) { Fail "'$Name' already exists and is not empty." }
 }
