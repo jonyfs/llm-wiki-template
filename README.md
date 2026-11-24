@@ -178,7 +178,7 @@ Whatever the format, the assistant needs a tool that can read it. If it can't, i
 
 ### Every request goes through a skill
 
-When you ask the assistant to ingest, answer or remove something, `AGENTS.md` tells it to load the matching skill first. That is why every answer is built the same way: it starts from the index, uses your pages, cites them and logs any change it makes. These are instructions the assistant follows, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
+When you ask the assistant to ingest, answer or remove something, `AGENTS.md` tells it to load the matching skill first. That is why every answer is built the same way: it starts from the index, uses your pages, cites them and logs any change it makes. Nothing enforces this: the assistant is following instructions. If an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
 
 | You say | Skill | What happens |
 |---|---|---|
@@ -207,14 +207,12 @@ flowchart TD
 
 ### Examples from an ordinary week
 
-Made-up situations, but the steps are the real ones.
+The situations are made up. The steps are the real ones.
 
 - **Studying for an exam.** You keep lecture PDFs, your class notes and two articles you found online. You run `wiki-ingest` on all of it, and it saves the links into `raw/` after you approve. Before the exam you ask: "What did the course say about Keynes, and where does the article disagree?" The answer cites the lecture page and the article page.
 - **Running a small business.** You drop in proposals, signed contracts, meeting notes and emails exported as text. Months later: "What did I promise this client about delivery, and did the scope change?" The assistant points to the proposal and to the later email, and says where they differ.
 - **Planning a trip.** You save a few blog posts as links, the booking confirmation as a PDF and screenshots of the map. You ask: "We land on Sunday night and the museum closes on Mondays. Which day works?" The answer comes from your saved sources, and each claim links to the page it came from.
 - **Keeping a team's decisions.** You add meeting notes, design docs and issue threads over a few months. A new teammate asks: "Why did we pick Postgres?" The assistant answers from the decision pages and can save the answer as a synthesis page, so the next person finds it already written.
-
-In each case, `wiki-query` handles the questions and `wiki-ingest` handles every source you add.
 
 ### Folder map
 
@@ -232,26 +230,26 @@ In each case, `wiki-query` handles the questions and `wiki-ingest` handles every
 │   ├── entities/             # people, organizations, products, places
 │   ├── concepts/             # ideas, methods, theories
 │   └── syntheses/            # comparisons, maps, durable answers
-├── scripts/                  # lint, refresh, search, the new-llm-wiki.sh starter and the update-llm-wiki.sh updater
+├── scripts/                  # lint, refresh, search, the installers, the new-llm-wiki starter and the update-llm-wiki.sh updater
 ├── tests/                    # checks that keep the template healthy
 ├── docs/                     # migration notes and the README images
 └── github-pages/             # the template's own site (the starter script removes it)
 ```
 
-Multi-agent entry points (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/`, `.opencode/`) are links to the same source of truth, so one edit reaches every assistant.
+Multi-agent entry points (`CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.claude/`, `.opencode/`) are copies of `AGENTS.md` and `.agents/`. Edit those two, run `python3 scripts/sync_agent_files.py`, and every assistant gets the change. They are real copies because Git on Windows often turns symlinks into text files.
 
 ### Keeping the wiki healthy
 
-- **refresh** (`/wiki-refresh`) detects when a source has changed and reports which pages to revisit.
-- **lint** (`/wiki-lint`) checks structure, link integrity, stale claims and integration gaps.
-- **search** is a script, `scripts/wiki_search.py`, that `wiki-query` runs when the wiki is large. You ask the question and the skill does the lookup.
-- **tests** keep the template itself healthy, for people who change it: `python3 -m unittest discover -s tests -t .`
+- Refresh (`/wiki-refresh`) detects when a source has changed and reports which pages to revisit.
+- Lint (`/wiki-lint`) checks structure, link integrity, stale claims and integration gaps.
+- Search is a script, `scripts/wiki_search.py`, that `wiki-query` runs when the wiki is large. You ask the question and the skill does the lookup.
+- Tests keep the template itself healthy, for people who change it: `python3 -m unittest discover -s tests -t .`
 
 ---
 
 ## 4. Why it pays off
 
-Plain files, a few scripts and instructions your assistant follows. Nothing runs in the background.
+It is plain files, a few scripts and the instructions your assistant follows. Nothing runs in the background.
 
 - **Answers you can check.** Claims in wiki pages carry a footnote that points at the raw file. When the assistant answers, it names the pages it used, so you can open them.
 - **Your sources stay untouched.** The assistant reads `raw/` but never edits it. Everything it writes goes into `wiki/`, and git keeps the history.
@@ -279,7 +277,7 @@ Skip it if you need search over millions of documents or a hosted service. This 
 
 ### LLM wiki vs. RAG vs. note apps
 
-The same question, answered three ways. Read the rows as rough generalizations.
+The table compares how each approach handles the same needs. Read the rows as rough generalizations.
 
 | | LLM wiki | RAG | Note apps |
 |---|---|---|---|
@@ -308,7 +306,7 @@ Python 3.9+ on macOS, Linux and Windows. Standard library only.
 - **Do I need an API key or database?** No. The wiki is plain markdown files in git. You only need an AI coding assistant that can read and write them.
 - **How is this different from RAG?** RAG finds the relevant chunks and writes a fresh answer every time you ask. Here the assistant writes the pages ahead of time, so links between ideas and conflicting claims are already on the page when you ask.
 - **What can I add to it?** Files, links and pasted text, all through `wiki-ingest`: notes, markdown, PDFs, images and data files. It asks before saving a copy in `raw/`. The assistant still needs a tool that can read the format.
-- **Do I have to use the skills?** They are how the template works. `AGENTS.md` tells the assistant to load the matching skill before it ingests, answers or removes anything. It's an instruction, not a lock, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
+- **Do I have to use the skills?** They are how the template works. `AGENTS.md` tells the assistant to load the matching skill before it ingests, answers or removes anything. Nothing enforces it, so if an answer looks like it skipped the wiki, ask it to use the wiki skill and cite its pages.
 - **Does it cost a lot of tokens?** `AGENTS.md` is about 10 KB and the scripts print one-line summaries by default.
 - **Is my data sent anywhere?** The scripts have no network calls and `raw/` stays on your machine. Whatever your assistant sends to its model depends on which assistant you use.
 - **Does it work offline?** The files do. The wiki is local and needs no server. Whether the assistant works offline depends on which assistant you use.
@@ -326,7 +324,7 @@ Python 3.9+ on macOS, Linux and Windows. Standard library only.
 
 ## 5. Start
 
-Pick the path that fits. All three give you the same template.
+Pick the path that fits. Every one of them gives you the same template.
 
 ### On GitHub
 
@@ -356,7 +354,7 @@ To make it your own history instead of the template's, run `rm -rf .git && git i
 
 ### Guided install for macOS, Windows and Linux
 
-No terminal experience needed. Download this repository as a ZIP from GitHub (green **Code** button, then **Download ZIP**), unzip it, and run the installer for your system. Each one checks what is missing, installs git if needed, asks for a folder name and creates your wiki in your Documents folder.
+You don't need terminal experience. Download this repository as a ZIP from GitHub (green **Code** button, then **Download ZIP**), unzip it, and run the installer for your system. Each one checks what is missing, installs git if needed, asks for a folder name and creates your wiki in your Documents folder.
 
 | System | What to do |
 |---|---|
@@ -412,7 +410,7 @@ Built something with this template? Open a Discussion ("Show and tell") and it m
 
 ## Status
 
-Actively maintained. Last reviewed: 2026-10-27. CI runs on every push and pull request.
+Actively maintained. Last reviewed: 2026-11-24. CI runs on every push and pull request.
 
 ## Credits
 
