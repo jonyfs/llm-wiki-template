@@ -94,6 +94,10 @@ if (-not $KeepPages) {
   $agents = $agents.Replace(', the GitHub Pages copy in `github-pages/`,', ',')
   $agents = [regex]::Replace($agents, ' Pages with translations \(`github-pages/assets/i18n\.js`\) need the same pass in every language\.', '')
   [System.IO.File]::WriteAllText($agentsPath, $agents, $Utf8)
+  # The agent copies must match AGENTS.md byte for byte (the template's mirror check), so refresh them now.
+  foreach ($copy in 'CLAUDE.md', '.cursorrules', '.github/copilot-instructions.md') {
+    [System.IO.File]::WriteAllText((Join-Path (Get-Location) $copy), $agents, $Utf8)
+  }
 }
 
 # wiki/log.md: keep the header, start a fresh history.

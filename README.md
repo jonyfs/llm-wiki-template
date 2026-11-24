@@ -360,6 +360,7 @@ You don't need terminal experience. Download this repository as a ZIP from GitHu
 |---|---|
 | macOS | Double-click [`scripts/install-macos.command`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-macos.command). If Apple's developer tools are missing, a macOS window installs them first: run the file again afterwards. |
 | Windows | Double-click [`scripts/install-windows.cmd`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd). It uses PowerShell, which Windows already has, and installs git with winget if needed. |
+| All three | One command does everything: it installs git if it is missing, downloads the template from GitHub and starts the installer. macOS and Linux: `scripts/bootstrap.sh`. Windows: `scripts/bootstrap.ps1`. The guide has the exact line to paste. |
 | Linux | Run `bash scripts/install-linux.sh`. It installs git and python3 with your package manager (apt, dnf, pacman or zypper) and asks for your password once. |
 
 Step-by-step instructions, with what to expect in each window and how to fix common errors, are in [`docs/install.md`](https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md).

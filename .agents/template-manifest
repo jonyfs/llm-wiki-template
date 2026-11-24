@@ -17,6 +17,8 @@ never	scripts/new-llm-wiki.sh
 never	scripts/new-llm-wiki.ps1
 never	scripts/install-macos.command
 never	scripts/install-linux.sh
+never	scripts/bootstrap.sh
+never	scripts/bootstrap.ps1
 never	scripts/install-windows.ps1
 never	scripts/install-windows.cmd
 merge	AGENTS.md

@@ -4,6 +4,24 @@ This guide creates a wiki on your computer with one installer. You do not need t
 
 Plan for a short session. The slowest part is installing git and Apple's developer tools, which only happens once.
 
+## Fastest way: one command
+
+Copy the command for your system, paste it into the program below, and press Enter. It checks for git, installs what is missing, downloads the template from GitHub and starts the installer. You do not need to download or unzip anything.
+
+- **macOS or Linux.** Open **Terminal** and paste:
+
+  ```bash
+  bash -c "$(curl -fsSL https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.sh)"
+  ```
+
+- **Windows.** Open **PowerShell** (press the Start key, type `PowerShell`, press Enter) and paste:
+
+  ```powershell
+  irm https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.ps1 | iex
+  ```
+
+Answer the questions on screen. The wiki is created in your **Documents** folder. If you prefer to see each step with a file to double-click, use the steps below.
+
 ## Before you start
 
 1. Choose a name for your wiki, for example `my-wiki` or `sleep-research`. Use only letters, numbers, dots, dashes and underscores. No spaces, and do not start with a dash.
