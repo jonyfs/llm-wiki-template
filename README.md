@@ -354,6 +354,20 @@ If your assistant has no slash commands, name the skill in a sentence: "Use wiki
 
 To make it your own history instead of the template's, run `rm -rf .git && git init -b main` and commit.
 
+### Guided install for macOS, Windows and Linux
+
+No terminal experience needed. Download this repository as a ZIP from GitHub (green **Code** button, then **Download ZIP**), unzip it, and run the installer for your system. Each one checks what is missing, installs git if needed, asks for a folder name and creates your wiki in your Documents folder.
+
+| System | What to do |
+|---|---|
+| macOS | Double-click [`scripts/install-macos.command`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-macos.command). If Apple's developer tools are missing, a macOS window installs them first: run the file again afterwards. |
+| Windows | Double-click [`scripts/install-windows.cmd`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd). It uses PowerShell, which Windows already has, and installs git with winget if needed. |
+| Linux | Run `bash scripts/install-linux.sh`. It installs git and python3 with your package manager (apt, dnf, pacman or zypper) and asks for your password once. |
+
+Step-by-step instructions, with what to expect in each window and how to fix common errors, are in [`docs/install.md`](https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md).
+
+Each installer only runs [`scripts/new-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh) on macOS and Linux, or [`scripts/new-llm-wiki.ps1`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.ps1) on Windows, and deletes nothing outside the new folder. Read the file before you run it.
+
 ### With the starter script
 
 `scripts/new-llm-wiki.sh` does the whole clean start in one command. It clones the template (or creates a GitHub repo from it with `--github`), starts a fresh git history, removes the template's GitHub Pages site and workflows, drops the author's citation file and the internal catalogs, resets `wiki/log.md`, writes a short README for your notebook and runs the checks. It refuses to run if the target folder is not empty, and it checks that it is inside a template copy before it deletes anything.
@@ -366,7 +380,7 @@ bash new-llm-wiki.sh my-notebook --github --public  # same, public
 bash new-llm-wiki.sh my-notebook --keep-pages       # keep the GitHub Pages site
 ```
 
-It also records which template commit your copy started from in `.agents/template.lock`, so the updater below knows its base later. It needs bash, git and python3, plus the GitHub CLI for `--github`. On Windows, use Git Bash or WSL. Read [`scripts/new-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh) before you run it.
+It also records which template commit your copy started from in `.agents/template.lock`, so the updater below knows its base later. It needs bash, git and python3, plus the GitHub CLI for `--github`. On Windows, use the guided installer above, which runs the PowerShell version of this script. Read [`scripts/new-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh) before you run it.
 
 ### Updating a copy or fork
 

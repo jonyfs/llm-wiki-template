@@ -1,0 +1,71 @@
+name: windows-installers
+
+# Runs the Windows starter on Windows PowerShell 5.1, the version that ships with Windows and that the
+# double-click installer uses. Nothing else in CI runs on Windows, so this job is what catches 5.1-only failures.
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-starter:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: powershell
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Show the PowerShell version
+        run: $PSVersionTable.PSVersion
+
+      - name: Build a local copy of this commit to use as the template
+        run: |
+          $tpl = Join-Path $env:RUNNER_TEMP 'tpl'
+          New-Item -ItemType Directory -Force -Path $tpl | Out-Null
+          $tar = Join-Path $env:RUNNER_TEMP 'tpl.tar'
+          git archive --format=tar --output $tar HEAD
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          tar -xf $tar -C $tpl
+          if ($LASTEXITCODE -ne 0) { exit 1 }
+          git config --global user.name 'ci'
+          git config --global user.email 'ci@example.invalid'
+          Push-Location $tpl
+          git init -q -b main
+          git add -A
+          git commit -q -m 'template'
+          Pop-Location
+          "TEMPLATE_URL=file:///$($tpl -replace '\\', '/')" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Create a notebook with the Windows starter (checks included)
+        run: |
+          $work = Join-Path $env:RUNNER_TEMP 'work'
+          New-Item -ItemType Directory -Force -Path $work | Out-Null
+          Set-Location -LiteralPath $work
+          & powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$env:GITHUB_WORKSPACE\scripts\new-llm-wiki.ps1" -Name 'ci-wiki'
+          if ($LASTEXITCODE -ne 0) { Write-Error "starter exited with $LASTEXITCODE"; exit 1 }
+
+      - name: Check the notebook
+        run: |
+          $nb = Join-Path $env:RUNNER_TEMP 'work\ci-wiki'
+          if (-not (Test-Path (Join-Path $nb 'AGENTS.md'))) { Write-Error 'AGENTS.md missing'; exit 1 }
+          if (Test-Path (Join-Path $nb 'github-pages')) { Write-Error 'the template site was not removed'; exit 1 }
+          $log = Get-Content -Raw -LiteralPath (Join-Path $nb 'wiki\log.md')
+          $entries = ([regex]::Matches($log, '(?m)^## \[')).Count
+          if ($entries -ne 1) { Write-Error "expected one log entry, found $entries"; exit 1 }
+          Set-Location -LiteralPath $nb
+          $commits = @(git log --oneline)
+          if ($commits.Count -ne 1) { Write-Error "expected one commit, found $($commits.Count)"; exit 1 }
+          Write-Host 'Notebook looks right.'
+
+      - name: Parse the double-click installer on PowerShell 5.1
+        run: |
+          $errs = $null
+          $tokens = $null
+          [void][System.Management.Automation.Language.Parser]::ParseFile("$env:GITHUB_WORKSPACE\scripts\install-windows.ps1", [ref]$tokens, [ref]$errs)
+          if ($errs.Count -gt 0) { $errs | ForEach-Object { Write-Error $_.Message }; exit 1 }

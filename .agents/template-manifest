@@ -14,6 +14,11 @@ never	docs/images/*
 never	tests/test_github_pages.py
 never	tests/test_readme.py
 never	scripts/new-llm-wiki.sh
+never	scripts/new-llm-wiki.ps1
+never	scripts/install-macos.command
+never	scripts/install-linux.sh
+never	scripts/install-windows.ps1
+never	scripts/install-windows.cmd
 merge	AGENTS.md
 once	.github/workflows/test.yml
 managed	.agents/skills/*
