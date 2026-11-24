@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+# The llm-wiki command for macOS and Linux. The one-command installer adds this folder to your PATH.
+#
+#   llm-wiki new      create a new wiki (asks for a name, creates it in Documents)
+#   llm-wiki update   get the newest version of the template
+#   llm-wiki where    show where the template is installed
+set -uo pipefail
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
+usage() {
+  echo "Usage: llm-wiki <command>"
+  echo
+  echo "  new      create a new wiki (asks for a name)"
+  echo "  update   get the newest version of the template"
+  echo "  where    show where the template is installed"
+}
+
+case "$(uname -s)" in
+  Darwin) INSTALLER="$ROOT/scripts/install-macos.command" ;;
+  Linux) INSTALLER="$ROOT/scripts/install-linux.sh" ;;
+  *) echo "Stopped: on Windows, use llm-wiki from PowerShell or Command Prompt." >&2; exit 1 ;;
+esac
+
+case "${1:-help}" in
+  new)
+    bash "$INSTALLER"
+    ;;
+  update)
+    git -C "$ROOT" pull --ff-only --quiet || { echo "Stopped: the template could not be updated. Check your internet connection." >&2; exit 1; }
+    echo "Template updated in $ROOT."
+    ;;
+  where)
+    echo "$ROOT"
+    ;;
+  help|-h|--help)
+    usage
+    ;;
+  *)
+    echo "Unknown command: $1" >&2
+    usage >&2
+    exit 1
+    ;;
+esac

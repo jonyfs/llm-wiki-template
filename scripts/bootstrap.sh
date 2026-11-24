@@ -1,18 +1,22 @@
 #!/usr/bin/env bash
-# One-command installer for macOS and Linux. Paste this line into the Terminal and press Return:
+# One command to install the LLM Wiki Template on macOS or Linux. Paste this line into the Terminal and press Return:
 #
 #   bash -c "$(curl -fsSL https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.sh)"
 #
-# It makes sure git is installed (asks for your password on Linux if it is missing), downloads the template
-# with git clone into a temporary folder, runs that folder's installer, then deletes the temporary folder.
-# The installer installs python3 on Linux when it is missing. Your wiki is created in Documents/<name>.
-# Nothing is deleted outside the temporary folder. You can read this file before running it.
+# Like SDKMAN, it installs into a folder in your home directory (~/.llm-wiki), adds an `llm-wiki` command to
+# your shell's startup file, and then creates your first wiki. It installs git first if git is missing.
+# Later, `llm-wiki new` creates another wiki and `llm-wiki update` gets the newest template.
+# Your wiki is created in Documents/<name>. Nothing outside ~/.llm-wiki and your shell startup file is changed.
+# You can read this file before running it.
 #
-# Set TEMPLATE_URL or TEMPLATE_BRANCH to install from another copy of the template.
+# Set TEMPLATE_URL, TEMPLATE_BRANCH or LLM_WIKI_HOME to install from another copy or into another folder.
 set -uo pipefail
 
 TEMPLATE_URL="${TEMPLATE_URL:-https://github.com/jonyfs/llm-wiki-template.git}"
 TEMPLATE_BRANCH="${TEMPLATE_BRANCH:-main}"
+LLM_WIKI_HOME="${LLM_WIKI_HOME:-$HOME/.llm-wiki}"
+MARK_BEGIN="# >>> llm-wiki >>>"
+MARK_END="# <<< llm-wiki <<<"
 
 fail() {
   echo
@@ -63,17 +67,40 @@ install_git() {
 command -v git >/dev/null 2>&1 || install_git
 command -v git >/dev/null 2>&1 || fail "git is still missing. Install it, then paste this command again."
 
-WORK="$(mktemp -d)" || fail "could not create a temporary folder."
-trap 'rm -rf "$WORK"' EXIT
+# Download the template into its own folder, or update the copy that is already there.
+if [ -d "$LLM_WIKI_HOME/.git" ]; then
+  echo "Updating the template in $LLM_WIKI_HOME ..."
+  git -C "$LLM_WIKI_HOME" pull --ff-only --quiet \
+    || fail "the template in $LLM_WIKI_HOME could not be updated. Check your internet connection and paste this command again."
+elif [ -e "$LLM_WIKI_HOME" ]; then
+  fail "$LLM_WIKI_HOME exists but is not an LLM Wiki installation. Move or rename it, then paste this command again."
+else
+  echo "Downloading the template from $TEMPLATE_URL ..."
+  git clone --quiet --depth 1 --branch "$TEMPLATE_BRANCH" "$TEMPLATE_URL" "$LLM_WIKI_HOME" \
+    || fail "the template could not be downloaded. Check your internet connection and paste this command again."
+fi
+chmod +x "$LLM_WIKI_HOME/scripts/llm-wiki"
 
-echo "Downloading the template from $TEMPLATE_URL ..."
-git clone --quiet --depth 1 --branch "$TEMPLATE_BRANCH" "$TEMPLATE_URL" "$WORK/template" \
-  || fail "the template could not be downloaded. Check your internet connection and paste this command again."
-
-case "$PLATFORM" in
-  macos) INSTALLER="$WORK/template/scripts/install-macos.command" ;;
-  linux) INSTALLER="$WORK/template/scripts/install-linux.sh" ;;
+# Add the llm-wiki command to the shell's startup file, once. Like SDKMAN, a marked block is written and
+# later runs replace it instead of adding another copy.
+case "${SHELL:-}" in
+  */zsh) RC="$HOME/.zshrc" ;;
+  *) if [ "$PLATFORM" = macos ]; then RC="$HOME/.bash_profile"; else RC="$HOME/.bashrc"; fi ;;
 esac
+touch "$RC" || fail "could not write to $RC."
+if grep -qF "$MARK_BEGIN" "$RC"; then
+  # Remove the old block, then write the current one.
+  sed -i.llm-wiki-bak "/$MARK_BEGIN/,/$MARK_END/d" "$RC" && rm -f "$RC.llm-wiki-bak"
+fi
+{
+  echo "$MARK_BEGIN"
+  echo "export PATH=\"$LLM_WIKI_HOME/scripts:\$PATH\""
+  echo "$MARK_END"
+} >> "$RC"
+echo "Added the llm-wiki command to $RC."
 
 echo
-bash "$INSTALLER"
+bash "$LLM_WIKI_HOME/scripts/llm-wiki" new
+
+echo
+echo "Done. Open a new Terminal window and type: llm-wiki help"
