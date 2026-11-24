@@ -364,6 +364,8 @@ No terminal experience needed. Download this repository as a ZIP from GitHub (gr
 | Windows | Double-click [`scripts/install-windows.cmd`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd). It uses PowerShell, which Windows already has, and installs git with winget if needed. |
 | Linux | Run `bash scripts/install-linux.sh`. It installs git and python3 with your package manager (apt, dnf, pacman or zypper) and asks for your password once. |
 
+Step-by-step instructions, with what to expect in each window and how to fix common errors, are in [`docs/install.md`](https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md).
+
 Each installer only runs [`scripts/new-llm-wiki.sh`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh) on macOS and Linux, or [`scripts/new-llm-wiki.ps1`](https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.ps1) on Windows, and deletes nothing outside the new folder. Read the file before you run it.
 
 ### With the starter script
