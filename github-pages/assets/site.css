@@ -18,6 +18,7 @@
   --step--1: clamp(.875rem, .85rem + .12vw, .95rem);
   --step-0: clamp(1rem, .96rem + .22vw, 1.125rem);
   --step-1: clamp(1.1rem, 1.02rem + .4vw, 1.35rem);
+  --step-2: clamp(1.3rem, 1.12rem + .9vw, 1.75rem);
   --step-3: clamp(1.7rem, 1.3rem + 1.8vw, 2.5rem);
   --step-4: clamp(2.1rem, 1.3rem + 3.8vw, 4.25rem);
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -323,3 +324,13 @@ html.graph-full { scrollbar-gutter: auto; }
    Portuguese or Spanish visit), so main stays hidden until the language is applied. If the script never runs, a CSS timer reveals it. */
 html.js:not(.i18n-ready) main { visibility: hidden; animation: i18n-fallback 0s 1.5s forwards; }
 @keyframes i18n-fallback { to { visibility: visible; } }
+
+/* ---------- Installers (Start section) ---------- */
+.install { margin-top: clamp(32px, 5vw, 56px); padding-top: clamp(28px, 4vw, 44px); border-top: 1px solid var(--border); }
+.install-title { font-size: var(--step-2); margin-bottom: .35em; }
+.install-sub { color: var(--muted); max-width: 62ch; margin-bottom: 20px; }
+.install-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: clamp(20px, 3vw, 32px); }
+.install .card { display: flex; flex-direction: column; }
+.install .card p { flex: 1 0 auto; margin-bottom: 1.1em; }
+.install .card .btn { align-self: flex-start; white-space: normal; text-align: left; }
+@media (max-width: 480px) { .install-actions .btn, .install .card .btn { align-self: stretch; width: 100%; } }

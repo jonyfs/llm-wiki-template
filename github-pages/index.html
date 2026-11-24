@@ -418,7 +418,20 @@
     </div>
     <p class="hint">No slash commands in your assistant? Name the skill in a sentence: "Use wiki-ingest on ~/Downloads/lecture.pdf." The file can live anywhere. <code>wiki-ingest</code> asks before it saves a copy in <code>raw/</code>. Lint and search are scripts those skills run for you, so you never call them yourself.</p>
     <p class="hint">Works with Claude Code, Cursor, GitHub Copilot, OpenCode, and Codex. See <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/README.md">README.md</a> for the full walkthrough.</p>
-    <p class="hint">New to the terminal? Follow the <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md">step-by-step install guide</a>, then double-click the installer for your system: <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-macos.command">macOS</a>, <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd">Windows</a>, or <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-linux.sh">Linux</a>. Prefer one command? The <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh">starter script</a> creates a clean local notebook without the template's site.</p>
+    <div class="install" id="install">
+      <h3 class="install-title">No terminal experience? Use an installer</h3>
+      <p class="install-sub">Download the template as a ZIP, unzip it, and run the file for your system. It asks for a name and creates your wiki in your Documents folder.</p>
+      <div class="install-actions">
+        <a class="btn primary" href="https://github.com/jonyfs/llm-wiki-template/archive/refs/heads/main.zip">Download the ZIP</a>
+        <a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/docs/install.md">Read the step-by-step guide</a>
+      </div>
+      <div class="grid">
+        <div class="card"><h3>macOS</h3><p>Double-click the installer in the scripts folder. If Apple's developer tools are missing, macOS installs them first, and you run the file again.</p><a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-macos.command">See the macOS installer</a></div>
+        <div class="card"><h3>Windows</h3><p>Double-click the installer in the scripts folder. It uses PowerShell, which Windows already has, and installs git if it is missing.</p><a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-windows.cmd">See the Windows installer</a></div>
+        <div class="card"><h3>Linux</h3><p>Run the installer with bash. It installs git and python3 with your package manager and asks for your password once.</p><a class="btn" href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/install-linux.sh">See the Linux installer</a></div>
+      </div>
+      <p class="hint">Prefer one command? The <a href="https://github.com/jonyfs/llm-wiki-template/blob/main/scripts/new-llm-wiki.sh">starter script</a> creates a clean local notebook without the template's site.</p>
+    </div>
   </div>
 </section>
 
