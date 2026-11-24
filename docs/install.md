@@ -20,7 +20,15 @@ Copy the command for your system, paste it into the program below, and press Ent
   irm https://raw.githubusercontent.com/jonyfs/llm-wiki-template/main/scripts/bootstrap.ps1 | iex
   ```
 
-Answer the questions on screen. The wiki is created in your **Documents** folder. If you prefer to see each step with a file to double-click, use the steps below.
+Answer the questions on screen. The wiki is created in your **Documents** folder.
+
+The command installs the template into `~/.llm-wiki` (on Windows, `%USERPROFILE%\.llm-wiki`) and adds an `llm-wiki` command, like SDKMAN does for Java. Open a new terminal window, then use:
+
+- `llm-wiki new`: create another wiki (asks for a name).
+- `llm-wiki update`: get the newest version of the template.
+- `llm-wiki help`: list the commands.
+
+If you prefer to see each step with a file to double-click, use the steps below.
 
 ## Before you start
 
